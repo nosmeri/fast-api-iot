@@ -34,8 +34,6 @@ def get_token_expiration(token: str) -> Optional[datetime]:
         return None
 def is_token_expired(token: str) -> bool:
     expiration = get_token_expiration(token)
-    print(datetime.fromtimestamp(datetime.now().timestamp()))
-    print(expiration)
     if expiration:
         return datetime.now() > expiration
     return True
