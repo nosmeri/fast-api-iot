@@ -1,16 +1,33 @@
 from fastapi import FastAPI, Request, Response, Form
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel
-from fastapi.responses import HTMLResponse
 import jwt_manager
 
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get("/", response_class=HTMLResponse)
 def printHello(request: Request):
-	return templates.TemplateResponse("index.html", {"request": request, "message": "Hello World!"})
+    tkn = request.cookies.get("session")
+    data = {
+            "request": request,
+            "message": "Hello World!",
+            }
+    if jwt_manager.check_token(tkn): 
+        print("Token is valid")
+        data.update({
+            "user":{
+                "username": jwt_manager.decode_access_token(tkn)["sub"],
+                "is_admin": jwt_manager.decode_access_token(tkn)["sub"] == "admin"
+            }
+        })
+    
+    return templates.TemplateResponse("index.html", data)
     
 class Post(BaseModel):
 	title: str
@@ -34,12 +51,14 @@ def login_form(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
-def login(response: Response, username: str = Form(...), password: str = Form(...)):
+def login(username: str = Form(...), password: str = Form(...)):
     if username == "admin" and password == "password":
         data = {"sub": username}
         token = jwt_manager.create_access_token(data=data)
-        response.set_cookie(key="session", value=token)
-        return {"status": "success", "message": "Login successful"}
+        response = RedirectResponse(url="/", status_code=303)
+        response.set_cookie(key="session", value=token, httponly=True, secure=True)
+        return response
+        
     else:
         return {"status": "error", "message": "Invalid credentials"}
     
@@ -52,3 +71,9 @@ def admin(request: Request):
         return "You are not admin"
 
     return "<h1>admin page</h1>"
+
+@app.get("/logout")
+def logout():
+    response = RedirectResponse(url="/", status_code=303)
+    response.delete_cookie("session")
+    return response

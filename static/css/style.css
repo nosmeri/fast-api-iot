@@ -1,0 +1,154 @@
+:root {
+    --primary-color: #263343;
+    --secondary-color: #1f2a3b;
+    
+    --text-color: #f0f3f5;
+    --font-family: 'Source Sans 3', sans-serif;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family);
+}
+
+a {
+    text-decoration: none;
+    color: var(--text-color);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    padding: 4px 12px;
+}
+
+
+.navbar_logo {
+    font-size: 24px;
+    padding: 8px 0;
+}
+
+.logo_img {
+    width: 1em;
+    height: 1em;
+}
+
+.navbar_menu {
+    display: flex;
+    list-style: none;
+    padding-left: 0;
+    align-self: flex-start;
+    margin-left: 16px;
+    margin-right: auto;
+}
+
+.navbar_menu li {
+    padding: 0 16px;
+}
+
+.navbar_menu li:hover {
+    background-color: var(--secondary-color);
+    border-radius: 4px;
+}
+
+.navbar_menu li a {
+    font-size: 20px;
+}
+
+.navbar_icons {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar_icons li {
+    font-size: 28px;
+    margin: 0 8px;
+}
+
+.navbar_login {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    margin: 0;
+}
+
+.navbar_user {
+    display: flex;
+    align-items: center;
+}
+
+.navbar_user span {
+    margin: 16px;
+    color: var(--text-color)
+}
+
+.navbar_btn {
+    padding: 4px 12px;
+    margin: 0 4px;
+    border-radius: 4px;
+    border: #f0f3f5 1px solid;
+    background-color: var(--secondary-color);
+}
+
+.navbar_btn:hover {
+    background-color: var(--primary-color);
+}
+
+.navbar_toggleBtn {
+    display: none;
+    position: absolute;
+    right: 18px;
+    top: 18px;
+}
+
+.navbar_toggleBtn i {
+    font-size: 24px;
+}
+
+@media screen and (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 8px 12px;
+    }
+    
+    .navbar_menu {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+    }
+
+    .navbar_menu li {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .navbar_icons {
+        display: none;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .navbar_login {
+        display: none;
+        width: 100%;
+        justify-content: center;
+        padding: 0;
+    }
+    
+    .navbar_toggleBtn {
+        display: block;
+    }
+
+    .navbar_menu.active,
+    .navbar_icons.active,
+    .navbar_login.active {
+        display: flex;
+    }
+}
