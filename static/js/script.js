@@ -1,11 +1,9 @@
 'use strict';
 
 const toggleButton = document.querySelector('.navbar_toggleBtn');
-const menu = document.querySelector('.navbar_menu');
-const icons = document.querySelector('.navbar_icons');
-const login = document.querySelector('.navbar_login');
+const menu = document.querySelectorAll('.toggle_menu');
 toggleButton.addEventListener('click', () => {
-    menu.classList.toggle('active');
-    icons.classList.toggle('active');
-    login.classList.toggle('active');
+    for (let i = 0; i < menu.length; i++) {
+        menu[i].classList.toggle('active');
+    }
 })

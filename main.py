@@ -18,12 +18,11 @@ def printHello(request: Request):
             "request": request,
             "message": "Hello World!",
             }
-    if jwt_manager.check_token(tkn): 
-        print("Token is valid")
+    if jwt_manager.check_token(tkn):
         data.update({
-            "user":{
+            "user": {
                 "username": jwt_manager.decode_access_token(tkn)["sub"],
-                "is_admin": jwt_manager.decode_access_token(tkn)["sub"] == "admin"
+                "is_admin": bool(jwt_manager.decode_access_token(tkn).get("is_admin", False))
             }
         })
     
@@ -53,7 +52,9 @@ def login_form(request: Request):
 @app.post("/login")
 def login(username: str = Form(...), password: str = Form(...)):
     if username == "admin" and password == "password":
-        data = {"sub": username}
+        data = {
+            "sub": username,
+            "is_admin": True}
         token = jwt_manager.create_access_token(data=data)
         response = RedirectResponse(url="/", status_code=303)
         response.set_cookie(key="session", value=token, httponly=True, secure=True)
@@ -62,18 +63,27 @@ def login(username: str = Form(...), password: str = Form(...)):
     else:
         return {"status": "error", "message": "Invalid credentials"}
     
-@app.get("/admin", response_class=HTMLResponse)
-def admin(request: Request):
-    tkn=request.cookies.get("session")
-    if not jwt_manager.check_token(tkn):
-        return "Please login"
-    if jwt_manager.decode_access_token(request.cookies.get("session"))["sub"]!="admin":
-        return "You are not admin"
-
-    return "<h1>admin page</h1>"
 
 @app.get("/logout")
 def logout():
     response = RedirectResponse(url="/", status_code=303)
     response.delete_cookie("session")
     return response
+
+@app.get("/admin", response_class=HTMLResponse)
+def admin(request: Request):
+    tkn=request.cookies.get("session")
+    if not jwt_manager.check_token(tkn):
+        return "Please login"
+    if not jwt_manager.decode_access_token(tkn).get("is_admin",False):
+        return "You are not admin"
+
+    data= {
+        "request": request,
+        "user": {
+            "username": jwt_manager.decode_access_token(tkn)["sub"],
+            "is_admin": bool(jwt_manager.decode_access_token(tkn).get("is_admin",False))
+        }
+    }
+
+    return templates.TemplateResponse("admin.html", data)

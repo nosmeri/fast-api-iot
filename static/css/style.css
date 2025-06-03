@@ -26,7 +26,7 @@ a {
 
 
 .navbar_logo {
-    font-size: 24px;
+    font-size: 1.25rem;
     padding: 8px 0;
 }
 
@@ -44,17 +44,14 @@ a {
     margin-right: auto;
 }
 
-.navbar_menu li {
+.navbar_menu li a {
+    display: block;
     padding: 0 16px;
 }
 
 .navbar_menu li:hover {
     background-color: var(--secondary-color);
     border-radius: 4px;
-}
-
-.navbar_menu li a {
-    font-size: 20px;
 }
 
 .navbar_icons {
@@ -65,7 +62,7 @@ a {
 }
 
 .navbar_icons li {
-    font-size: 28px;
+    font-size: 1.75rem;
     margin: 0 8px;
 }
 
@@ -127,8 +124,9 @@ a {
     .navbar_menu li {
         width: 100%;
         text-align: center;
+        padding: 8px 0;
     }
-    
+
     .navbar_icons {
         display: none;
         justify-content: center;
@@ -141,14 +139,18 @@ a {
         justify-content: center;
         padding: 0;
     }
+
+    .navbar_user {
+        display: none;
+        width: 100%;
+        justify-content: center;
+    }
     
     .navbar_toggleBtn {
         display: block;
     }
 
-    .navbar_menu.active,
-    .navbar_icons.active,
-    .navbar_login.active {
+    .toggle_menu.active{
         display: flex;
     }
 }

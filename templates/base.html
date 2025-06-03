@@ -19,32 +19,32 @@
 <body>
     <header>
         <nav class="navbar">
-            <div class="navbar_logo">
+            <div class="navbar_logo toggle_menu">
                 <img class="logo_img" src="/static/images/icon.png" alt="">
-                <a href="">Test Web</a>
+                <a href="/">Test Web</a>
             </div>
 
-            <ul class="navbar_menu">
-                <li><a href="">Home</a></li>
+            <ul class="navbar_menu toggle_menu">
+                <li><a href="/">Home</a></li>
                 <li><a href="">Introduction</a></li>
                 <li><a href="">Members</a></li>
                 {% if user and user.is_admin %}
                 <li><a href="/admin">Admin</a></li>
                 {% endif %}
             </ul>
-            <ul class="navbar_icons">
+            <ul class="navbar_icons toggle_menu">
                 <li><a href="https://github.com/nosmeri"><i class="fa-brands fa-github"></i></a></li>
             </ul>
             
             {% if not user %}
-            <ul class="navbar_login">
+            <ul class="navbar_login toggle_menu">
                 <li><a href="/login" class="navbar_btn">Sign in</a></li>
                 <li><a href="/signup" class="navbar_btn">Sign up</a></li>
             </ul>
             {% endif %}
 
             {% if user %}
-                <div class="navbar_user">
+                <div class="navbar_user toggle_menu">
                     <span class="user_name">{{ user.username }}</span>
                     <a href="/logout" class="navbar_btn">Logout</a>
                 </div>
