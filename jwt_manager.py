@@ -1,9 +1,13 @@
 from jose import jwt
 from datetime import datetime, timedelta
 from typing import Optional
+import os
+from dotenv import load_dotenv
 
-SECRET_KEY = "63ad42229557af3539c82e947648fa9ced38b6c3a4b0fac9073ae7b56c5652ba2043985760a9711cadb57874101f7002c6b9dbd799312d817bc006c3411077c2"
-ALGORITHM = "HS256"
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("JWT_ALGORITHM")
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
