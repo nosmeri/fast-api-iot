@@ -1,6 +1,5 @@
 from jose import jwt
 from datetime import datetime, timedelta
-from typing import Optional
 import os
 from dotenv import load_dotenv
 
@@ -8,13 +7,11 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("JWT_ALGORITHM")
+EXPIRES_IN_HOURS = float(os.getenv("JWT_EXPIRES_IN_HOURS"))
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now() + expires_delta
-    else:
-        expire = datetime.now() + timedelta(minutes=15)
+    expire = datetime.now() + timedelta(hours=EXPIRES_IN_HOURS)
     to_encode.update({"exp": expire.timestamp()})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -30,7 +27,7 @@ def verify_access_token(token: str) -> bool:
         return True
     except jwt.JWTError:
         return False
-def get_token_expiration(token: str) -> Optional[datetime]:
+def get_token_expiration(token: str) -> datetime | None:
     try:
         decoded_jwt = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return datetime.fromtimestamp(decoded_jwt.get("exp", 0))
@@ -44,6 +41,6 @@ def is_token_expired(token: str) -> bool:
 def check_token(token: str) -> bool:
     if not token:
         return False
-    if is_token_expired(token):
+    if not verify_access_token(token):
         return False
-    return verify_access_token(token)
+    return not is_token_expired(token)

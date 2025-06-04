@@ -1,18 +1,28 @@
-from fastapi import FastAPI, Request, Response, Form
+from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-import jwt_manager
+import services.jwt_service as jwt_manager
+import routers.auth as auth_router
+from sqlalchemy import create_engine
+
+from models.user import Base
+from config.db import SQLALCHEMY_DATABASE_URL
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+app.include_router(auth_router.router)
 
 templates = Jinja2Templates(directory="templates")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
-def printHello(request: Request):
+def mainPage(request: Request):
     tkn = request.cookies.get("session")
     data = {
             "request": request,
@@ -41,34 +51,6 @@ def createContents(post : Post):
         "Content": content,
 		"status": "success"
     }
-
-@app.get("/login", response_class=HTMLResponse)
-def login_form(request: Request):
-    
-    if jwt_manager.check_token(request.cookies.get("session")):
-        return "You are already logged in."
-    return templates.TemplateResponse("login.html", {"request": request})
-
-@app.post("/login")
-def login(username: str = Form(...), password: str = Form(...)):
-    if username == "admin" and password == "password":
-        data = {
-            "sub": username,
-            "is_admin": True}
-        token = jwt_manager.create_access_token(data=data)
-        response = RedirectResponse(url="/", status_code=303)
-        response.set_cookie(key="session", value=token, httponly=True, secure=True)
-        return response
-        
-    else:
-        return {"status": "error", "message": "Invalid credentials"}
-    
-
-@app.get("/logout")
-def logout():
-    response = RedirectResponse(url="/", status_code=303)
-    response.delete_cookie("session")
-    return response
 
 @app.get("/admin", response_class=HTMLResponse)
 def admin(request: Request):
