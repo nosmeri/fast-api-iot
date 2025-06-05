@@ -9,11 +9,6 @@ form.addEventListener('submit', async (event) => {
         password: password
     }
 
-    if (!username || !password) {
-        event.preventDefault();
-        alert('아이디와 비밀번호를 입력해주세요.');
-    }
-    
     try {
         const response = await fetch('/login', {
         method: 'POST',

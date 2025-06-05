@@ -30,9 +30,11 @@ a {
     padding: 8px 0;
 }
 
-.logo_img {
-    width: 1em;
-    height: 1em;
+.navbar_logo img {
+    width: 1.2em;
+    height: 1.2em;
+    vertical-align: text-top;
+    margin-right: 2px;
 }
 
 .navbar_menu {

@@ -16,3 +16,5 @@ update_data = {
     "is_admin": True
 }
 db=next(get_db())
+
+db_delete(db, "kes")

@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
+from fastapi.responses import HTMLResponse, RedirectResponse
 import services.jwt_service as jwt_manager
 import routers.auth as auth_router
+import routers.admin as admin_router
 from sqlalchemy import create_engine
 
 from models.user import Base
@@ -15,7 +15,8 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.include_router(auth_router.router)
+app.include_router(auth_router.router, prefix="")
+app.include_router(admin_router.router, prefix="/admin")
 
 templates = Jinja2Templates(directory="templates")
 
@@ -37,35 +38,3 @@ def mainPage(request: Request):
         })
     
     return templates.TemplateResponse("index.html", data)
-    
-class Post(BaseModel):
-	title: str
-	content: str
-
-@app.post("/posts")
-def createContents(post : Post):
-	title = post.title
-	content = post.content
-	return {
-        "Title": title,
-        "Content": content,
-		"status": "success"
-    }
-
-@app.get("/admin", response_class=HTMLResponse)
-def admin(request: Request):
-    tkn=request.cookies.get("session")
-    if not jwt_manager.check_token(tkn):
-        return "Please login"
-    if not jwt_manager.decode_access_token(tkn).get("is_admin",False):
-        return "You are not admin"
-
-    data= {
-        "request": request,
-        "user": {
-            "username": jwt_manager.decode_access_token(tkn)["sub"],
-            "is_admin": bool(jwt_manager.decode_access_token(tkn).get("is_admin",False))
-        }
-    }
-
-    return templates.TemplateResponse("admin.html", data)

@@ -3,17 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>test web</title>
+    <link rel="icon" type="image/x-icon" href="/static/images/icon.png">
+
+    <link rel="stylesheet" href="/static/css/auth.css">
 
     <script src="/static/js/login.js" defer></script>
 
+    <title>test web</title>
 </head>
 <body>
-    <h1>로그인</h1>
-    <form id="loginForm">
-      <label>아이디: <input type="text" name="username" required /></label><br />
-      <label>비밀번호: <input type="password" name="password" required /></label><br />
-      <button type="submit">로그인</button>
-    </form>
+    <h1>Sign in to test web</h1>
+    <div class="login-container">
+        <form id="loginForm">
+            <label for="username">ID</label>
+            <input type="text" name="username" required />
+            <label for="password">Password</label>
+            <input type="password" name="password" required />
+            <button type="submit">Sign in</button>
+            <p>New to test web? <a href="/register">Create an account</a></p>
+        </form>
+    </div>
 </body>
 </html>
