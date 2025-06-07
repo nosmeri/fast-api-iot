@@ -46,3 +46,5 @@ async def not_found(request: Request, exc):
 @app.exception_handler(500)
 async def internal_server_error(request: Request, exc):
     return templates.TemplateResponse("500.html", {"request": request}, status_code=500)
+
+#TOTO: make mypage
