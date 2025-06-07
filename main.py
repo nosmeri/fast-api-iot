@@ -2,9 +2,10 @@ from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
-import services.jwt_service as jwt_manager
+from services import jwt_service
 import routers.auth as auth_router
 import routers.admin as admin_router
+import routers.mypage as mypage_router
 from sqlalchemy import create_engine
 
 from models.user import Base
@@ -17,6 +18,7 @@ app = FastAPI()
 
 app.include_router(auth_router.router, prefix="")
 app.include_router(admin_router.router, prefix="/admin")
+app.include_router(mypage_router.router, prefix="/mypage")
 
 templates = Jinja2Templates(directory="templates")
 
@@ -29,11 +31,11 @@ def mainPage(request: Request):
             "request": request,
             "message": "Hello World!",
             }
-    if jwt_manager.check_token(tkn):
+    if jwt_service.check_token(tkn):
         data.update({
             "user": {
-                "username": jwt_manager.decode_access_token(tkn)["sub"],
-                "is_admin": bool(jwt_manager.decode_access_token(tkn).get("is_admin", False))
+                "username": jwt_service.decode_access_token(tkn)["sub"],
+                "is_admin": bool(jwt_service.decode_access_token(tkn).get("is_admin", False))
             }
         })
     
