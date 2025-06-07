@@ -33,3 +33,6 @@ form.addEventListener('submit', async (event) => {
         alert('회원가입 요청 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
     }
 });
+
+// TODO: 추가적인 유효성 검사
+// 예: 비밀번호 길이, 특수문자 포함 여부 등
