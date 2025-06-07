@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse
 import services.jwt_service as jwt_manager
 import routers.auth as auth_router
 import routers.admin as admin_router
@@ -38,3 +38,11 @@ def mainPage(request: Request):
         })
     
     return templates.TemplateResponse("index.html", data)
+
+
+@app.exception_handler(404)
+async def not_found(request: Request, exc):
+    return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+@app.exception_handler(500)
+async def internal_server_error(request: Request, exc):
+    return templates.TemplateResponse("500.html", {"request": request}, status_code=500)

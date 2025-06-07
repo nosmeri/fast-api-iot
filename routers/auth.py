@@ -7,7 +7,6 @@ from config.db import get_db
 from sqlalchemy.orm import Session
 
 router = APIRouter()
-
 templates = Jinja2Templates(directory="templates")
 
 @router.get("/login", response_class=HTMLResponse)
