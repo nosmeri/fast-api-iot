@@ -9,23 +9,23 @@ from sqlalchemy.orm import Session
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
-@router.get("/login", response_class=HTMLResponse)
+@router.get("/login")
 def login_form(request: Request):
     
     if jwt_service.check_token(request.cookies.get("session")):
-        return "You are already logged in."
+        return RedirectResponse(url="/", status_code=302)
     return templates.TemplateResponse("login.html", {"request": request})
 
-@router.post("/login", response_class=JSONResponse)
+@router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
     username = user.username
     password = user.password
     try:
         user: UserResponse = auth_service.authenticate_user(db, username, password)
     except ValueError as e:
-        return JSONResponse(status_code=403, content={"status": "error", "message": str(e)})
+        return JSONResponse(status_code=400, content={"status": "error", "message": str(e)})
     if not user:
-        return JSONResponse(status_code=403, content={"status": "error", "message": "Invalid username or password"})
+        return JSONResponse(status_code=400, content={"status": "error", "message": "Invalid username or password"})
     
     data = {
         "sub": user.username,
@@ -35,19 +35,19 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     response.set_cookie(key="session", value=token)
     return response
 
-@router.get("/register", response_class=HTMLResponse)
+@router.get("/register")
 def register_form(request: Request):
     
     if jwt_service.check_token(request.cookies.get("session")):
-        return "You are already logged in."
+        return RedirectResponse(url="/", status_code=302)
     return templates.TemplateResponse("register.html", {"request": request})
 
-@router.post("/register", response_class=JSONResponse)
+@router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
     try:
         new_user = auth_service.create_user(db, user)
     except ValueError as e:
-        return JSONResponse(status_code=403, content={
+        return JSONResponse(status_code=400, content={
             "status": "error",
             "message": str(e)})
     
