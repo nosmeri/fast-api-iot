@@ -10,13 +10,13 @@ from models.user import User
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
-@router.get("/", response_class=HTMLResponse)
+@router.get("/")
 def admin(request: Request, db: Session = Depends(get_db)):
     tkn=request.cookies.get("session")
     if not jwt_manager.check_token(tkn):
-        return "Please login"
+        return JSONResponse(status_code=401, content={"status": "error", "message": "Please login"})
     if not jwt_manager.decode_access_token(tkn).get("is_admin",False):
-        return "You are not admin"
+        return JSONResponse(status_code=403, content={"status": "error", "message": "You are not admin"})
 
     users = admin_service.get_all_users(db)
     data= {
