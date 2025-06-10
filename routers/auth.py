@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
-from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from services import jwt_service, auth_service
 from models.user import UserCreate, UserLogin, UserResponse
@@ -32,7 +32,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
         "is_admin": user.is_admin}
     token = jwt_service.create_access_token(data=data)
     response = JSONResponse(status_code=200, content={"status": "success", "message": "Login successful"})
-    response.set_cookie(key="session", value=token)
+    response.set_cookie(key="session", value=token, httponly=True)
     return response
 
 @router.get("/register")
@@ -56,7 +56,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     response = JSONResponse(status_code=201, content={
             "status": "success",
             "message": "User created successfully",})
-    response.set_cookie(key="session", value=token)
+    response.set_cookie(key="session", value=token, httponly=True)
     return response
 
 @router.get("/logout")

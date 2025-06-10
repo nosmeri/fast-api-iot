@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
 import services.jwt_service as jwt_manager
 import routers.auth as auth_router
 import routers.admin as admin_router
@@ -22,7 +21,7 @@ templates = Jinja2Templates(directory="templates")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/")
 def mainPage(request: Request):
     tkn = request.cookies.get("session")
     data = {

@@ -26,4 +26,4 @@ class UserResponse(BaseModel):
     is_admin: bool
 
     class Config:
-        from_attributes=True
+        from_orm=True
