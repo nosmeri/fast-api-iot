@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from services import jwt_service
@@ -10,7 +10,7 @@ templates = Jinja2Templates(directory="templates")
 def mypage(request: Request):
     tkn = request.cookies.get("session")
     if not tkn or not jwt_service.check_token(tkn):
-        return "You are not logged in. Please log in first."
+        raise HTTPException(status_code=401, detail="Unauthorized")
     
     user_data = jwt_service.decode_access_token(tkn)
     data = {
