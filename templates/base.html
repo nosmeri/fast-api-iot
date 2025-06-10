@@ -48,7 +48,7 @@
 
             {% if user %}
                 <div class="navbar_user toggle_menu">
-                    <span class="user_name">{{ user.username }}</span>
+                    <span class="user_name"><a href="/mypage">{{ user.username }}</a></span>
                     <a href="/logout" class="navbar_btn">Logout</a>
                 </div>
             {% endif %}
@@ -56,6 +56,7 @@
             <a href="#" class="navbar_toggleBtn"><i class="fa-solid fa-bars"></i></a>
         </nav>
     </header>
-    {% block content %} {% endblock %}
+    {% block content %}
+    {% endblock %}
 </body>
 </html>
