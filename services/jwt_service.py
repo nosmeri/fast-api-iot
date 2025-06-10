@@ -12,7 +12,7 @@ EXPIRES_IN_HOURS = float(os.getenv("JWT_EXPIRES_IN_HOURS"))
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     expire = datetime.now() + timedelta(hours=EXPIRES_IN_HOURS)
-    to_encode.update({"exp": expire.timestamp()})
+    to_encode.update({"exp": int(expire.timestamp())})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 def decode_access_token(token: str) -> dict:
