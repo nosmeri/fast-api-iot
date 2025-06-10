@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+from services import jwt_service
 import routers.auth as auth_router
 import routers.admin as admin_router
 import routers.mypage as mypage_router
