@@ -39,13 +39,15 @@ def mainPage(request: Request):
     
     return templates.TemplateResponse("index.html", data)
 
-
+@app.exception_handler(401)
+async def unauthorized(request: Request, exc):
+    return templates.TemplateResponse("401.html", {"request": request}, status_code=401)
+@app.exception_handler(403)
+async def forbidden(request: Request, exc):
+    return templates.TemplateResponse("403.html", {"request": request}, status_code=403)
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
     return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
 @app.exception_handler(500)
 async def internal_server_error(request: Request, exc):
     return templates.TemplateResponse("500.html", {"request": request}, status_code=500)
-@app.exception_handler(403)
-async def forbidden(request: Request, exc):
-    return templates.TemplateResponse("403.html", {"request": request}, status_code=403)

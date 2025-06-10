@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import RedirectResponse, HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from services import jwt_service, auth_service
@@ -23,9 +23,9 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     try:
         user: UserResponse = auth_service.authenticate_user(db, username, password)
     except ValueError as e:
-        return JSONResponse(status_code=400, content={"status": "error", "message": str(e)})
+        raise HTTPException(status_code=400, detail=str(e))
     if not user:
-        return JSONResponse(status_code=400, content={"status": "error", "message": "Invalid username or password"})
+        raise HTTPException(status_code=400, detail="Invalid username or password")
     
     data = {
         "sub": user.username,
@@ -47,9 +47,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     try:
         new_user = auth_service.create_user(db, user)
     except ValueError as e:
-        return JSONResponse(status_code=400, content={
-            "status": "error",
-            "message": str(e)})
+        raise HTTPException(status_code=400, detail=str(e))
     
     data = {
         "sub": new_user.username,

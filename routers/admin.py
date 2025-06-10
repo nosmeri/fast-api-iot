@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse, JSONResponse
 import services.jwt_service as jwt_manager
 from config.db import get_db
 from sqlalchemy.orm import Session
@@ -14,9 +13,9 @@ templates = Jinja2Templates(directory="templates")
 def admin(request: Request, db: Session = Depends(get_db)):
     tkn=request.cookies.get("session")
     if not jwt_manager.check_token(tkn):
-        return JSONResponse(status_code=401, content={"status": "error", "message": "Please login"})
+        raise HTTPException(status_code=401, detail="Please login")
     if not jwt_manager.decode_access_token(tkn).get("is_admin",False):
-        return JSONResponse(status_code=403, content={"status": "error", "message": "You are not admin"})
+        raise HTTPException(status_code=403, detail="You are not admin")
 
     users = admin_service.get_all_users(db)
     data= {
@@ -30,17 +29,17 @@ def admin(request: Request, db: Session = Depends(get_db)):
 
     return templates.TemplateResponse("admin.html", data)
 
-@router.post("/modify", response_class=JSONResponse)
+@router.post("/modify")
 def admin_modify_member(request: Request, userid: int, attr: str, type: str, value: str, db: Session = Depends(get_db)):
     tkn = request.cookies.get("session")
     if not jwt_manager.check_token(tkn):
-        return "Please login"
+        raise HTTPException(status_code=401, detail="Please login")
     if not jwt_manager.decode_access_token(tkn).get("is_admin",False):
-        return "You are not admin"
+        raise HTTPException(status_code=403, detail="You are not admin")
     if type not in ["bool", "int", "str"]:
-        return JSONResponse(status_code=400, content={"status": "error", "message": "Invalid type specified. Use 'bool', 'int', or 'str'."})
+        raise HTTPException(status_code=400, detail="Invalid type specified. Must be 'bool', 'int', or 'str'.")
     if attr not in map(lambda x: x.name, User.__table__.columns):
-        return JSONResponse(status_code=400, content={"status": "error", "message": f"Invalid attribute '{attr}' specified."})
+        raise HTTPException(status_code=400, detail=f"Invalid attribute '{attr}' specified. Must be one of {list(map(lambda x: x.name, User.__table__.columns))}.")
     update_data = {}
     if type == "bool":
         update_data[attr] = value.lower() == "true"
@@ -48,7 +47,7 @@ def admin_modify_member(request: Request, userid: int, attr: str, type: str, val
         try:
             update_data[attr] = int(value)
         except ValueError:
-            return JSONResponse(status_code=400, content={"status": "error", "message": "Invalid integer value."})
+            raise HTTPException(status_code=400, detail=f"Invalid value '{value}' for type 'int'. Must be a valid integer.")
     elif type == "str":
         update_data[attr] = value
     admin_service.db_update(db, userid, update_data)
@@ -58,9 +57,9 @@ def admin_modify_member(request: Request, userid: int, attr: str, type: str, val
 def admin_delete_member(request: Request, userid: int, db: Session = Depends(get_db)):
     tkn = request.cookies.get("session")
     if not jwt_manager.check_token(tkn):
-        return "Please login"
+        raise HTTPException(status_code=401, detail="Please login")
     if not jwt_manager.decode_access_token(tkn).get("is_admin",False):
-        return "You are not admin"
+        raise HTTPException(status_code=403, detail="You are not admin")
 
     admin_service.db_delete(db, userid)
     return {"status": "success", "message": f"User {userid} deleted successfully"}
