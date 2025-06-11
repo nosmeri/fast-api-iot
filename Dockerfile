@@ -6,6 +6,9 @@ ARG GID=1000
 RUN groupadd -g "${GID}" appgroup && \
     useradd --create-home --no-log-init -u "${UID}" -g "${GID}" appuser
 
+RUN mkdir -p /app && \
+    chown -R ${UID}:${GID} /app
+
 WORKDIR /app
 
 RUN apt-get update && \
