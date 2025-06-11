@@ -1,3 +1,5 @@
+import { validatePassword } from "./validators.js";
+
 const form = document.querySelector('#changePWForm');
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -5,6 +7,16 @@ form.addEventListener('submit', async (event) => {
     const currentPassword = formData.get('currentPassword').trim();
     const newPassword = formData.get('newPassword').trim();
     const confirmPassword = formData.get('confirmPassword').trim();
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        alert('모든 필드를 입력해주세요.');
+        return;
+    }
+
+    if (!validatePassword(newPassword)) {
+        return;
+    }
+
 
     if (newPassword !== confirmPassword) {
         alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.');

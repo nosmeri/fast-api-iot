@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="/static/css/auth.css">
 
-    <script src="/static/js/register.js" defer></script>
+    <script type="module" src="/static/js/register.js" defer></script>
 
     <title>Sign up</title>
 </head>
@@ -15,10 +15,12 @@
     <h1>Sign up to test web</h1>
     <div class="register-container auth-container">
         <form id="registerForm">
-            <label for="username">ID</label>
+            <label for="username">Username</label>
             <input type="text" name="username" required />
             <label for="password">Password</label>
             <input type="password" name="password" required />
+            <label for="confirmPassword">Confirm password</label>
+            <input type="password" name="confirmPassword" required />
             <button type="submit">Sign up</button>
             <p>Already have an account? <a href="/login">Sign in</a></p>
         </form>

@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="/static/css/auth.css">
 
-    <script src="/static/js/changepw.js" defer></script>
+    <script type="module" src="/static/js/changepw.js" defer></script>
 
     <title>Change password</title>
 </head>
@@ -15,11 +15,11 @@
     <h1>Change password</h1>
     <div class="change-password-container auth-container">
         <form id="changePWForm">
-            <label for="username">Current Password</label>
+            <label for="currentPassword">Current Password</label>
             <input type="password" name="currentPassword" required />
-            <label for="password">New Password</label>
+            <label for="newPassword">New Password</label>
             <input type="password" name="newPassword" required />
-            <label for="password">Confirm Password</label>
+            <label for="confirmPassword">Confirm Password</label>
             <input type="password" name="confirmPassword" required />
             <button type="submit">Change Password</button>
         </form>

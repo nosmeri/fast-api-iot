@@ -1,17 +1,33 @@
+import { validateUsername, validatePassword } from './validators.js';
+
 const form = document.querySelector('#registerForm');
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(form);
     const username = formData.get('username').trim();
     const password = formData.get('password').trim();
+    const confirmPassword = formData.get('confirmPassword').trim();
     const data = {
         username: username,
         password: password
     }
 
     if (!username || !password) {
-        event.preventDefault();
         alert('아이디와 비밀번호를 입력해주세요.');
+        return;
+    }
+
+    if (!validateUsername(username)) {
+        alert('아이디는 영문, 숫자, 하이픈(-)만 사용할 수 있으며, 하이픈으로 시작하거나 끝날 수 없습니다.');
+        return;
+    }
+    if (!validatePassword(password)) {
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert('비밀번호와 확인 비밀번호가 일치하지 않습니다.');
+        return;
     }
     
     try {
@@ -33,6 +49,3 @@ form.addEventListener('submit', async (event) => {
         alert('회원가입 요청 중 오류가 발생했습니다. 나중에 다시 시도해주세요.');
     }
 });
-
-// TODO: 추가적인 유효성 검사
-// 예: 비밀번호 길이, 특수문자 포함 여부 등
