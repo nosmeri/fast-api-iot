@@ -1,6 +1,8 @@
 import { validatePassword } from "./validators.js";
 
 const form = document.querySelector('#changePWForm');
+const submitButton = form.querySelector('button[type="submit"]');
+
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     submitButton.disabled = true;

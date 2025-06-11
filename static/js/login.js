@@ -1,4 +1,6 @@
 const form = document.querySelector('#loginForm');
+const submitButton = form.querySelector('button[type="submit"]');
+
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
     submitButton.disabled = true;
