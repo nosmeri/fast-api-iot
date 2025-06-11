@@ -20,6 +20,11 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
+class ChangePassword(BaseModel):
+    currentPassword: str
+    newPassword: str
+
+
 class UserResponse(BaseModel):
     id: int
     username: str

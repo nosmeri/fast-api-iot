@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from services import jwt_service, auth_service
-from models.user import UserCreate, UserLogin, UserResponse
+from models.user import UserCreate, UserLogin, UserResponse, ChangePassword
 from config.db import get_db
 from sqlalchemy.orm import Session
 
@@ -58,6 +58,45 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
             "message": "User created successfully",})
     response.set_cookie(key="session", value=token, httponly=True)
     return response
+
+@router.get("/changepw")
+def change_password_form(request: Request):
+    tkn = request.cookies.get("session")
+    if not tkn or not jwt_service.check_token(tkn):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    user_data = jwt_service.decode_access_token(tkn)
+    data = {
+        "request": request,
+        "user": {
+            "username": user_data["sub"],
+            "is_admin": user_data.get("is_admin", False)
+        }
+    }
+    
+    return templates.TemplateResponse("changepw.html", data)
+
+@router.post("/changepw")
+def change_password(request: Request, change_password: ChangePassword, db: Session = Depends(get_db)):
+    tkn = request.cookies.get("session")
+    if not tkn or not jwt_service.check_token(tkn):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    user_data = jwt_service.decode_access_token(tkn)
+    user_id = user_data["id"]
+
+    if not auth_service.authenticate_user(db, user_data["sub"], change_password.currentPassword):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    
+    try:
+        updated_user = auth_service.change_password(db, user_id, change_password.newPassword)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+    return JSONResponse(status_code=200, content={
+        "status": "success",
+        "message": "Password changed successfully"
+    })
 
 @router.get("/logout")
 def logout():

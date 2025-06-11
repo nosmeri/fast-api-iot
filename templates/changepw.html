@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/images/icon.png">
+
+    <link rel="stylesheet" href="/static/css/auth.css">
+
+    <script src="/static/js/changepw.js" defer></script>
+
+    <title>Change password</title>
+</head>
+<body>
+    <h1>Sign in to test web</h1>
+    <div class="change-password-container auth-container">
+        <form id="changePWForm">
+            <label for="username">Current Password</label>
+            <input type="password" name="currentPassword" required />
+            <label for="password">New Password</label>
+            <input type="password" name="newPassword" required />
+            <label for="password">Confirm Password</label>
+            <input type="password" name="confirmPassword" required />
+            <button type="submit">Change Password</button>
+        </form>
+    </div>
+</body>
+</html>

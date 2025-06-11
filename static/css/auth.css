@@ -12,14 +12,28 @@ h1 {
     margin-bottom: 20px;
     color: #343a40;
 }
-.login-container {
-    width: 280px;
-    height: 240px;
+
+.auth-container {
     padding: 20px;
     background-color: #f8f9fa;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     border: 1px solid #dee2e6;
+}
+
+.login-container {
+    width: 280px;
+    height: 240px;
+}
+
+.register-container {
+    width: 280px;
+    height: 240px;
+}
+
+.change-password-container {
+    width: 280px;
+    height: 280px;
 }
 
 form {
@@ -27,18 +41,18 @@ form {
     flex-direction: column;
 }
 
-.login-container label {
+.auth-container label {
     margin-bottom: 8px;
     color: #495057;
 }
-.login-container input {
+.auth-container input {
     padding: 8px;
     margin-bottom: 16px;
     border: 1px solid #ced4da;
     border-radius: 4px;
     font-size: 14px;
 }
-.login-container button {
+.auth-container button {
     background-color: #238636;
     color: white;
     border: none;
@@ -46,56 +60,11 @@ form {
     padding: 8px;
     border-radius: 4px;
 }
-.login-container button:hover {
+.auth-container button:hover {
     background-color: #2ea043;
 }
 
-.login-container a {
-    color: #007bff;
-    text-decoration: none;
-    font-size: 14px;
-    margin-top: 8px;
-}
-
-.register-container {
-    width: 280px;
-    height: 240px;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #dee2e6;
-}
-
-#registerForm {
-    display: flex;
-    flex-direction: column;
-}
-
-#registerForm label {
-    margin-bottom: 8px;
-    color: #495057;
-}
-#registerForm input {
-    padding: 8px;
-    margin-bottom: 16px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 14px;
-}
-#registerForm button {
-    background-color: #238636;
-    color: white;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 4px;
-}
-#registerForm button:hover {
-    background-color: #2ea043;
-}
-
-#registerForm a {
+.auth-container a {
     color: #007bff;
     text-decoration: none;
     font-size: 14px;
