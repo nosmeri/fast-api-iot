@@ -7,8 +7,8 @@ import routers.admin as admin_router
 import routers.mypage as mypage_router
 from sqlalchemy import create_engine
 
-from models.user import Base
-from config.db import SQLALCHEMY_DATABASE_URL
+from config.db import SQLALCHEMY_DATABASE_URL, Base
+from models import *
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 Base.metadata.create_all(bind=engine)

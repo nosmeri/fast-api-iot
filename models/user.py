@@ -1,8 +1,7 @@
 from pydantic import BaseModel
 from sqlalchemy import Column, String, Boolean, Integer
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
-
-Base: DeclarativeMeta = declarative_base()
+from config.db import Base
 
 class User(Base):
     __tablename__ = "users"
