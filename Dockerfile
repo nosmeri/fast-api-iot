@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM python:3.12-slim
 
 ARG UID=1000
 ARG GID=1000
