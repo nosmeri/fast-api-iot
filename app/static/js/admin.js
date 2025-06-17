@@ -20,8 +20,8 @@ modifyButtons.forEach(button => {
         }
 
         try {
-            const response = await fetch(`/admin/modify?userid=${id}&attr=${attribute}&value=${value}&type=${type}`, {
-                method: 'POST'
+            const response = await fetch(`/admin/user?userid=${id}&attr=${attribute}&value=${value}&type=${type}`, {
+                method: 'PUT'
             });
             if (response.ok) {
                 saveLocalStorage();
@@ -41,7 +41,7 @@ deleteButtons.forEach(button => {
         const id = button.getAttribute('id');
         if (confirm('정말로 삭제하시겠습니까?')) {
             try {
-                const response = await fetch(`/admin/delete?userid=${id}`, {
+                const response = await fetch(`/admin/user?userid=${id}`, {
                     method: 'DELETE'
                 });
                 if (response.ok) {

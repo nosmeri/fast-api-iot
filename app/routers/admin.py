@@ -30,7 +30,7 @@ def admin(request: Request, db: Session = Depends(get_db)):
 
     return templates.TemplateResponse("admin.html", data)
 
-@router.post("/modify")
+@router.put("/user")
 def admin_modify_member(request: Request, userid: int, attr: str, type: str, value: str, db: Session = Depends(get_db)):
     tkn = request.cookies.get("session")
     if not jwt_manager.check_token(tkn):
@@ -54,7 +54,7 @@ def admin_modify_member(request: Request, userid: int, attr: str, type: str, val
     admin_service.db_update(db, userid, update_data)
     return {"status": "success", "message": f"User {userid} updated successfully with {attr} = {value}"}
     
-@router.delete("/delete")
+@router.delete("/user")
 def admin_delete_member(request: Request, userid: int, db: Session = Depends(get_db)):
     tkn = request.cookies.get("session")
     if not jwt_manager.check_token(tkn):
