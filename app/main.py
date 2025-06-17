@@ -7,10 +7,11 @@ import routers.admin as admin_router
 import routers.mypage as mypage_router
 from sqlalchemy import create_engine
 
-from config.db import SQLALCHEMY_DATABASE_URL, Base
+from config.settings import settings
+from config.db import Base
 from models import *
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(settings.SQLALCHEMY_DATABASE_URL)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
