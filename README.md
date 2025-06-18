@@ -68,7 +68,7 @@ $ docker-compose up -d --build
 
 ## TODO
 * DB 모델링 및 Alembic 마이그레이션 추가
+* pytest 테스트
 * CI/CD 자동화 파이프라인 구축
-* pytest 테스트 케이스 확장
 
 ---
