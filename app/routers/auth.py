@@ -28,6 +28,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid username or password")
     
     data = {
+        "id": user.id,
         "sub": user.username,
         "is_admin": user.is_admin}
     token = jwt_service.create_access_token(data=data)
@@ -50,6 +51,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(e))
     
     data = {
+        "id": new_user.id,
         "sub": new_user.username,
         "is_admin": new_user.is_admin}
     token = jwt_service.create_access_token(data=data)
