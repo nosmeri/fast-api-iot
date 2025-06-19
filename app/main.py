@@ -6,6 +6,9 @@ import routers.auth as auth_router
 import routers.admin as admin_router
 import routers.mypage as mypage_router
 from sqlalchemy import create_engine
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
 
 from config.settings import settings
 from config.db import Base
@@ -22,7 +25,7 @@ app.include_router(mypage_router.router, prefix="/mypage")
 
 templates = Jinja2Templates(directory="templates")
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 @app.get("/")
 def mainPage(request: Request):
