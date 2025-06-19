@@ -1,28 +1,22 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
-import services.jwt_service as jwt_manager
 from config.db import get_db
 from sqlalchemy.orm import Session
 import services.admin_service as admin_service
-from models.user import User
+from models.user import User, UserResponse
 from utils.path import templates
+from utils.deps import require_admin
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_admin)])
 
 @router.get("/")
-def admin(request: Request, db: Session = Depends(get_db)):
-    tkn=request.cookies.get("session")
-    if not jwt_manager.check_token(tkn):
-        raise HTTPException(status_code=401, detail="Please login")
-    decoded_token=jwt_manager.decode_access_token(tkn)
-    if not decoded_token.get("is_admin",False):
-        raise HTTPException(status_code=403, detail="You are not admin")
+def admin(request: Request, db: Session = Depends(get_db), user: UserResponse = Depends(require_admin)):
 
     users = admin_service.get_all_users(db)
     data= {
         "request": request,
         "user": {
-            "username": decoded_token["username"],
-            "is_admin": bool(decoded_token.get("is_admin",False))
+            "username": user.username,
+            "is_admin": user.is_admin
         },
         "users": users
     }
@@ -31,11 +25,6 @@ def admin(request: Request, db: Session = Depends(get_db)):
 
 @router.put("/user")
 def admin_modify_member(request: Request, userid: int, attr: str, type: str, value: str, db: Session = Depends(get_db)):
-    tkn = request.cookies.get("session")
-    if not jwt_manager.check_token(tkn):
-        raise HTTPException(status_code=401, detail="Please login")
-    if not jwt_manager.decode_access_token(tkn).get("is_admin",False):
-        raise HTTPException(status_code=403, detail="You are not admin")
     if type not in ["bool", "int", "str"]:
         raise HTTPException(status_code=400, detail="Invalid type specified. Must be 'bool', 'int', or 'str'.")
     if attr not in map(lambda x: x.name, User.__table__.columns):
@@ -55,11 +44,5 @@ def admin_modify_member(request: Request, userid: int, attr: str, type: str, val
     
 @router.delete("/user")
 def admin_delete_member(request: Request, userid: int, db: Session = Depends(get_db)):
-    tkn = request.cookies.get("session")
-    if not jwt_manager.check_token(tkn):
-        raise HTTPException(status_code=401, detail="Please login")
-    if not jwt_manager.decode_access_token(tkn).get("is_admin",False):
-        raise HTTPException(status_code=403, detail="You are not admin")
-
     admin_service.db_delete(db, userid)
     return {"status": "success", "message": f"User {userid} deleted successfully"}

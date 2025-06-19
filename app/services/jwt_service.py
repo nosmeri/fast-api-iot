@@ -1,39 +1,20 @@
-from jose import jwt
-from datetime import datetime, timedelta
+from jose import jwt, JWTError, ExpiredSignatureError
+from datetime import datetime, timedelta, timezone
 from config.settings import settings
 
-def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.now() + timedelta(hours=settings.JWT_EXPIRES_IN_HOURS)
-    to_encode.update({"exp": int(expire.timestamp())})
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-    return encoded_jwt
-def decode_access_token(token: str) -> dict:
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+def create_access_token(payload: dict) -> str:
+    to_encode = payload.copy()
+    exp = _utc_now() + timedelta(hours=settings.JWT_EXPIRES_IN_HOURS)
+    to_encode["exp"] = exp
+    return jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+
+def verify_token(token: str) -> dict | None:
     try:
-        decoded_jwt = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-        return decoded_jwt
-    except jwt.JWTError:
-        return {}
-def verify_access_token(token: str) -> bool:
-    try:
-        jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-        return True
-    except jwt.JWTError:
-        return False
-def get_token_expiration(token: str) -> datetime | None:
-    try:
-        decoded_jwt = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
-        return datetime.fromtimestamp(decoded_jwt.get("exp", 0))
-    except jwt.JWTError:
+        return jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+    except ExpiredSignatureError:
         return None
-def is_token_expired(token: str) -> bool:
-    expiration = get_token_expiration(token)
-    if expiration:
-        return datetime.now() > expiration
-    return True
-def check_token(token: str) -> bool:
-    if not token:
-        return False
-    if not verify_access_token(token):
-        return False
-    return not is_token_expired(token)
+    except JWTError:
+        return None

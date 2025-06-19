@@ -1,11 +1,15 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
-from services import jwt_service
+from fastapi.responses import JSONResponse
 import routers.auth as auth_router
 import routers.admin as admin_router
 import routers.mypage as mypage_router
 from config.settings import settings
 from utils.path import BASE_DIR, templates
+from utils.deps import get_current_user_optional, require_admin
+from models.user import UserResponse
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
+from fastapi.openapi.utils import get_openapi
 
 from sqlalchemy import create_engine
 from config.db import Base
@@ -23,23 +27,22 @@ app.include_router(mypage_router.router, prefix="/mypage")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 @app.get("/")
-def mainPage(request: Request):
-    tkn = request.cookies.get("session")
+def mainPage(request: Request, user: UserResponse = Depends(get_current_user_optional)):
     data = {
             "request": request,
             "message": "Hello World!",
             }
-    if jwt_service.check_token(tkn):
+    if user:
         data.update({
             "user": {
-                "username": jwt_service.decode_access_token(tkn)["username"],
-                "is_admin": bool(jwt_service.decode_access_token(tkn).get("is_admin", False))
+                "username": user.username,
+                "is_admin": bool(user.is_admin)
             }
         })
     
     return templates.TemplateResponse("index.html", data)
 
-@app.get("/health")
+@app.get("/health", include_in_schema=False)
 def health_check():
     return {"status": "ok"}
 
@@ -55,3 +58,15 @@ async def not_found(request: Request, exc):
 @app.exception_handler(500)
 async def internal_server_error(request: Request, exc):
     return templates.TemplateResponse("500.html", {"request": request}, status_code=500)
+
+@app.get("/docs", dependencies=[Depends(require_admin)], include_in_schema=False)
+def custom_swagger_ui():
+    return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
+
+@app.get("/redoc", dependencies=[Depends(require_admin)], include_in_schema=False)
+def custom_redoc():
+    return get_redoc_html(openapi_url="/openapi.json", title="ReDoc")
+
+@app.get("/openapi.json", dependencies=[Depends(require_admin)], include_in_schema=False)
+def custom_openapi():
+    return JSONResponse(get_openapi(title=app.title, version=app.version, routes=app.routes))

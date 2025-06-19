@@ -5,13 +5,13 @@ from models.user import UserCreate, UserLogin, UserResponse, ChangePassword
 from config.db import get_db
 from sqlalchemy.orm import Session
 from utils.path import templates
+from utils.deps import get_current_user_optional, get_current_user
 
 router = APIRouter()
 
 @router.get("/login")
-def login_form(request: Request):
-    
-    if jwt_service.check_token(request.cookies.get("session")):
+def login_form(request: Request, user: UserResponse = Depends(get_current_user_optional)):
+    if user:
         return RedirectResponse(url="/", status_code=302)
     return templates.TemplateResponse("login.html", {"request": request})
 
@@ -36,9 +36,9 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     return response
 
 @router.get("/register")
-def register_form(request: Request):
+def register_form(request: Request, user: UserResponse = Depends(get_current_user_optional)):
     
-    if jwt_service.check_token(request.cookies.get("session")):
+    if user:
         return RedirectResponse(url="/", status_code=302)
     return templates.TemplateResponse("register.html", {"request": request})
 
@@ -61,36 +61,24 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     return response
 
 @router.get("/changepw")
-def change_password_form(request: Request):
-    tkn = request.cookies.get("session")
-    if not tkn or not jwt_service.check_token(tkn):
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    
-    user_data = jwt_service.decode_access_token(tkn)
+def change_password_form(request: Request, user: UserResponse = Depends(get_current_user)):
     data = {
         "request": request,
         "user": {
-            "username": user_data["username"],
-            "is_admin": user_data.get("is_admin", False)
+            "username": user.username,
+            "is_admin": user.is_admin
         }
     }
     
     return templates.TemplateResponse("changepw.html", data)
 
 @router.post("/changepw")
-def change_password(request: Request, change_password: ChangePassword, db: Session = Depends(get_db)):
-    tkn = request.cookies.get("session")
-    if not tkn or not jwt_service.check_token(tkn):
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    
-    user_data = jwt_service.decode_access_token(tkn)
-    user_id = user_data["id"]
-
-    if not auth_service.authenticate_user(db, user_data["username"], change_password.currentPassword):
+def change_password(request: Request, change_password: ChangePassword, db: Session = Depends(get_db), user: UserResponse = Depends(get_current_user)):
+    if not auth_service.authenticate_user(db, user.username, change_password.currentPassword):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
     
     try:
-        updated_user = auth_service.change_password(db, user_id, change_password.newPassword)
+        updated_user = auth_service.change_password(db, user.id, change_password.newPassword)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     

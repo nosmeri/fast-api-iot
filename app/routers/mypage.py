@@ -1,21 +1,17 @@
-from fastapi import APIRouter, Request, HTTPException
-from services import jwt_service
+from fastapi import APIRouter, Request, HTTPException, Depends
 from utils.path import templates
+from utils.deps import get_current_user
+from models.user import UserResponse
 
 router = APIRouter()
 
 @router.get("/")
-def mypage(request: Request):
-    tkn = request.cookies.get("session")
-    if not tkn or not jwt_service.check_token(tkn):
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    
-    user_data = jwt_service.decode_access_token(tkn)
+def mypage(request: Request, user: UserResponse = Depends(get_current_user)):
     data = {
         "request": request,
         "user": {
-            "username": user_data["username"],
-            "is_admin": user_data.get("is_admin", False)
+            "username": user.username,
+            "is_admin": user.is_admin
         }
     }
     
