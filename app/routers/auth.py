@@ -5,9 +5,9 @@ from services import jwt_service, auth_service
 from models.user import UserCreate, UserLogin, UserResponse, ChangePassword
 from config.db import get_db
 from sqlalchemy.orm import Session
+from utils.path import templates
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
 @router.get("/login")
 def login_form(request: Request):

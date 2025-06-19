@@ -5,12 +5,10 @@ from services import jwt_service
 import routers.auth as auth_router
 import routers.admin as admin_router
 import routers.mypage as mypage_router
-from sqlalchemy import create_engine
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent
-
 from config.settings import settings
+from utils.path import BASE_DIR, templates
+
+from sqlalchemy import create_engine
 from config.db import Base
 from models import *
 
@@ -22,8 +20,6 @@ app = FastAPI()
 app.include_router(auth_router.router, prefix="")
 app.include_router(admin_router.router, prefix="/admin")
 app.include_router(mypage_router.router, prefix="/mypage")
-
-templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 

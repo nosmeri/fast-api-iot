@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from services import jwt_service
+from utils.path import templates
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
 @router.get("/")
 def mypage(request: Request):
