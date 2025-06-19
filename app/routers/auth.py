@@ -29,7 +29,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     
     data = {
         "id": user.id,
-        "sub": user.username,
+        "username": user.username,
         "is_admin": user.is_admin}
     token = jwt_service.create_access_token(data=data)
     response = JSONResponse(status_code=200, content={"status": "success", "message": "Login successful"})
@@ -52,7 +52,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     
     data = {
         "id": new_user.id,
-        "sub": new_user.username,
+        "username": new_user.username,
         "is_admin": new_user.is_admin}
     token = jwt_service.create_access_token(data=data)
     response = JSONResponse(status_code=201, content={
@@ -71,7 +71,7 @@ def change_password_form(request: Request):
     data = {
         "request": request,
         "user": {
-            "username": user_data["sub"],
+            "username": user_data["username"],
             "is_admin": user_data.get("is_admin", False)
         }
     }
@@ -87,7 +87,7 @@ def change_password(request: Request, change_password: ChangePassword, db: Sessi
     user_data = jwt_service.decode_access_token(tkn)
     user_id = user_data["id"]
 
-    if not auth_service.authenticate_user(db, user_data["sub"], change_password.currentPassword):
+    if not auth_service.authenticate_user(db, user_data["username"], change_password.currentPassword):
         raise HTTPException(status_code=400, detail="Current password is incorrect")
     
     try:

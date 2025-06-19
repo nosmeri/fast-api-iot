@@ -5,9 +5,9 @@ from config.db import get_db
 from sqlalchemy.orm import Session
 import services.admin_service as admin_service
 from models.user import User
+from utils.path import templates
 
 router = APIRouter()
-templates = Jinja2Templates(directory="templates")
 
 @router.get("/")
 def admin(request: Request, db: Session = Depends(get_db)):
@@ -22,7 +22,7 @@ def admin(request: Request, db: Session = Depends(get_db)):
     data= {
         "request": request,
         "user": {
-            "username": decoded_token["sub"],
+            "username": decoded_token["username"],
             "is_admin": bool(decoded_token.get("is_admin",False))
         },
         "users": users

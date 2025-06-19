@@ -15,7 +15,7 @@ def mypage(request: Request):
     data = {
         "request": request,
         "user": {
-            "username": user_data["sub"],
+            "username": user_data["username"],
             "is_admin": user_data.get("is_admin", False)
         }
     }

@@ -15,7 +15,7 @@ from models import *
 engine = create_engine(settings.SQLALCHEMY_DATABASE_URL)
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None,)
 
 app.include_router(auth_router.router, prefix="")
 app.include_router(admin_router.router, prefix="/admin")
@@ -33,7 +33,7 @@ def mainPage(request: Request):
     if jwt_service.check_token(tkn):
         data.update({
             "user": {
-                "username": jwt_service.decode_access_token(tkn)["sub"],
+                "username": jwt_service.decode_access_token(tkn)["username"],
                 "is_admin": bool(jwt_service.decode_access_token(tkn).get("is_admin", False))
             }
         })
