@@ -44,6 +44,10 @@ def mainPage(request: Request):
     
     return templates.TemplateResponse("index.html", data)
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
 @app.exception_handler(401)
 async def unauthorized(request: Request, exc):
     return templates.TemplateResponse("401.html", {"request": request}, status_code=401)
