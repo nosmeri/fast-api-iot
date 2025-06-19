@@ -48,11 +48,6 @@ jobs:
         pip install -r app/requirements.txt
         pip install pytest pytest-env
 
-    - name: Debug
-      run: |
-        pwd
-        ls -R
-
     - name: Run Pytest
       run: |
         pytest

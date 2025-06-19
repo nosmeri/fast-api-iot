@@ -23,7 +23,7 @@ app.include_router(auth_router.router, prefix="")
 app.include_router(admin_router.router, prefix="/admin")
 app.include_router(mypage_router.router, prefix="/mypage")
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
