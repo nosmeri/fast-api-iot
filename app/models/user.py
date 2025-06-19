@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Column, String, Boolean, Integer
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from config.db import Base
@@ -28,6 +28,4 @@ class UserResponse(BaseModel):
     id: int
     username: str
     is_admin: bool
-
-    class Config:
-        from_attributes=True
+    model_config = ConfigDict(from_attributes=True)

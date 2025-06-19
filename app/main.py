@@ -11,11 +11,9 @@ from models.user import UserResponse
 from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
 from fastapi.openapi.utils import get_openapi
 
-from sqlalchemy import create_engine
-from config.db import Base
+from config.db import Base, engine
 from models import *
 
-engine = create_engine(settings.SQLALCHEMY_DATABASE_URL)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None,)
