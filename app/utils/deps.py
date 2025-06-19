@@ -8,12 +8,20 @@ def get_raw_token(request: Request) -> str:
 
 def decode_token(token: str) -> UserResponse:
     payload = jwt_service.verify_token(token)
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
     return UserResponse(**payload)
 
 def get_current_user_optional(token: str = Depends(get_raw_token)) -> UserResponse | None:
     if not token:
         return None
-    return decode_token(token)
+    try:
+        return decode_token(token)
+    except HTTPException:
+        return None
 
 def get_current_user(token: str = Depends(get_raw_token)) -> UserResponse:
     if not token:
