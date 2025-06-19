@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse, JSONResponse
 from services import jwt_service, auth_service
 from models.user import UserCreate, UserLogin, UserResponse, ChangePassword
@@ -12,7 +12,7 @@ router = APIRouter()
 @router.get("/login")
 def login_form(request: Request, user: UserResponse = Depends(get_current_user_optional)):
     if user:
-        return RedirectResponse(url="/", status_code=302)
+        return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse("login.html", {"request": request})
 
 @router.post("/login")
@@ -22,16 +22,16 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     try:
         user: UserResponse = auth_service.authenticate_user(db, username, password)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     if not user:
-        raise HTTPException(status_code=400, detail="Invalid username or password")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid username or password")
     
     payload = {
         "id": user.id,
         "username": user.username,
         "is_admin": user.is_admin}
     token = jwt_service.create_access_token(payload=payload)
-    response = JSONResponse(status_code=200, content={"status": "success", "message": "Login successful"})
+    response = JSONResponse(status_code=status.HTTP_200_OK, content={"status": "success", "message": "Login successful"})
     response.set_cookie(key="session", value=token, httponly=True)
     return response
 
@@ -39,7 +39,7 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 def register_form(request: Request, user: UserResponse = Depends(get_current_user_optional)):
     
     if user:
-        return RedirectResponse(url="/", status_code=302)
+        return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse("register.html", {"request": request})
 
 @router.post("/register")
@@ -47,14 +47,14 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     try:
         new_user = auth_service.create_user(db, user)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     
     payload = {
         "id": new_user.id,
         "username": new_user.username,
         "is_admin": new_user.is_admin}
     token = jwt_service.create_access_token(payload=payload)
-    response = JSONResponse(status_code=201, content={
+    response = JSONResponse(status_code=status.HTTP_201_CREATED, content={
             "status": "success",
             "message": "User created successfully",})
     response.set_cookie(key="session", value=token, httponly=True)
@@ -75,20 +75,20 @@ def change_password_form(request: Request, user: UserResponse = Depends(get_curr
 @router.post("/changepw")
 def change_password(request: Request, change_password: ChangePassword, db: Session = Depends(get_db), user: UserResponse = Depends(get_current_user)):
     if not auth_service.authenticate_user(db, user.username, change_password.currentPassword):
-        raise HTTPException(status_code=400, detail="Current password is incorrect")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
     
     try:
         updated_user = auth_service.change_password(db, user.id, change_password.newPassword)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     
-    return JSONResponse(status_code=200, content={
+    return JSONResponse(status_code=status.HTTP_200_OK, content={
         "status": "success",
         "message": "Password changed successfully"
     })
 
 @router.get("/logout")
 def logout():
-    response = RedirectResponse(url="/", status_code=303)
+    response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.delete_cookie("session")
     return response

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 import routers.auth as auth_router
@@ -46,16 +46,16 @@ def health_check():
 
 @app.exception_handler(401)
 async def unauthorized(request: Request, exc):
-    return templates.TemplateResponse("401.html", {"request": request}, status_code=401)
+    return templates.TemplateResponse("401.html", {"request": request}, status_code=status.HTTP_401_UNAUTHORIZED)
 @app.exception_handler(403)
 async def forbidden(request: Request, exc):
-    return templates.TemplateResponse("403.html", {"request": request}, status_code=403)
+    return templates.TemplateResponse("403.html", {"request": request}, status_code=status.HTTP_403_FORBIDDEN)
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
-    return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
+    return templates.TemplateResponse("404.html", {"request": request}, status_code=status.HTTP_404_NOT_FOUND)
 @app.exception_handler(500)
 async def internal_server_error(request: Request, exc):
-    return templates.TemplateResponse("500.html", {"request": request}, status_code=500)
+    return templates.TemplateResponse("500.html", {"request": request}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @app.get("/docs", dependencies=[Depends(require_admin)], include_in_schema=False)
 def custom_swagger_ui():

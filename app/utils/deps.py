@@ -1,7 +1,6 @@
 from fastapi import Depends, HTTPException, status, Request
 from services import jwt_service
 from models.user import UserResponse
-from functools import lru_cache
 
 def get_raw_token(request: Request) -> str:
     return request.cookies.get("session")
