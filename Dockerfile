@@ -9,6 +9,7 @@ RUN groupadd -g "${GID}" appgroup && \
 WORKDIR /app
 
 RUN apt-get update && \
+    apt-get install -y curl && \
     pip install --upgrade pip
 
 COPY app/requirements.txt .
