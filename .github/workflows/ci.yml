@@ -63,7 +63,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          cd ~/fast-api-testweb
+          cd ~/webserver/fast-api-testweb/
           git pull
           docker-compose down
           docker-compose up -d --build
