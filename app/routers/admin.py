@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
-from fastapi.templating import Jinja2Templates
 import services.jwt_service as jwt_manager
 from config.db import get_db
 from sqlalchemy.orm import Session

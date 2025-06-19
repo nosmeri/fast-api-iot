@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Request, Depends, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse
-from fastapi.templating import Jinja2Templates
 from services import jwt_service, auth_service
 from models.user import UserCreate, UserLogin, UserResponse, ChangePassword
 from config.db import get_db
