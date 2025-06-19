@@ -14,8 +14,8 @@ def test_user():
     assert response.status_code == 201, "회원가입 실패"
     return {"username": "test", "password": "test"}
 
-def test_login_success():
-    response = client.post("/login", json={"username": "test", "password": "test"})
+def test_login_success(test_user):
+    response = client.post("/login", json=test_user)
     print(response.json())
     assert response.status_code == 200, "로그인 실패"
 
