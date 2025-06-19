@@ -7,7 +7,7 @@ client = TestClient(app)
 @pytest.fixture(scope="module")
 def test_user():
     # 1️⃣ 먼저 회원가입 시도
-    response = client.post("/auth/register", json={
+    response = client.post("/register", json={
         "username": "test",
         "password": "test"
     })
@@ -15,9 +15,9 @@ def test_user():
     return {"username": "test", "password": "test"}
 
 def test_login_success():
-    response = client.post("/auth/login", json={"username": "test", "password": "test"})
+    response = client.post("/login", json={"username": "test", "password": "test"})
     assert response.status_code == 200
 
 def test_login_fail():
-    response = client.post("/auth/login", json={"username": "bad", "password": "bad"})
+    response = client.post("/login", json={"username": "bad", "password": "bad"})
     assert response.status_code == 401
