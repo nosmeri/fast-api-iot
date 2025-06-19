@@ -26,11 +26,11 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=400, detail="Invalid username or password")
     
-    data = {
+    payload = {
         "id": user.id,
         "username": user.username,
         "is_admin": user.is_admin}
-    token = jwt_service.create_access_token(data=data)
+    token = jwt_service.create_access_token(payload=payload)
     response = JSONResponse(status_code=200, content={"status": "success", "message": "Login successful"})
     response.set_cookie(key="session", value=token, httponly=True)
     return response
@@ -49,11 +49,11 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-    data = {
+    payload = {
         "id": new_user.id,
         "username": new_user.username,
         "is_admin": new_user.is_admin}
-    token = jwt_service.create_access_token(data=data)
+    token = jwt_service.create_access_token(payload=payload)
     response = JSONResponse(status_code=201, content={
             "status": "success",
             "message": "User created successfully",})
