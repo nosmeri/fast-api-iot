@@ -66,6 +66,16 @@ $ docker-compose up -d --build
 
 ---
 
+## DB 모델 변경하기
+1. 모델 추가시 models.__init__에 model import 하기
+2. 마이그레이션 버전 만들기
+```bash
+alembic revision --autogenerate
+```
+3. git commit & push
+
+---
+
 ## TODO
 * [x] FastAPI 의존성 리팩터
 * [ ] DB 모델링 및 Alembic 마이그레이션 추가
