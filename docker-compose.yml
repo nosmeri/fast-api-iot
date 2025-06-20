@@ -15,7 +15,6 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - default
-      - proxy
 
   app:
     container_name: fastapi_app
