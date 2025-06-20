@@ -67,10 +67,10 @@ $ docker-compose up -d --build
 ---
 
 ## TODO
-* 권한 의존성
-* DB 모델링 및 Alembic 마이그레이션 추가
-* pytest 테스트 케이스 확장
-* ssl 인증서
-* db 백업
+* [x] 권한 의존성
+* [ ] DB 모델링 및 Alembic 마이그레이션 추가
+* [ ] pytest 테스트 케이스 확장
+* [ ] ssl 인증서
+* [ ] db 백업
 
 ---
