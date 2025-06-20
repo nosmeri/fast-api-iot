@@ -1,7 +1,8 @@
+from datetime import datetime
+
 from config.db import Base
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, func
-from datetime import datetime
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, func
 
 
 class User(Base):
@@ -33,4 +34,7 @@ class UserResponse(BaseModel):
     id: int
     username: str
     is_admin: bool = False
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
+
     model_config = ConfigDict(from_attributes=True)
