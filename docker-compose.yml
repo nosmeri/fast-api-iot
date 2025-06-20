@@ -13,6 +13,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - default
+      - proxy
 
   app:
     container_name: fastapi_app
@@ -21,7 +24,7 @@ services:
     expose:
       - "8000"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8000/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -32,18 +35,13 @@ services:
       JWT_EXPIRES_IN_HOURS: ${JWT_EXPIRES_IN_HOURS}
     depends_on:
       - db
+    networks:
+      - default
+      - proxy
 
-  nginx:
-    container_name: fastapi_nginx
-    image: nginx:latest
-    restart: always
-    ports:
-      - "80:80"
-      # - "443:443"  # HTTPS 쓸 거면 나중에 활성화
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - app
+networks:
+  proxy:
+    external: true
 
 volumes:
   db_data:
