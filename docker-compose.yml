@@ -15,7 +15,6 @@ services:
       - db_data:/var/lib/postgresql/data
     networks:
       - default
-      - proxy
 
   app:
     container_name: fastapi_app
@@ -29,7 +28,7 @@ services:
       timeout: 10s
       retries: 3
     environment:
-      SQLALCHEMY_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      SQLALCHEMY_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@fastapi_db:5432/${POSTGRES_DB}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ALGORITHM: ${JWT_ALGORITHM}
       JWT_EXPIRES_IN_HOURS: ${JWT_EXPIRES_IN_HOURS}
