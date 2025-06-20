@@ -1,6 +1,7 @@
 from config.db import Base
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import Boolean, Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, func
+from datetime import datetime
 
 
 class User(Base):
@@ -10,6 +11,8 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     is_admin = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 class UserCreate(BaseModel):
