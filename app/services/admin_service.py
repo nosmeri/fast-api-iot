@@ -3,7 +3,7 @@ from models.user import User, UserResponse
 
 def get_all_users(db: Session) -> list[UserResponse]:
     users = db.query(User).all()
-    return [UserResponse.from_orm(user) for user in users]
+    return [UserResponse.model_validate(user) for user in users]
 
 def db_update(db: Session, userid: int, update_data: dict) -> None:
     db.query(User).filter(User.id == userid).update(update_data)
