@@ -27,9 +27,8 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 @app.get("/")
 def mainPage(request: Request, user: UserResponse = Depends(get_current_user_optional)):
     data = {
-            "request": request,
-            "message": "Hello World!",
-            }
+        "message": "Hello World!",
+    }
     if user:
         data.update({
             "user": {
@@ -38,7 +37,7 @@ def mainPage(request: Request, user: UserResponse = Depends(get_current_user_opt
             }
         })
     
-    return templates.TemplateResponse("index.html", data)
+    return templates.TemplateResponse(request, "index.html", data)
 
 @app.get("/health", include_in_schema=False)
 def health_check():
@@ -46,16 +45,16 @@ def health_check():
 
 @app.exception_handler(401)
 async def unauthorized(request: Request, exc):
-    return templates.TemplateResponse("401.html", {"request": request}, status_code=status.HTTP_401_UNAUTHORIZED)
+    return templates.TemplateResponse(request, "401.html", status_code=status.HTTP_401_UNAUTHORIZED)
 @app.exception_handler(403)
 async def forbidden(request: Request, exc):
-    return templates.TemplateResponse("403.html", {"request": request}, status_code=status.HTTP_403_FORBIDDEN)
+    return templates.TemplateResponse(request, "403.html", status_code=status.HTTP_403_FORBIDDEN)
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
-    return templates.TemplateResponse("404.html", {"request": request}, status_code=status.HTTP_404_NOT_FOUND)
+    return templates.TemplateResponse(request, "404.html", status_code=status.HTTP_404_NOT_FOUND)
 @app.exception_handler(500)
 async def internal_server_error(request: Request, exc):
-    return templates.TemplateResponse("500.html", {"request": request}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return templates.TemplateResponse(request, "500.html", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @app.get("/docs", dependencies=[Depends(require_admin)], include_in_schema=False)
 def custom_swagger_ui():

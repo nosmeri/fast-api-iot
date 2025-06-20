@@ -8,11 +8,10 @@ router = APIRouter()
 @router.get("/")
 def mypage(request: Request, user: UserResponse = Depends(get_current_user)):
     data = {
-        "request": request,
         "user": {
             "username": user.username,
             "is_admin": user.is_admin
         }
     }
     
-    return templates.TemplateResponse("mypage.html", data)
+    return templates.TemplateResponse(request, "mypage.html", data)

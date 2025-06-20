@@ -13,7 +13,6 @@ def admin(request: Request, db: Session = Depends(get_db), user: UserResponse = 
 
     users = admin_service.get_all_users(db)
     data= {
-        "request": request,
         "user": {
             "username": user.username,
             "is_admin": user.is_admin
@@ -21,7 +20,7 @@ def admin(request: Request, db: Session = Depends(get_db), user: UserResponse = 
         "users": users
     }
 
-    return templates.TemplateResponse("admin.html", data)
+    return templates.TemplateResponse(request, "admin.html", data)
 
 @router.put("/user")
 def admin_modify_member(request: Request, userid: int, attr: str, type: str, value: str, db: Session = Depends(get_db)):

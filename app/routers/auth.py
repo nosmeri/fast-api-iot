@@ -13,7 +13,7 @@ router = APIRouter()
 def login_form(request: Request, user: UserResponse = Depends(get_current_user_optional)):
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request, "login.html")
 
 @router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
@@ -40,7 +40,7 @@ def register_form(request: Request, user: UserResponse = Depends(get_current_use
     
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-    return templates.TemplateResponse("register.html", {"request": request})
+    return templates.TemplateResponse(request, "register.html")
 
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
@@ -63,14 +63,13 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 @router.get("/changepw")
 def change_password_form(request: Request, user: UserResponse = Depends(get_current_user)):
     data = {
-        "request": request,
         "user": {
             "username": user.username,
             "is_admin": user.is_admin
         }
     }
     
-    return templates.TemplateResponse("changepw.html", data)
+    return templates.TemplateResponse(request, "changepw.html")
 
 @router.post("/changepw")
 def change_password(request: Request, change_password: ChangePassword, db: Session = Depends(get_db), user: UserResponse = Depends(get_current_user)):
