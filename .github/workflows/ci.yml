@@ -66,5 +66,5 @@ jobs:
           cd ~/webserver/fast-api-testweb/
           git pull
           docker-compose down
-          docker-compose run --rm app alembic upgrade head
           docker-compose up -d --build
+          docker-compose run --rm app alembic upgrade head
