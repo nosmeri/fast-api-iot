@@ -72,5 +72,6 @@ $ docker-compose up -d --build
 * [ ] pytest 테스트 케이스 확장
 * [ ] ssl 인증서 발급
 * [ ] db 백업 스케줄
+* [ ] 비밀번호, 아이디 유효성 백엔드 추가 검사
 
 ---

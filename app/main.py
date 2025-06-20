@@ -1,19 +1,15 @@
 import routers.admin as admin_router
 import routers.auth as auth_router
 import routers.mypage as mypage_router
-from config.db import Base, engine
 from config.settings import settings
 from fastapi import Depends, FastAPI, Request, status
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from models import *
 from models.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
 from utils.path import BASE_DIR, templates
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     docs_url=None,
