@@ -1,19 +1,23 @@
-from fastapi import APIRouter, Request, Depends, HTTPException, status
-from fastapi.responses import RedirectResponse, JSONResponse
-from services import jwt_service, auth_service
-from models.user import UserCreate, UserLogin, UserResponse, ChangePassword
 from config.db import get_db
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse, RedirectResponse
+from models.user import ChangePassword, UserCreate, UserLogin, UserResponse
+from services import auth_service, jwt_service
 from sqlalchemy.orm import Session
+from utils.deps import get_current_user, get_current_user_optional
 from utils.path import templates
-from utils.deps import get_current_user_optional, get_current_user
 
 router = APIRouter()
 
+
 @router.get("/login")
-def login_form(request: Request, user: UserResponse = Depends(get_current_user_optional)):
+def login_form(
+    request: Request, user: UserResponse = Depends(get_current_user_optional)
+):
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse(request, "login.html")
+
 
 @router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db)):
@@ -24,23 +28,30 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     if not user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid username or password")
-    
-    payload = {
-        "id": user.id,
-        "username": user.username,
-        "is_admin": user.is_admin}
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid username or password",
+        )
+
+    payload = {"id": user.id, "username": user.username, "is_admin": user.is_admin}
     token = jwt_service.create_access_token(payload=payload)
-    response = JSONResponse(status_code=status.HTTP_200_OK, content={"status": "success", "message": "Login successful"})
+    response = JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"status": "success", "message": "Login successful"},
+    )
     response.set_cookie(key="session", value=token, httponly=True)
     return response
 
+
 @router.get("/register")
-def register_form(request: Request, user: UserResponse = Depends(get_current_user_optional)):
-    
+def register_form(
+    request: Request, user: UserResponse = Depends(get_current_user_optional)
+):
+
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse(request, "register.html")
+
 
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
@@ -48,43 +59,60 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         new_user = auth_service.create_user(db, user)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    
+
     payload = {
         "id": new_user.id,
         "username": new_user.username,
-        "is_admin": new_user.is_admin}
+        "is_admin": new_user.is_admin,
+    }
     token = jwt_service.create_access_token(payload=payload)
-    response = JSONResponse(status_code=status.HTTP_201_CREATED, content={
+    response = JSONResponse(
+        status_code=status.HTTP_201_CREATED,
+        content={
             "status": "success",
-            "message": "User created successfully",})
+            "message": "User created successfully",
+        },
+    )
     response.set_cookie(key="session", value=token, httponly=True)
     return response
 
+
 @router.get("/changepw")
-def change_password_form(request: Request, user: UserResponse = Depends(get_current_user)):
-    data = {
-        "user": {
-            "username": user.username,
-            "is_admin": user.is_admin
-        }
-    }
-    
+def change_password_form(
+    request: Request, user: UserResponse = Depends(get_current_user)
+):
+    data = {"user": {"username": user.username, "is_admin": user.is_admin}}
+
     return templates.TemplateResponse(request, "changepw.html")
 
+
 @router.post("/changepw")
-def change_password(request: Request, change_password: ChangePassword, db: Session = Depends(get_db), user: UserResponse = Depends(get_current_user)):
-    if not auth_service.authenticate_user(db, user.username, change_password.currentPassword):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Current password is incorrect")
-    
+def change_password(
+    request: Request,
+    change_password: ChangePassword,
+    db: Session = Depends(get_db),
+    user: UserResponse = Depends(get_current_user),
+):
+    if not auth_service.authenticate_user(
+        db, user.username, change_password.currentPassword
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
+
     try:
-        updated_user = auth_service.change_password(db, user.id, change_password.newPassword)
+        updated_user = auth_service.change_password(
+            db, user.id, change_password.newPassword
+        )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    
-    return JSONResponse(status_code=status.HTTP_200_OK, content={
-        "status": "success",
-        "message": "Password changed successfully"
-    })
+
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"status": "success", "message": "Password changed successfully"},
+    )
+
 
 @router.get("/logout")
 def logout():
