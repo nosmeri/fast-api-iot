@@ -17,7 +17,7 @@ jobs:
       SQLALCHEMY_DATABASE_URL: postgresql://myuser:mypassword@localhost:5432/mydb
       JWT_SECRET_KEY: testsecretkey
       JWT_EXPIRES_IN_HOURS: 24
-
+  
     services:
       postgres:
         image: postgres:15
@@ -59,6 +59,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
+          set -e
           cd ~/fast-api-testweb/
           docker-compose down
           git pull
