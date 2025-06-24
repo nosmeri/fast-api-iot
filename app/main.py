@@ -1,7 +1,7 @@
 import routers.admin as admin_router
 import routers.auth as auth_router
 import routers.mypage as mypage_router
-from fastapi import Depends, FastAPI, Request, status
+from fastapi import Depends, FastAPI, Request, status, UploadFile
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
@@ -9,7 +9,8 @@ from fastapi.staticfiles import StaticFiles
 from models import *
 from models.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
-from utils.path import BASE_DIR, templates
+from utils.path import BASE_DIR, UPLOAD_DIR, templates
+import shutil
 
 app = FastAPI(
     docs_url=None,
@@ -35,6 +36,14 @@ def mainPage(request: Request, user: UserResponse = Depends(get_current_user_opt
         )
 
     return templates.TemplateResponse(request, "index.html", data)
+
+
+@app.post("/upload")
+def upload_file(file: UploadFile):
+    dest = UPLOAD_DIR / file.filename
+    with dest.open("wb") as buffer:
+        shutil.copyfileobj(file.file, dest)
+    return {"stored": dest.name, "size": dest.stat().st_size}
 
 
 @app.get("/health", include_in_schema=False)

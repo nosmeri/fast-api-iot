@@ -34,6 +34,8 @@ services:
       JWT_EXPIRES_IN_HOURS: ${JWT_EXPIRES_IN_HOURS}
     depends_on:
       - db
+    volumes:
+      - uploads:/app/uploads
     networks:
       - default
       - proxy
@@ -44,3 +46,4 @@ networks:
 
 volumes:
   db_data:
+  uploads:
