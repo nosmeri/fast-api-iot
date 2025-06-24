@@ -4,9 +4,9 @@ ARG UID=1000
 ARG GID=1000
 
 RUN groupadd -g "${GID}" appgroup && \
-    useradd --create-home --no-log-init -u "${UID}" -g "${GID}" appuser \
-    mkdir -p /app/uploads \
-    chown -R appuser:appuser /app/uploads
+    useradd --create-home --no-log-init -u "${UID}" -g "${GID}" appuser && \
+    mkdir -p /app/uploads && \
+    chown -R appuser /app/uploads
 
 WORKDIR /app
 
