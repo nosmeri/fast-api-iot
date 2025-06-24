@@ -42,7 +42,7 @@ def mainPage(request: Request, user: UserResponse = Depends(get_current_user_opt
 def upload_file(file: UploadFile):
     dest = UPLOAD_DIR / file.filename
     with dest.open("wb") as buffer:
-        shutil.copyfileobj(file.file, dest)
+        shutil.copyfileobj(file.file, buffer)
     return {"stored": dest.name, "size": dest.stat().st_size}
 
 
