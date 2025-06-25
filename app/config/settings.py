@@ -1,5 +1,5 @@
-from pydantic import ConfigDict
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from utils.path import BASE_DIR
 
 
 class Settings(BaseSettings):
@@ -9,7 +9,9 @@ class Settings(BaseSettings):
     JWT_EXPIRES_IN_HOURS: float  # JWT 만료 시간 (시간 단위)
     JWT_ALGORITHM: str = "HS256"  # JWT 알고리즘
 
-    model_config = ConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / ".env"), env_file_encoding="utf-8", case_sensitive=False
+    )
 
 
-settings = Settings()
+settings = Settings()  # type: ignore

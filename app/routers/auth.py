@@ -1,9 +1,10 @@
 from config.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from models.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
 from sqlalchemy.orm import Session
+from typing import Dict, Any
 from utils.deps import get_current_user, get_current_user_optional
 from utils.path import templates
 
@@ -13,18 +14,18 @@ router = APIRouter()
 @router.get("/login")
 def login_form(
     request: Request, user: UserResponse = Depends(get_current_user_optional)
-):
+) -> HTMLResponse | RedirectResponse:
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse(request, "login.html")
 
 
 @router.post("/login")
-def login(user: UserLogin, db: Session = Depends(get_db)):
-    username = user.username
-    password = user.password
+def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
+    username = user_login.username
+    password = user_login.password
     try:
-        user: UserResponse = auth_service.authenticate_user(db, username, password)
+        user = auth_service.authenticate_user(db, username, password)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     if not user:
@@ -46,15 +47,14 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 @router.get("/register")
 def register_form(
     request: Request, user: UserResponse = Depends(get_current_user_optional)
-):
-
+) -> HTMLResponse | RedirectResponse:
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse(request, "register.html")
 
 
 @router.post("/register")
-def register(user: UserCreate, db: Session = Depends(get_db)):
+def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
     try:
         new_user = auth_service.create_user(db, user)
     except ValueError as e:
@@ -80,10 +80,12 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 @router.get("/changepw")
 def change_password_form(
     request: Request, user: UserResponse = Depends(get_current_user)
-):
-    data = {"user": {"username": user.username, "is_admin": user.is_admin}}
+) -> HTMLResponse:
+    data: Dict[str, Any] = {
+        "user": {"username": user.username, "is_admin": user.is_admin}
+    }
 
-    return templates.TemplateResponse(request, "changepw.html")
+    return templates.TemplateResponse(request, "changepw.html", data)
 
 
 @router.post("/changepw")
@@ -92,7 +94,7 @@ def change_password(
     change_password: ChangePassword,
     db: Session = Depends(get_db),
     user: UserResponse = Depends(get_current_user),
-):
+) -> JSONResponse:
     if not auth_service.authenticate_user(
         db, user.username, change_password.currentPassword
     ):
@@ -115,7 +117,7 @@ def change_password(
 
 
 @router.get("/logout")
-def logout():
+def logout() -> RedirectResponse:
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.delete_cookie("session")
     return response

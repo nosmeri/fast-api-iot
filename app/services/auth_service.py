@@ -1,4 +1,4 @@
-from models.user import User, UserResponse
+from models.user import User, UserCreate, UserResponse
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
@@ -13,7 +13,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def create_user(db: Session, user: User) -> User:
+def create_user(db: Session, user: UserCreate) -> User:
     existing_user = get_user_by_username(db, user.username)
     if existing_user:
         raise ValueError("Username already exists")
@@ -32,7 +32,7 @@ def change_password(db: Session, id: int, new_password: str) -> User:
     if not user:
         raise ValueError("User not found")
 
-    user.password = get_password_hash(new_password)
+    user.password = get_password_hash(new_password)  # type: ignore
     db.commit()
     db.refresh(user)
 
@@ -49,6 +49,6 @@ def get_user_by_id(db: Session, user_id: int) -> User | None:
 
 def authenticate_user(db: Session, username: str, password: str) -> UserResponse | None:
     user = get_user_by_username(db, username)
-    if not user or not verify_password(password, user.password):
+    if not user or not verify_password(password, user.password):  # type: ignore
         return None
     return user

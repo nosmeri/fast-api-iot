@@ -12,22 +12,39 @@ from utils.deps import get_current_user_optional, require_admin
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
 import shutil
 
+# FastAPI 애플리케이션 인스턴스 생성
+# - docs_url=None: Swagger UI 문서 비활성화
+# - redoc_url=None: ReDoc 문서 비활성화
+# - openapi_url=None: OpenAPI 스키마 엔드포인트 비활성화
 app = FastAPI(
     docs_url=None,
     redoc_url=None,
     openapi_url=None,
 )
 
+# 라우터 포함
+# - auth_router: 인증 관련 라우터
+# - admin_router: 관리자 관련 라우터
+# - mypage_router: 마이페이지 관련 라우터
 app.include_router(auth_router.router, prefix="")
 app.include_router(admin_router.router, prefix="/admin")
 app.include_router(mypage_router.router, prefix="/mypage")
 
+# 정적 파일 서비스 마운트
+# - "/static": 정적 파일 디렉토리 마운트
+# - BASE_DIR / "static": 정적 파일 디렉토리 경로
+# - name="static": 마운트 이름
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 
+# 메인 페이지 엔드포인트
+# - "/": 메인 페이지
+# - request: FastAPI Request 객체
+# - user: 현재 사용자 정보 (선택적 의존성 주입)
+# - templates.TemplateResponse: 템플릿 응답 반환
 @app.get("/")
 def mainPage(request: Request, user: UserResponse = Depends(get_current_user_optional)):
-    data = {
+    data: dict = {
         "message": "Hello World!",
     }
     if user:
@@ -38,8 +55,16 @@ def mainPage(request: Request, user: UserResponse = Depends(get_current_user_opt
     return templates.TemplateResponse(request, "index.html", data)
 
 
+# 파일 업로드 엔드포인트
+# - "/upload": 파일 업로드 엔드포인트
+# - file: 업로드할 파일 객체
+# - UPLOAD_DIR: 파일 저장 디렉토리
+# - dest: 파일 저장 경로
+# - with dest.open("wb") as buffer: 파일 저장
 @app.post("/upload")
 def upload_file(file: UploadFile):
+    if not file.filename:
+        return {"error": "No filename provided"}
     dest = UPLOAD_DIR / file.filename
     with dest.open("wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
