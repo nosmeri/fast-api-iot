@@ -1,6 +1,6 @@
 from config.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from models.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
 from sqlalchemy.orm import Session
@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get("/login")
 def login_form(
     request: Request, user: UserResponse = Depends(get_current_user_optional)
-) -> HTMLResponse | RedirectResponse:
+):
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse(request, "login.html")
@@ -47,7 +47,7 @@ def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
 @router.get("/register")
 def register_form(
     request: Request, user: UserResponse = Depends(get_current_user_optional)
-) -> HTMLResponse | RedirectResponse:
+):
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse(request, "register.html")
@@ -80,7 +80,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
 @router.get("/changepw")
 def change_password_form(
     request: Request, user: UserResponse = Depends(get_current_user)
-) -> HTMLResponse:
+):
     data: Dict[str, Any] = {
         "user": {"username": user.username, "is_admin": user.is_admin}
     }
