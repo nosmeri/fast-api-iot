@@ -83,5 +83,6 @@ $ alembic revision --autogenerate
 * [ ] ssl 인증서 발급
 * [ ] db 백업 스케줄
 * [ ] 비밀번호, 아이디 유효성 백엔드 추가 검사
+* [ ] 수학 실수 유형 분석 서비스
 
 ---
