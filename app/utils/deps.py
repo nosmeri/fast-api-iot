@@ -4,7 +4,7 @@ from services import jwt_service
 
 
 def get_raw_token(request: Request) -> str | None:
-    return request.cookies.get("session")
+    return request.cookies.get("access_token")
 
 
 def decode_token(token: str) -> UserResponse:

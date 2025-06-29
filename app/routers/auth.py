@@ -13,7 +13,7 @@ router = APIRouter()
 
 @router.get("/login")
 def login_form(
-    request: Request, user: UserResponse = Depends(get_current_user_optional)
+    request: Request, user: UserResponse | None = Depends(get_current_user_optional)
 ):
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
@@ -40,13 +40,13 @@ def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
         status_code=status.HTTP_200_OK,
         content={"status": "success", "message": "Login successful"},
     )
-    response.set_cookie(key="session", value=token, httponly=True)
+    response.set_cookie(key="access_token", value=token, httponly=True)
     return response
 
 
 @router.get("/register")
 def register_form(
-    request: Request, user: UserResponse = Depends(get_current_user_optional)
+    request: Request, user: UserResponse | None = Depends(get_current_user_optional)
 ):
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
@@ -73,7 +73,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
             "message": "User created successfully",
         },
     )
-    response.set_cookie(key="session", value=token, httponly=True)
+    response.set_cookie(key="access_token", value=token, httponly=True)
     return response
 
 
@@ -119,5 +119,5 @@ def change_password(
 @router.get("/logout")
 def logout() -> RedirectResponse:
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
-    response.delete_cookie("session")
+    response.delete_cookie("access_token")
     return response
