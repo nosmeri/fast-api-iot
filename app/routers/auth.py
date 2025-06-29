@@ -40,7 +40,9 @@ def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
         status_code=status.HTTP_200_OK,
         content={"status": "success", "message": "Login successful"},
     )
-    response.set_cookie(key="access_token", value=token, httponly=True)
+    response.set_cookie(
+        key="access_token", value=token, httponly=True, secure=True, samesite="strict"
+    )
     return response
 
 
@@ -73,7 +75,9 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
             "message": "User created successfully",
         },
     )
-    response.set_cookie(key="access_token", value=token, httponly=True)
+    response.set_cookie(
+        key="access_token", value=token, httponly=True, secure=True, samesite="strict"
+    )
     return response
 
 
