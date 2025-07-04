@@ -29,7 +29,7 @@ def admin(
 @router.put("/user")
 def admin_modify_member(
     request: Request,
-    userid: int,
+    userid: str,
     attr: str,
     type: str,
     value: str,
@@ -80,7 +80,7 @@ def admin_modify_member(
 
 @router.delete("/user")
 def admin_delete_member(
-    request: Request, userid: int, db: Session = Depends(get_db)
+    request: Request, userid: str, db: Session = Depends(get_db)
 ) -> Dict[str, str]:
     admin_service.db_delete(db, userid)
     return {"status": "success", "message": f"User {userid} deleted successfully"}
