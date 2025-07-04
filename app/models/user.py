@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from config.db import Base
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, func
+from sqlalchemy import Boolean, Column, DateTime, String, func
 
 
 class User(Base):
@@ -11,6 +11,8 @@ class User(Base):
 
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     # id = Column(Integer, primary_key=True, autoincrement=True)
+
+    username = Column(String, unique=True, index=True, nullable=False)
     password = Column(String, nullable=False)
     is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
