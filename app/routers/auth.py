@@ -1,4 +1,3 @@
-from app.models import refresh_tocken
 from config.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
