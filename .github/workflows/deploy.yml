@@ -17,6 +17,7 @@ jobs:
       SQLALCHEMY_DATABASE_URL: postgresql://myuser:mypassword@localhost:5432/mydb
       JWT_SECRET_KEY: testsecretkey
       JWT_EXPIRES_IN_HOURS: 24
+      JWT_REFRESH_EXPIRES_IN_DAYS: 30
   
     services:
       postgres:
