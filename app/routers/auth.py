@@ -34,8 +34,9 @@ def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
             detail="Invalid username or password",
         )
 
-    payload = {"id": user.id, "username": user.username, "is_admin": user.is_admin}
-    access_token = jwt_service.create_access_token(payload=payload)
+    access_token = jwt_service.create_access_token(
+        user_id=user.id, is_admin=user.is_admin, username=user.username
+    )
     refresh_tocken = jwt_service.create_refresh_token(user_id=user.id, db=db)
     response = JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -79,7 +80,9 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
         "username": new_user.username,
         "is_admin": new_user.is_admin,
     }
-    access_token = jwt_service.create_access_token(payload=payload)
+    access_token = jwt_service.create_access_token(
+        user_id=new_user.id, is_admin=new_user.is_admin, username=new_user.username
+    )
     refresh_tocken = jwt_service.create_refresh_token(user_id=new_user.id, db=db)
     response = JSONResponse(
         status_code=status.HTTP_201_CREATED,

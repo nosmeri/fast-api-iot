@@ -10,11 +10,14 @@ def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def create_access_token(payload: dict) -> str:
-    to_encode = payload.copy()
-    exp = _utc_now() + timedelta(hours=settings.JWT_EXPIRES_IN_HOURS)
-    to_encode["exp"] = exp
-    to_encode["type"] = "access"
+def create_access_token(user_id: str, is_admin: bool, username: str) -> str:
+    to_encode = {
+        "sub": user_id,
+        "is_admin": is_admin,
+        "username": username,
+        "exp": _utc_now() + timedelta(hours=settings.JWT_EXPIRES_IN_HOURS),
+        "type": "access",
+    }
     return jwt.encode(
         to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
     )
@@ -83,9 +86,7 @@ def refresh_access_token(db: Session, refresh_token_str: str) -> tuple[str, str]
         return None
 
     # 새로운 access token과 refresh token 생성
-    new_access_token = create_access_token(
-        {"id": user.id, "username": user.username, "is_admin": user.is_admin}
-    )
+    new_access_token = create_access_token(user.id, user.is_admin, user.username)
     new_refresh_token = create_refresh_token(user.id, db)
 
     return new_access_token, new_refresh_token
