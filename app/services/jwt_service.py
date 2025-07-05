@@ -48,10 +48,10 @@ def get_refresh_token(db: Session, token: str) -> RefreshToken | None:
     return db.query(RefreshToken).filter(RefreshToken.token == token).first()
 
 
-def revoke_refresh_token(db: Session, token: str):
+def revoke_refresh_token(db: Session, token: str) -> RefreshToken | None:
     refresh_token = get_refresh_token(db, token)
     if not refresh_token:
-        raise ValueError("Refresh token not found")
+        return None
     refresh_token.revoked = True
     db.commit()
     db.refresh(refresh_token)
@@ -74,17 +74,18 @@ def refresh_access_token(db: Session, refresh_token_str: str) -> tuple[str, str]
     if db_refresh_token.expires_at < _utc_now():
         return None
 
-    # 사용자 ID 추출
-    user_id = payload.get("sub")
-    if not user_id:
-        return None
-
     # 기존 refresh token revoke
     db_refresh_token.revoked = True
     db.commit()
 
+    user = db_refresh_token.user
+    if not user:
+        return None
+
     # 새로운 access token과 refresh token 생성
-    new_access_token = create_access_token({"sub": user_id})
-    new_refresh_token = create_refresh_token(user_id, db)
+    new_access_token = create_access_token(
+        {"id": user.id, "username": user.username, "is_admin": user.is_admin}
+    )
+    new_refresh_token = create_refresh_token(user.id, db)
 
     return new_access_token, new_refresh_token
