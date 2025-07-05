@@ -1,3 +1,4 @@
+from app.models import refresh_tocken
 from config.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -5,7 +6,7 @@ from models.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
 from sqlalchemy.orm import Session
 from typing import Dict, Any
-from utils.deps import get_current_user, get_current_user_optional
+from utils.deps import get_current_user, get_current_user_optional, get_refresh_token
 from utils.path import templates
 
 router = APIRouter()
@@ -35,13 +36,25 @@ def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
         )
 
     payload = {"id": user.id, "username": user.username, "is_admin": user.is_admin}
-    token = jwt_service.create_access_token(payload=payload)
+    access_token = jwt_service.create_access_token(payload=payload)
+    refresh_tocken = jwt_service.create_refresh_token(user_id=user.id, db=db)
     response = JSONResponse(
         status_code=status.HTTP_200_OK,
         content={"status": "success", "message": "Login successful"},
     )
     response.set_cookie(
-        key="access_token", value=token, httponly=True, secure=True, samesite="strict"
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_tocken,
+        httponly=True,
+        secure=True,
+        samesite="strict",
     )
     return response
 
@@ -67,7 +80,8 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
         "username": new_user.username,
         "is_admin": new_user.is_admin,
     }
-    token = jwt_service.create_access_token(payload=payload)
+    access_token = jwt_service.create_access_token(payload=payload)
+    refresh_tocken = jwt_service.create_refresh_token(user_id=new_user.id, db=db)
     response = JSONResponse(
         status_code=status.HTTP_201_CREATED,
         content={
@@ -76,7 +90,18 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
         },
     )
     response.set_cookie(
-        key="access_token", value=token, httponly=True, secure=True, samesite="strict"
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_tocken,
+        httponly=True,
+        secure=True,
+        samesite="strict",
     )
     return response
 
@@ -121,7 +146,13 @@ def change_password(
 
 
 @router.get("/logout")
-def logout() -> RedirectResponse:
+def logout(
+    request: Request,
+    db: Session = Depends(get_db),
+    refresh_token: str = Depends(get_refresh_token),
+) -> RedirectResponse:
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
+    jwt_service.revoke_refresh_token(db, refresh_token)
     return response
