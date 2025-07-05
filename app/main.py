@@ -10,7 +10,7 @@ from models import *
 from models.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
-import shutil
+import aiofiles
 
 # FastAPI 애플리케이션 인스턴스 생성
 # - docs_url=None: Swagger UI 문서 비활성화
@@ -74,7 +74,7 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 # - user: 현재 사용자 정보 (선택적 의존성 주입)
 # - templates.TemplateResponse: 템플릿 응답 반환
 @app.get("/")
-def mainPage(
+async def mainPage(
     request: Request, user: UserResponse | None = Depends(get_current_user_optional)
 ):
     data: dict = {
@@ -93,14 +93,19 @@ def mainPage(
 # - file: 업로드할 파일 객체
 # - UPLOAD_DIR: 파일 저장 디렉토리
 # - dest: 파일 저장 경로
-# - with dest.open("wb") as buffer: 파일 저장
+# - async with aiofiles.open(dest, "wb") as buffer: 비동기 파일 저장
 @app.post("/upload")
-def upload_file(file: UploadFile):
+async def upload_file(file: UploadFile):
     if not file.filename:
         return {"error": "No filename provided"}
+
     dest = UPLOAD_DIR / file.filename
-    with dest.open("wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+
+    # 비동기 파일 쓰기
+    async with aiofiles.open(dest, "wb") as buffer:
+        content = await file.read()
+        await buffer.write(content)
+
     return {"stored": dest.name, "size": dest.stat().st_size}
 
 
@@ -108,7 +113,7 @@ def upload_file(file: UploadFile):
 # - "/health": 상태 확인 엔드포인트
 # - include_in_schema=False: 문서에 포함되지 않음
 @app.get("/health", include_in_schema=False)
-def health_check():
+async def health_check():
     return {"status": "ok"}
 
 
@@ -150,7 +155,7 @@ async def internal_server_error(request: Request, exc):
 # - dependencies=[Depends(require_admin)]: 관리자 권한 필요
 # - include_in_schema=False: 문서에 포함되지 않음
 @app.get("/docs", dependencies=[Depends(require_admin)], include_in_schema=False)
-def custom_swagger_ui():
+async def custom_swagger_ui():
     return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
 
 
@@ -159,7 +164,7 @@ def custom_swagger_ui():
 # - dependencies=[Depends(require_admin)]: 관리자 권한 필요
 # - include_in_schema=False: 문서에 포함되지 않음
 @app.get("/redoc", dependencies=[Depends(require_admin)], include_in_schema=False)
-def custom_redoc():
+async def custom_redoc():
     return get_redoc_html(openapi_url="/openapi.json", title="ReDoc")
 
 
@@ -170,7 +175,7 @@ def custom_redoc():
 @app.get(
     "/openapi.json", dependencies=[Depends(require_admin)], include_in_schema=False
 )
-def custom_openapi():
+async def custom_openapi():
     return JSONResponse(
         get_openapi(title=app.title, version=app.version, routes=app.routes)
     )
