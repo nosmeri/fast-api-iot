@@ -32,6 +32,7 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ALGORITHM: ${JWT_ALGORITHM}
       JWT_EXPIRES_IN_HOURS: ${JWT_EXPIRES_IN_HOURS}
+      JWT_REFRESH_EXPIRES_IN_DAYS: ${JWT_REFRESH_EXPIRES_IN_DAYS}
     depends_on:
       - db
     volumes:
