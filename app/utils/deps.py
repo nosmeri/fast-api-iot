@@ -22,45 +22,8 @@ def decode_token(token: str) -> UserResponse:
     return UserResponse(**payload)
 
 
-def try_refresh_token(
-    db: Session, refresh_token: str, response: Response
-) -> UserResponse | None:
-    """Refresh token을 사용해서 새로운 access token과 refresh token을 발급받고 사용자 정보를 반환합니다."""
-    result = jwt_service.refresh_access_token(db, refresh_token)
-    if not result:
-        return None
-
-    new_access_token, new_refresh_token = result
-
-    # 새로운 access token을 쿠키에 설정
-    response.set_cookie(
-        key="access_token",
-        value=new_access_token,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-    )
-
-    # 새로운 refresh token을 쿠키에 설정
-    response.set_cookie(
-        key="refresh_token",
-        value=new_refresh_token,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-    )
-
-    # 새로운 access token으로 사용자 정보 반환
-    payload = jwt_service.verify_token(new_access_token)
-    if not payload:
-        return None
-
-    return UserResponse(**payload)
-
-
 def get_current_user_optional(
     request: Request,
-    response: Response,
     db: Session = Depends(get_db),
     token: str = Depends(get_raw_token),
     refresh_token: str = Depends(get_refresh_token),
@@ -74,15 +37,23 @@ def get_current_user_optional(
     except HTTPException:
         # Access token이 만료되었고 refresh token이 있는 경우
         if refresh_token:
-            return try_refresh_token(db, refresh_token, response)
-        return None
+            result = jwt_service.refresh_access_token(db, refresh_token)
+            if result:
+                new_access_token, new_refresh_token = result
+                # request.state에 새로운 토큰들을 저장
+                request.state.new_access_token = new_access_token
+                request.state.new_refresh_token = new_refresh_token
+
+                # 새로운 access token으로 사용자 정보 반환
+                payload = jwt_service.verify_token(new_access_token)
+                if payload:
+                    return UserResponse(**payload)
 
     return None
 
 
 def get_current_user(
     request: Request,
-    response: Response,
     db: Session = Depends(get_db),
     token: str = Depends(get_raw_token),
     refresh_token: str = Depends(get_refresh_token),
@@ -99,9 +70,17 @@ def get_current_user(
     except HTTPException:
         # Access token이 만료되었고 refresh token이 있는 경우
         if refresh_token:
-            refreshed_user = try_refresh_token(db, refresh_token, response)
-            if refreshed_user:
-                return refreshed_user
+            result = jwt_service.refresh_access_token(db, refresh_token)
+            if result:
+                new_access_token, new_refresh_token = result
+                # request.state에 새로운 토큰들을 저장
+                request.state.new_access_token = new_access_token
+                request.state.new_refresh_token = new_refresh_token
+
+                # 새로운 access token으로 사용자 정보 반환
+                payload = jwt_service.verify_token(new_access_token)
+                if payload:
+                    return UserResponse(**payload)
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

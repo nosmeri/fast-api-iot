@@ -1,7 +1,7 @@
 import routers.admin as admin_router
 import routers.auth as auth_router
 import routers.mypage as mypage_router
-from fastapi import Depends, FastAPI, Request, status, UploadFile
+from fastapi import Depends, FastAPI, Request, Response, status, UploadFile
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
@@ -21,6 +21,34 @@ app = FastAPI(
     redoc_url=None,
     openapi_url=None,
 )
+
+
+# 토큰 갱신 미들웨어
+@app.middleware("http")
+async def token_refresh_middleware(request: Request, call_next):
+    response = await call_next(request)
+
+    # request.state에 새로운 토큰이 있으면 쿠키에 설정
+    if hasattr(request.state, "new_access_token") and request.state.new_access_token:
+        response.set_cookie(
+            key="access_token",
+            value=request.state.new_access_token,
+            httponly=True,
+            secure=True,
+            samesite="strict",
+        )
+
+    if hasattr(request.state, "new_refresh_token") and request.state.new_refresh_token:
+        response.set_cookie(
+            key="refresh_token",
+            value=request.state.new_refresh_token,
+            httponly=True,
+            secure=True,
+            samesite="strict",
+        )
+
+    return response
+
 
 # 라우터 포함
 # - auth_router: 인증 관련 라우터
@@ -43,7 +71,9 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 # - user: 현재 사용자 정보 (선택적 의존성 주입)
 # - templates.TemplateResponse: 템플릿 응답 반환
 @app.get("/")
-def mainPage(request: Request, user: UserResponse = Depends(get_current_user_optional)):
+def mainPage(
+    request: Request, user: UserResponse | None = Depends(get_current_user_optional)
+):
     data: dict = {
         "message": "Hello World!",
     }
