@@ -11,6 +11,7 @@ from utils.path import templates
 router = APIRouter(dependencies=[Depends(require_admin)])
 
 
+# 관리자 페이지
 @router.get("/")
 def admin(
     request: Request,
@@ -26,6 +27,7 @@ def admin(
     return templates.TemplateResponse(request, "admin.html", data)
 
 
+# 사용자 수정
 @router.put("/user")
 def admin_modify_member(
     request: Request,
@@ -57,6 +59,7 @@ def admin_modify_member(
             detail=f"Invalid attribute '{attr}' specified. Must be one of {column_names}.",
         )
 
+    # 업데이트 데이터 생성
     update_data: Dict[str, Any] = {}
     if type == "bool":
         update_data[attr] = value.lower() == "true"
@@ -71,6 +74,7 @@ def admin_modify_member(
     elif type == "str":
         update_data[attr] = value
 
+    # 데이터베이스 업데이트
     admin_service.db_update(db, userid, update_data)
     return {
         "status": "success",
@@ -78,6 +82,7 @@ def admin_modify_member(
     }
 
 
+# 사용자 삭제
 @router.delete("/user")
 def admin_delete_member(
     request: Request, userid: str, db: Session = Depends(get_db)

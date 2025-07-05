@@ -24,6 +24,9 @@ app = FastAPI(
 
 
 # 토큰 갱신 미들웨어
+# - "http": HTTP 미들웨어
+# - request: FastAPI Request 객체
+# - call_next: 다음 미들웨어 또는 엔드포인트 함수
 @app.middleware("http")
 async def token_refresh_middleware(request: Request, call_next):
     response = await call_next(request)
@@ -101,11 +104,19 @@ def upload_file(file: UploadFile):
     return {"stored": dest.name, "size": dest.stat().st_size}
 
 
+# 상태 확인 엔드포인트
+# - "/health": 상태 확인 엔드포인트
+# - include_in_schema=False: 문서에 포함되지 않음
 @app.get("/health", include_in_schema=False)
 def health_check():
     return {"status": "ok"}
 
 
+# 예외처리
+# - 401: 인증 실패
+# - 403: 권한 없음
+# - 404: 페이지 없음
+# - 500: 서버 오류
 @app.exception_handler(401)
 async def unauthorized(request: Request, exc):
     return templates.TemplateResponse(
@@ -134,16 +145,28 @@ async def internal_server_error(request: Request, exc):
     )
 
 
+# 문서 엔드포인트
+# - "/docs": Swagger UI 문서
+# - dependencies=[Depends(require_admin)]: 관리자 권한 필요
+# - include_in_schema=False: 문서에 포함되지 않음
 @app.get("/docs", dependencies=[Depends(require_admin)], include_in_schema=False)
 def custom_swagger_ui():
     return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
 
 
+# 문서 엔드포인트
+# - "/redoc": ReDoc 문서
+# - dependencies=[Depends(require_admin)]: 관리자 권한 필요
+# - include_in_schema=False: 문서에 포함되지 않음
 @app.get("/redoc", dependencies=[Depends(require_admin)], include_in_schema=False)
 def custom_redoc():
     return get_redoc_html(openapi_url="/openapi.json", title="ReDoc")
 
 
+# 문서 엔드포인트
+# - "/openapi.json": OpenAPI 스키마
+# - dependencies=[Depends(require_admin)]: 관리자 권한 필요
+# - include_in_schema=False: 문서에 포함되지 않음
 @app.get(
     "/openapi.json", dependencies=[Depends(require_admin)], include_in_schema=False
 )

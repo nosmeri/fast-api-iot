@@ -11,6 +11,7 @@ from utils.path import templates
 router = APIRouter()
 
 
+# 로그인 페이지
 @router.get("/login")
 def login_form(
     request: Request, user: UserResponse | None = Depends(get_current_user_optional)
@@ -20,6 +21,7 @@ def login_form(
     return templates.TemplateResponse(request, "login.html")
 
 
+# 로그인
 @router.post("/login")
 def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
     username = user_login.username
@@ -59,6 +61,7 @@ def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
     return response
 
 
+# 회원가입 페이지
 @router.get("/register")
 def register_form(
     request: Request, user: UserResponse | None = Depends(get_current_user_optional)
@@ -68,6 +71,7 @@ def register_form(
     return templates.TemplateResponse(request, "register.html")
 
 
+# 회원가입
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
     try:
@@ -75,11 +79,6 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
-    payload = {
-        "id": new_user.id,
-        "username": new_user.username,
-        "is_admin": new_user.is_admin,
-    }
     access_token = jwt_service.create_access_token(
         user_id=new_user.id, is_admin=new_user.is_admin, username=new_user.username
     )
@@ -108,6 +107,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
     return response
 
 
+# 비밀번호 변경 페이지
 @router.get("/changepw")
 def change_password_form(
     request: Request, user: UserResponse = Depends(get_current_user)
@@ -119,6 +119,7 @@ def change_password_form(
     return templates.TemplateResponse(request, "changepw.html", data)
 
 
+# 비밀번호 변경
 @router.post("/changepw")
 def change_password(
     request: Request,
@@ -147,6 +148,7 @@ def change_password(
     )
 
 
+# 로그아웃
 @router.get("/logout")
 def logout(
     request: Request,

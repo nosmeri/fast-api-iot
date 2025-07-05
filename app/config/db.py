@@ -1,7 +1,6 @@
 from config.settings import settings
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import DeclarativeMeta
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 engine = create_engine(
     settings.SQLALCHEMY_DATABASE_URL,
@@ -13,7 +12,9 @@ SessionLocal = sessionmaker(
     bind=engine, autoflush=False, autocommit=False, expire_on_commit=False
 )
 
-Base: DeclarativeMeta = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
 
 
 def get_db():
