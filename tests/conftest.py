@@ -18,6 +18,8 @@ def setup_database():
 
 @pytest.fixture(scope="session", autouse=True)
 def test_user():
-    response = client.post("/register", json={"username": "test", "password": "test"})
+    response = client.post(
+        "/register", json={"username": "test", "password": "test1234!"}
+    )
     assert response.status_code == 201, "회원가입 실패"
     return response.cookies.get("session")

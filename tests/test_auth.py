@@ -1,5 +1,5 @@
-import pytest
 from fastapi.testclient import TestClient
+
 from main import app
 
 client = TestClient(app)
@@ -12,15 +12,15 @@ def test_register_page():
 
 def test_register_success():
     response = client.post(
-        "/register", json={"username": "newuser", "password": "newpass"}
+        "/register", json={"username": "newuser", "password": "newpass1234!"}
     )
     assert response.status_code == 201, "회원가입 실패"
 
 
 def test_register_duplicate():
-    client.post("/register", json={"username": "dupuser", "password": "pass"})
+    client.post("/register", json={"username": "dupuser", "password": "pass1234!"})
     response = client.post(
-        "/register", json={"username": "dupuser", "password": "pass"}
+        "/register", json={"username": "dupuser", "password": "pass1234!"}
     )
     assert response.status_code == 400, "중복된 회원가입 요청이 실패하지 않았습니다"
 
@@ -31,7 +31,7 @@ def test_login_page():
 
 
 def test_login_success():
-    response = client.post("/login", json={"username": "test", "password": "test"})
+    response = client.post("/login", json={"username": "test", "password": "test1234!"})
     assert response.status_code == 200, "로그인 실패"
 
 
