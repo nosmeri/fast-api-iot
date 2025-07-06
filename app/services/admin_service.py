@@ -8,10 +8,15 @@ def get_all_users(db: Session) -> list[UserResponse]:
 
 
 def db_update(db: Session, userid: str, update_data: dict) -> None:
-    db.query(User).filter(User.id == userid).update(update_data)
-    db.commit()
+    user = db.query(User).filter(User.id == userid).first()
+    if user:
+        for key, value in update_data.items():
+            setattr(user, key, value)
+        db.commit()
 
 
 def db_delete(db: Session, userid: str) -> None:
-    db.query(User).filter(User.id == userid).delete()
-    db.commit()
+    user = db.query(User).filter(User.id == userid).first()
+    if user:
+        db.delete(user)
+        db.commit()
