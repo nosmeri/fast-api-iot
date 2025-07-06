@@ -12,7 +12,7 @@ def _utc_now() -> datetime:
 
 def create_access_token(user_id: str, is_admin: bool, username: str) -> str:
     to_encode = {
-        "id": user_id,
+        "sub": user_id,
         "is_admin": is_admin,
         "username": username,
         "exp": _utc_now() + timedelta(hours=settings.JWT_EXPIRES_IN_HOURS),
