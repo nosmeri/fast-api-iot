@@ -76,6 +76,13 @@ $ alembic revision --autogenerate
 
 ---
 
+## 로그 확인하기
+```bash
+docker exec -it fastapi_app tail -f /app/logs/app.log
+```
+
+---
+
 ## TODO
 * [x] FastAPI 의존성 리팩터
 * [x] DB 모델링 및 Alembic 마이그레이션 추가

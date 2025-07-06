@@ -4,7 +4,7 @@ import aiofiles
 import routers.admin as admin_router
 import routers.auth as auth_router
 import routers.mypage as mypage_router
-from fastapi import Depends, FastAPI, Request, Response, UploadFile, status
+from fastapi import Depends, FastAPI, Request, UploadFile, status
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
