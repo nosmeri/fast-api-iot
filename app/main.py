@@ -27,10 +27,14 @@ app = FastAPI(
 
 
 # HTTP 요청 로깅 미들웨어
-# - 모든 HTTP 요청과 응답을 로깅
+# - 모든 HTTP 요청과 응답을 로깅 (health check 제외)
 # - 요청 시간, 메서드, URL, 상태 코드, 응답 시간 등을 기록
 @app.middleware("http")
 async def logging_middleware(request: Request, call_next):
+    # health check 경로는 로깅하지 않음
+    if request.url.path == "/health":
+        return await call_next(request)
+
     # 요청 시작 시간 기록
     start_time = time.time()
 
