@@ -1,3 +1,5 @@
+'use strict';
+
 const form = document.querySelector('#loginForm');
 const submitButton = form.querySelector('button[type="submit"]');
 
@@ -21,18 +23,18 @@ form.addEventListener('submit', async (event) => {
 
     try {
         const response = await fetch('/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
 
         if (response.ok) {
-        window.location.href = '/';
+            window.location.href = '/';
         } else {
-        alert('로그인 실패. 아이디와 비밀번호를 확인해주세요.');
-        submitButton.disabled = false;
+            alert('로그인 실패. 아이디와 비밀번호를 확인해주세요.');
+            submitButton.disabled = false;
         }
     } catch (error) {
         console.error('로그인 요청 중 오류 발생:', error);

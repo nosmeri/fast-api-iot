@@ -1,3 +1,4 @@
+'use strict';
 export function validateUsername(username) {
     const regex = /^(?!-)(?!.*--)[A-Za-z0-9-]+(?<!-)$/;
     return regex.test(username);
@@ -8,7 +9,7 @@ export function validatePassword(password) {
         alert('비밀번호는 최소 8자 이상이어야 합니다.');
         return false;
     }
-    
+
     const hasNumber = /[0-9]/.test(password);
     const hasAlphabet = /[a-zA-Z]/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);

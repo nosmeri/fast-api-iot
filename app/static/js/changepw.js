@@ -1,3 +1,4 @@
+'use strict';
 import { validatePassword } from "./validators.js";
 
 const form = document.querySelector('#changePWForm');

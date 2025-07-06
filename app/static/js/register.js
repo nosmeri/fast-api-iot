@@ -1,3 +1,4 @@
+'use strict';
 import { validateUsername, validatePassword } from './validators.js';
 
 const form = document.querySelector('#registerForm');
@@ -38,21 +39,21 @@ form.addEventListener('submit', async (event) => {
         submitButton.disabled = false;
         return;
     }
-    
+
     try {
         const response = await fetch('/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
 
         if (response.ok) {
-        window.location.href = '/';
+            window.location.href = '/';
         } else {
-        alert('이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요.');
-        submitButton.disabled = false;
+            alert('이미 존재하는 아이디입니다. 다른 아이디를 사용해주세요.');
+            submitButton.disabled = false;
         }
     } catch (error) {
         console.error('회원가입 요청 중 오류 발생:', error);

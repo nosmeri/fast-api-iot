@@ -1,3 +1,4 @@
+'use strict';
 const modifyButtons = document.querySelectorAll('.modify-button');
 const deleteButtons = document.querySelectorAll('.delete-button');
 const userModifyForm = document.querySelector('#userModifyForm');
@@ -63,7 +64,7 @@ function saveLocalStorage() {
     const attribute = formData.get('attribute').trim();
     const value = formData.get('value').trim();
     const type = formData.get('type');
-    
+
     localStorage.setItem('admin_modify_attribute', attribute);
     localStorage.setItem('admin_modify_value', value);
     localStorage.setItem('admin_modify_type', type);
