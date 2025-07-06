@@ -37,6 +37,7 @@ services:
       - db
     volumes:
       - uploads:/app/uploads
+      - ./logs:/app/logs
     networks:
       - default
       - proxy

@@ -1,7 +1,10 @@
+import time
+
+import aiofiles
 import routers.admin as admin_router
 import routers.auth as auth_router
 import routers.mypage as mypage_router
-from fastapi import Depends, FastAPI, Request, Response, status, UploadFile
+from fastapi import Depends, FastAPI, Request, Response, UploadFile, status
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
@@ -9,8 +12,8 @@ from fastapi.staticfiles import StaticFiles
 from models import *
 from models.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
+from utils.logger import main_logger
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
-import aiofiles
 
 # FastAPI 애플리케이션 인스턴스 생성
 # - docs_url=None: Swagger UI 문서 비활성화
@@ -23,6 +26,48 @@ app = FastAPI(
 )
 
 
+# HTTP 요청 로깅 미들웨어
+# - 모든 HTTP 요청과 응답을 로깅
+# - 요청 시간, 메서드, URL, 상태 코드, 응답 시간 등을 기록
+@app.middleware("http")
+async def logging_middleware(request: Request, call_next):
+    # 요청 시작 시간 기록
+    start_time = time.time()
+
+    # 요청 정보 로깅
+    main_logger.info(
+        f"요청 시작 - {request.method} {request.url.path} "
+        f"클라이언트: {request.client.host if request.client else 'Unknown'} "
+        f"User-Agent: {request.headers.get('user-agent', 'Unknown')}"
+    )
+
+    try:
+        # 다음 미들웨어 또는 엔드포인트 실행
+        response = await call_next(request)
+
+        # 응답 시간 계산
+        process_time = time.time() - start_time
+
+        # 성공 응답 로깅
+        main_logger.info(
+            f"요청 완료 - {request.method} {request.url.path} "
+            f"상태: {response.status_code} "
+            f"처리시간: {process_time:.3f}초"
+        )
+
+        return response
+
+    except Exception as e:
+        # 에러 발생 시 로깅
+        process_time = time.time() - start_time
+        main_logger.error(
+            f"요청 실패 - {request.method} {request.url.path} "
+            f"에러: {str(e)} "
+            f"처리시간: {process_time:.3f}초"
+        )
+        raise e
+
+
 # 토큰 갱신 미들웨어
 # - "http": HTTP 미들웨어
 # - request: FastAPI Request 객체
@@ -33,6 +78,7 @@ async def token_refresh_middleware(request: Request, call_next):
 
     # request.state에 새로운 토큰이 있으면 쿠키에 설정
     if hasattr(request.state, "new_access_token") and request.state.new_access_token:
+        main_logger.info(f"액세스 토큰 갱신 - {request.method} {request.url.path}")
         response.set_cookie(
             key="access_token",
             value=request.state.new_access_token,
@@ -42,6 +88,7 @@ async def token_refresh_middleware(request: Request, call_next):
         )
 
     if hasattr(request.state, "new_refresh_token") and request.state.new_refresh_token:
+        main_logger.info(f"리프레시 토큰 갱신 - {request.method} {request.url.path}")
         response.set_cookie(
             key="refresh_token",
             value=request.state.new_refresh_token,

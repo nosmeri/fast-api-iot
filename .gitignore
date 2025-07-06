@@ -1,4 +1,6 @@
 .venv
 .env
 __pycache__
-db_manager
+db_manager/
+logs/
+uploads/

@@ -19,7 +19,15 @@ def decode_token(token: str) -> UserResponse:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
         )
-    return UserResponse(**payload)
+
+    # JWT 토큰의 'sub' 필드를 'id'로 변환
+    user_data = {
+        "id": payload.get("sub"),  # sub -> id로 변환
+        "username": payload.get("username"),
+        "is_admin": payload.get("is_admin", False),
+    }
+
+    return UserResponse(**user_data)
 
 
 def get_current_user_optional(
@@ -45,9 +53,7 @@ def get_current_user_optional(
                 request.state.new_refresh_token = new_refresh_token
 
                 # 새로운 access token으로 사용자 정보 반환
-                payload = jwt_service.verify_token(new_access_token)
-                if payload:
-                    return UserResponse(**payload)
+                return decode_token(new_access_token)
 
     return None
 
@@ -78,9 +84,7 @@ def get_current_user(
                 request.state.new_refresh_token = new_refresh_token
 
                 # 새로운 access token으로 사용자 정보 반환
-                payload = jwt_service.verify_token(new_access_token)
-                if payload:
-                    return UserResponse(**payload)
+                return decode_token(new_access_token)
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
