@@ -8,7 +8,9 @@ RUN groupadd -g "${GID}" appgroup && \
     mkdir -p /app/uploads && \
     mkdir -p /app/logs && \
     chown -R appuser /app/uploads && \
-    chown -R appuser /app/logs
+    chown -R appuser /app/logs && \
+    chmod 755 /app/uploads && \
+    chmod 755 /app/logs
 
 WORKDIR /app
 
