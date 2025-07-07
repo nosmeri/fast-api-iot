@@ -1,5 +1,6 @@
 from models.user import User, UserResponse
 from sqlalchemy.orm import Session
+from typing import Any
 
 
 def get_all_users(db: Session) -> list[UserResponse]:
@@ -7,7 +8,7 @@ def get_all_users(db: Session) -> list[UserResponse]:
     return [UserResponse.model_validate(user) for user in users]
 
 
-def db_update(db: Session, userid: str, update_data: dict) -> None:
+def db_update(db: Session, userid: str, update_data: dict[str, Any]) -> None:
     user = db.query(User).filter(User.id == userid).first()
     if user:
         for key, value in update_data.items():

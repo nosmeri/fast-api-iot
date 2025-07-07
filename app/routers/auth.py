@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from models.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
 from sqlalchemy.orm import Session
-from typing import Dict, Any
+from typing import Any
 from utils.deps import get_current_user, get_current_user_optional, get_refresh_token
 from utils.path import templates
 
@@ -112,7 +112,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
 def change_password_form(
     request: Request, user: UserResponse = Depends(get_current_user)
 ):
-    data: Dict[str, Any] = {
+    data: dict[str, Any] = {
         "user": {"username": user.username, "is_admin": user.is_admin}
     }
 

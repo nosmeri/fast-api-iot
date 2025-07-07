@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from models.user import User, UserResponse
 from sqlalchemy.orm import Session
-from typing import Dict, Any
+from typing import Any
 from utils.deps import require_admin
 from utils.path import templates
 
@@ -18,8 +18,8 @@ def admin(
     db: Session = Depends(get_db),
     user: UserResponse = Depends(require_admin),
 ) -> HTMLResponse:
-    users = admin_service.get_all_users(db)
-    data: Dict[str, Any] = {
+    users: list[UserResponse] = admin_service.get_all_users(db)
+    data: dict[str, Any] = {
         "user": {"username": user.username, "is_admin": user.is_admin},
         "users": users,
     }
@@ -36,7 +36,7 @@ def admin_modify_member(
     type: str,
     value: str,
     db: Session = Depends(get_db),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     if type not in ["bool", "int", "str"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -60,7 +60,7 @@ def admin_modify_member(
         )
 
     # 업데이트 데이터 생성
-    update_data: Dict[str, Any] = {}
+    update_data: dict[str, Any] = {}
     if type == "bool":
         update_data[attr] = value.lower() == "true"
     elif type == "int":
@@ -86,6 +86,6 @@ def admin_modify_member(
 @router.delete("/user")
 def admin_delete_member(
     request: Request, userid: str, db: Session = Depends(get_db)
-) -> Dict[str, str]:
+) -> dict[str, str]:
     admin_service.db_delete(db, userid)
     return {"status": "success", "message": f"User {userid} deleted successfully"}
