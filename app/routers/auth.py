@@ -23,7 +23,9 @@ def login_form(
 
 # 로그인
 @router.post("/login")
-def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
+def login(
+    request: Request, user_login: UserLogin, db: Session = Depends(get_db)
+) -> JSONResponse:
     username = user_login.username
     password = user_login.password
     try:
@@ -40,25 +42,14 @@ def login(user_login: UserLogin, db: Session = Depends(get_db)) -> JSONResponse:
         user_id=user.id, is_admin=user.is_admin, username=user.username
     )
     refresh_tocken = jwt_service.create_refresh_token(user_id=user.id, db=db)
-    response = JSONResponse(
+
+    request.state.new_access_token = access_token
+    request.state.new_refresh_token = refresh_tocken
+
+    return JSONResponse(
         status_code=status.HTTP_200_OK,
         content={"status": "success", "message": "Login successful"},
     )
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_tocken,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-    )
-    return response
 
 
 # 회원가입 페이지
@@ -73,7 +64,9 @@ def register_form(
 
 # 회원가입
 @router.post("/register")
-def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
+def register(
+    request: Request, user: UserCreate, db: Session = Depends(get_db)
+) -> JSONResponse:
     try:
         new_user = auth_service.create_user(db, user)
     except ValueError as e:
@@ -83,28 +76,17 @@ def register(user: UserCreate, db: Session = Depends(get_db)) -> JSONResponse:
         user_id=new_user.id, is_admin=new_user.is_admin, username=new_user.username
     )
     refresh_tocken = jwt_service.create_refresh_token(user_id=new_user.id, db=db)
-    response = JSONResponse(
+
+    request.state.new_access_token = access_token
+    request.state.new_refresh_token = refresh_tocken
+
+    return JSONResponse(
         status_code=status.HTTP_201_CREATED,
         content={
             "status": "success",
             "message": "User created successfully",
         },
     )
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_tocken,
-        httponly=True,
-        secure=True,
-        samesite="strict",
-    )
-    return response
 
 
 # 비밀번호 변경 페이지
