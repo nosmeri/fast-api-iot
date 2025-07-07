@@ -128,9 +128,7 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 async def mainPage(
     request: Request, user: UserResponse | None = Depends(get_current_user_optional)
 ):
-    data: dict = {
-        "message": "Hello World!",
-    }
+    data: dict = {}
     if user:
         data.update(
             {"user": {"username": user.username, "is_admin": bool(user.is_admin)}}
@@ -168,7 +166,7 @@ async def health_check():
     return {"status": "ok"}
 
 
-# 예외처리
+# 통합 예외처리
 # - 401: 인증 실패
 # - 403: 권한 없음
 # - 404: 페이지 없음
@@ -176,28 +174,56 @@ async def health_check():
 @app.exception_handler(401)
 async def unauthorized(request: Request, exc):
     return templates.TemplateResponse(
-        request, "401.html", status_code=status.HTTP_401_UNAUTHORIZED
+        request,
+        "error.html",
+        {
+            "error_code": 401,
+            "error_title": "인증 실패",
+            "error_message": "로그인이 필요합니다. 로그인 후 다시 시도해주세요.",
+        },
+        status_code=status.HTTP_401_UNAUTHORIZED,
     )
 
 
 @app.exception_handler(403)
 async def forbidden(request: Request, exc):
     return templates.TemplateResponse(
-        request, "403.html", status_code=status.HTTP_403_FORBIDDEN
+        request,
+        "error.html",
+        {
+            "error_code": 403,
+            "error_title": "접근 권한 없음",
+            "error_message": "이 페이지에 접근할 권한이 없습니다. 관리자에게 문의하세요.",
+        },
+        status_code=status.HTTP_403_FORBIDDEN,
     )
 
 
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
     return templates.TemplateResponse(
-        request, "404.html", status_code=status.HTTP_404_NOT_FOUND
+        request,
+        "error.html",
+        {
+            "error_code": 404,
+            "error_title": "페이지를 찾을 수 없습니다",
+            "error_message": "요청하신 페이지가 존재하지 않습니다. URL을 확인하거나 홈페이지로 이동해주세요.",
+        },
+        status_code=status.HTTP_404_NOT_FOUND,
     )
 
 
 @app.exception_handler(500)
 async def internal_server_error(request: Request, exc):
     return templates.TemplateResponse(
-        request, "500.html", status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        request,
+        "error.html",
+        {
+            "error_code": 500,
+            "error_title": "서버 오류",
+            "error_message": "서버에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+        },
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
 
 

@@ -1,30 +1,19 @@
-<!DOCTYPE html>
-<html lang="ko">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/static/images/icon.png">
-
-    <link rel="stylesheet" href="/static/css/auth.css">
-
-    <script src="/static/js/login.js" defer></script>
-
-    <title>Sign in</title>
-</head>
-
-<body>
-    <h1>Sign in to I.o.T.</h1>
-    <div class="login-container auth-container">
-        <form id="loginForm">
-            <label for="username">Username</label>
-            <input type="text" name="username" required />
-            <label for="password">Password</label>
-            <input type="password" name="password" required />
-            <button type="submit">Sign in</button>
-            <p>New to I.o.T.? <a href="/register">Create an account</a></p>
-        </form>
-    </div>
-</body>
-
-</html>
+{%extends "base.html"%}
+{%block title%}Sign in{%endblock%}
+{%block head%}
+<link rel="stylesheet" href="/static/css/auth.css">
+<script src="/static/js/login.js" defer></script>
+{%endblock%}
+{%block content%}
+<h1>Sign in to I.o.T.</h1>
+<div class="login-container auth-container">
+    <form id="loginForm">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" autocomplete="username" required />
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" autocomplete="current-password" required />
+        <button type="submit">Sign in</button>
+        <p>New to I.o.T.? <a href="/register">Create an account</a></p>
+    </form>
+</div>
+{%endblock%}

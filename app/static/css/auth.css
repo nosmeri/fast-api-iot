@@ -1,24 +1,20 @@
-
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 80vh;
+main {
+    font-size: 1rem;
 }
 
-h1 {
+main h1 {
     font-size: 24px;
     margin-bottom: 20px;
-    color: #343a40;
+    color: var(--text-color);
 }
+
 
 .auth-container {
     padding: 20px;
-    background-color: #f8f9fa;
+    background-color: var(--content-primary-color);
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--content-secondary-color);
 }
 
 .login-container {
@@ -43,8 +39,9 @@ form {
 
 .auth-container label {
     margin-bottom: 8px;
-    color: #495057;
+    color: var(--text-color);
 }
+
 .auth-container input {
     padding: 8px;
     margin-bottom: 16px;
@@ -52,6 +49,7 @@ form {
     border-radius: 4px;
     font-size: 14px;
 }
+
 .auth-container button {
     background-color: #238636;
     color: white;
@@ -60,6 +58,7 @@ form {
     padding: 8px;
     border-radius: 4px;
 }
+
 .auth-container button:hover {
     background-color: #2ea043;
 }

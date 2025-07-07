@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/static/images/icon.png">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap"
+        rel="stylesheet">
+
     <script src="https://kit.fontawesome.com/4479351da8.js" crossorigin="anonymous"></script>
-    
-    <link rel="stylesheet" href="/static/css/style.css">
+
+    <link rel="stylesheet" href="/static/css/base.css">
     <script src="/static/js/navbar.js" defer></script>
 
-    <title>I.o.T.</title>
+    <title>{% block title %}I.o.T.{% endblock %}</title>
 
     {% block head %}
     {% endblock %}
 </head>
+
 <body>
     <header>
         <nav class="navbar">
@@ -38,7 +41,7 @@
             <ul class="navbar_icons toggle_menu">
                 <li><a href="https://github.com/nosmeri"><i class="fa-brands fa-github"></i></a></li>
             </ul>
-            
+
             {% if not user %}
             <ul class="navbar_login toggle_menu">
                 <li><a href="/login" class="navbar_btn">Sign in</a></li>
@@ -47,16 +50,19 @@
             {% endif %}
 
             {% if user %}
-                <div class="navbar_user toggle_menu">
-                    <span class="user_name"><a href="/mypage">{{ user.username }}</a></span>
-                    <a href="/logout" class="navbar_btn">Logout</a>
-                </div>
+            <div class="navbar_user toggle_menu">
+                <span class="user_name"><a href="/mypage">{{ user.username }}</a></span>
+                <a href="/logout" class="navbar_btn">Logout</a>
+            </div>
             {% endif %}
 
             <a href="#" class="navbar_toggleBtn"><i class="fa-solid fa-bars"></i></a>
         </nav>
     </header>
-    {% block content %}
-    {% endblock %}
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
 </body>
+
 </html>
