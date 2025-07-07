@@ -79,6 +79,8 @@ $ alembic revision --autogenerate
 ## 로그 확인하기
 ```bash
 docker exec -it fastapi_app tail -f /app/logs/app.log
+
+docker exec -it fastapi_app tail -f /app/logs/db.log
 ```
 
 ---

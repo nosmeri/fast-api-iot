@@ -14,7 +14,7 @@ dictConfig(
             }
         },
         "handlers": {
-            "file": {
+            "app_file": {
                 "class": "logging.handlers.RotatingFileHandler",
                 "filename": LOG_DIR / "app.log",
                 "maxBytes": 1024 * 1024 * 5,  # 5MB
@@ -30,7 +30,7 @@ dictConfig(
             },
         },
         "root": {
-            "handlers": ["file"],
+            "handlers": ["app_file"],
             "level": "INFO",
         },
         "loggers": {
