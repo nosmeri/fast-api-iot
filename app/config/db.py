@@ -6,6 +6,7 @@ engine = create_engine(
     settings.SQLALCHEMY_DATABASE_URL,
     pool_pre_ping=True,
     future=True,
+    echo=True,  # 쿼리 로그 활성화
 )
 
 SessionLocal = sessionmaker(

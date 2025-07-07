@@ -20,11 +20,25 @@ dictConfig(
                 "maxBytes": 1024 * 1024 * 5,  # 5MB
                 "backupCount": 5,
                 "formatter": "default",
-            }
+            },
+            "db_file": {
+                "class": "logging.handlers.RotatingFileHandler",
+                "filename": LOG_DIR / "db.log",
+                "maxBytes": 1024 * 1024 * 5,  # 5MB
+                "backupCount": 5,
+                "formatter": "default",
+            },
         },
         "root": {
             "handlers": ["file"],
             "level": "INFO",
+        },
+        "loggers": {
+            "sqlalchemy.engine": {
+                "handlers": ["db_file"],
+                "level": "INFO",
+                "propagate": False,
+            },
         },
     }
 )
