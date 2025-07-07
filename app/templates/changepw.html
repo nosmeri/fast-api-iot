@@ -1,28 +1,20 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="/static/images/icon.png">
-
-    <link rel="stylesheet" href="/static/css/auth.css">
-
-    <script type="module" src="/static/js/changepw.js" defer></script>
-
-    <title>Change password</title>
-</head>
-<body>
-    <h1>Change password</h1>
-    <div class="change-password-container auth-container">
-        <form id="changePWForm">
-            <label for="currentPassword">Current Password</label>
-            <input type="password" name="currentPassword" required />
-            <label for="newPassword">New Password</label>
-            <input type="password" name="newPassword" required />
-            <label for="confirmPassword">Confirm Password</label>
-            <input type="password" name="confirmPassword" required />
-            <button type="submit">Change Password</button>
-        </form>
-    </div>
-</body>
-</html>
+{%extends "base.html"%}
+{%block title%}Change password{%endblock%}
+{%block head%}
+<link rel="stylesheet" href="/static/css/auth.css">
+<script type="module" src="/static/js/changepw.js" defer></script>
+{%endblock%}
+{%block content%}
+<h1>Change password</h1>
+<div class="change-password-container auth-container">
+    <form id="changePWForm">
+        <label for="currentPassword">Current Password</label>
+        <input type="password" name="currentPassword" id="currentPassword" autocomplete="current-password" required />
+        <label for="newPassword">New Password</label>
+        <input type="password" name="newPassword" id="newPassword" autocomplete="new-password" required />
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" name="confirmPassword" id="confirmPassword" autocomplete="new-password" required />
+        <button type="submit">Change Password</button>
+    </form>
+</div>
+{%endblock%}
