@@ -15,11 +15,11 @@
 html {
     background-color: var(--content-background-color);
     color: var(--text-color);
+    font-family: var(--font-family);
 }
 
 body {
     margin: 0;
-    font-family: var(--font-family);
 }
 
 .navbar a {
