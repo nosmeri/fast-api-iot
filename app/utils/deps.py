@@ -1,6 +1,6 @@
 from config.db import get_db
 from fastapi import Depends, HTTPException, Request, status
-from models.user import UserResponse
+from schemas.user import UserResponse
 from services import jwt_service
 from sqlalchemy.orm import Session
 

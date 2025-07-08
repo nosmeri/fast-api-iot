@@ -10,7 +10,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from models import *
-from models.user import UserResponse
+from schemas.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
 from utils.error_handlers import (
     forbidden_error,

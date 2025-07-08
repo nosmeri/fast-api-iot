@@ -1,6 +1,7 @@
 from typing import Any
 
-from models.user import User, UserResponse
+from models.user import User
+from schemas.user import UserResponse
 from sqlalchemy.orm import Session
 
 

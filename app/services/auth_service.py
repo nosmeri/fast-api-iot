@@ -1,4 +1,5 @@
-from models.user import User, UserCreate, UserResponse
+from models.user import User
+from schemas.user import UserCreate, UserResponse
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from utils.validators import validate_user_credentials

@@ -3,7 +3,7 @@ from typing import Any
 from config.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
-from models.user import ChangePassword, UserCreate, UserLogin, UserResponse
+from schemas.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
 from sqlalchemy.orm import Session
 from utils.deps import get_current_user, get_current_user_optional, get_refresh_token
@@ -16,7 +16,6 @@ router = APIRouter()
 # 유효성 검사 규칙 제공 API
 @router.get("/validation-rules")
 def get_validation_rules_api():
-    """프론트엔드에서 사용할 수 있는 유효성 검사 규칙을 반환합니다."""
     return get_validation_rules()
 
 

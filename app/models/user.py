@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING
 from uuid import uuid4
 
 from config.db import Base
-from pydantic import BaseModel, ConfigDict
 from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -34,31 +33,3 @@ class User(Base):
     refresh_tokens: Mapped[list["RefreshToken"]] = relationship(
         "RefreshToken", back_populates="user", cascade="all, delete-orphan"
     )
-
-
-# 사용자 생성 모델
-class UserCreate(BaseModel):
-    username: str
-    password: str
-
-
-# 사용자 로그인 모델
-class UserLogin(UserCreate):
-    pass
-
-
-# 비밀번호 변경 모델
-class ChangePassword(BaseModel):
-    currentPassword: str
-    newPassword: str
-
-
-# 사용자 응답 모델
-class UserResponse(BaseModel):
-    id: str
-    username: str
-    is_admin: bool = False
-    created_at: datetime | None = None
-    updated_at: datetime | None = None
-
-    model_config = ConfigDict(from_attributes=True)
