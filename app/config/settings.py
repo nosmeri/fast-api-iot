@@ -15,4 +15,5 @@ class Settings(BaseSettings):
     )
 
 
+# 설정 인스턴스 생성
 settings = Settings()  # type: ignore

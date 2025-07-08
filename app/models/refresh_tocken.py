@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .user import User
 
 
+# 리프레시 토큰 모델
 class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
 

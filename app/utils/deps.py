@@ -5,14 +5,17 @@ from services import jwt_service
 from sqlalchemy.orm import Session
 
 
+# 액세스 토큰 쿠키에서 추출
 def get_raw_token(request: Request) -> str | None:
     return request.cookies.get("access_token")
 
 
+# 리프레시 토큰 쿠키에서 추출
 def get_refresh_token(request: Request) -> str | None:
     return request.cookies.get("refresh_token")
 
 
+# 토큰 검증 및 사용자 정보 반환
 def decode_token(token: str) -> UserResponse:
     payload = jwt_service.verify_token(token)
     if not payload:
@@ -30,6 +33,7 @@ def decode_token(token: str) -> UserResponse:
     return UserResponse(**user_data)
 
 
+# 토큰 갱신을 처리하는 내부 함수
 def _handle_token_refresh(
     request: Request, db: Session, refresh_token: str
 ) -> UserResponse | None:
@@ -50,6 +54,7 @@ def _handle_token_refresh(
     return None
 
 
+# 현재 사용자 정보 조회(선택적)
 def get_current_user_optional(
     request: Request,
     db: Session = Depends(get_db),
@@ -69,6 +74,7 @@ def get_current_user_optional(
     return None
 
 
+# 현재 사용자 정보 조회(필수)
 def get_current_user(
     request: Request,
     db: Session = Depends(get_db),
@@ -101,6 +107,7 @@ def get_current_user(
     )
 
 
+# 관리자 권한 확인
 def require_admin(user: UserResponse = Depends(get_current_user)) -> UserResponse:
     if not user.is_admin:
         raise HTTPException(

@@ -4,6 +4,7 @@ from fastapi import Request, status
 from utils.path import templates
 
 
+# 공통 에러 응답
 def error_response(
     request: Request,
     error_code: int,
@@ -11,19 +12,6 @@ def error_response(
     error_message: str,
     status_code: int | None = None,
 ) -> Any:
-    """
-    공통 에러 응답을 생성합니다.
-
-    Args:
-        request: FastAPI Request 객체
-        error_code: 에러 코드
-        error_title: 에러 제목
-        error_message: 에러 메시지
-        status_code: HTTP 상태 코드 (기본값: error_code와 동일)
-
-    Returns:
-        TemplateResponse: 에러 페이지 응답
-    """
     if status_code is None:
         status_code = error_code
 
@@ -39,6 +27,7 @@ def error_response(
     )
 
 
+# 401 인증 실패 에러 응답
 def unauthorized_error(request: Request, exc) -> Any:
     """401 인증 실패 에러 응답"""
     return error_response(
@@ -50,6 +39,7 @@ def unauthorized_error(request: Request, exc) -> Any:
     )
 
 
+# 403 권한 없음 에러 응답
 def forbidden_error(request: Request, exc) -> Any:
     """403 권한 없음 에러 응답"""
     return error_response(
@@ -61,6 +51,7 @@ def forbidden_error(request: Request, exc) -> Any:
     )
 
 
+# 404 페이지 없음 에러 응답
 def not_found_error(request: Request, exc) -> Any:
     """404 페이지 없음 에러 응답"""
     return error_response(
@@ -72,6 +63,7 @@ def not_found_error(request: Request, exc) -> Any:
     )
 
 
+# 500 서버 오류 응답
 def internal_server_error(request: Request, exc) -> Any:
     """500 서버 오류 응답"""
     return error_response(

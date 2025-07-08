@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from .refresh_tocken import RefreshToken
 
 
+# 사용자 모델
 class User(Base):
     __tablename__ = "users"
 
@@ -35,20 +36,24 @@ class User(Base):
     )
 
 
+# 사용자 생성 모델
 class UserCreate(BaseModel):
     username: str
     password: str
 
 
+# 사용자 로그인 모델
 class UserLogin(UserCreate):
     pass
 
 
+# 비밀번호 변경 모델
 class ChangePassword(BaseModel):
     currentPassword: str
     newPassword: str
 
 
+# 사용자 응답 모델
 class UserResponse(BaseModel):
     id: str
     username: str

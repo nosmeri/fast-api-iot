@@ -21,6 +21,7 @@ VALIDATION_RULES = {
 }
 
 
+# 사용자명 유효성 검사
 def validate_username(username: str) -> Tuple[bool, str]:
     """
     사용자명 유효성 검사
@@ -56,6 +57,7 @@ def validate_username(username: str) -> Tuple[bool, str]:
     return True, ""
 
 
+# 비밀번호 유효성 검사
 def validate_password(password: str) -> Tuple[bool, str]:
     """
     비밀번호 유효성 검사
@@ -101,6 +103,7 @@ def validate_password(password: str) -> Tuple[bool, str]:
     return True, ""
 
 
+# 사용자명과 비밀번호를 함께 검사
 def validate_user_credentials(username: str, password: str) -> Tuple[bool, List[str]]:
     """
     사용자명과 비밀번호를 함께 검사
@@ -125,6 +128,7 @@ def validate_user_credentials(username: str, password: str) -> Tuple[bool, List[
     return len(errors) == 0, errors
 
 
+# 유효성 검사 규칙 반환
 def get_validation_rules() -> Dict:
     """
     프론트엔드에서 사용할 수 있도록 유효성 검사 규칙을 반환

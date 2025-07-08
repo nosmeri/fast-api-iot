@@ -10,6 +10,7 @@ def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+# 액세스 토큰 생성
 def create_access_token(user_id: str, is_admin: bool, username: str) -> str:
     to_encode = {
         "sub": user_id,
@@ -23,6 +24,7 @@ def create_access_token(user_id: str, is_admin: bool, username: str) -> str:
     )
 
 
+# 토큰 검증
 def verify_token(token: str) -> dict | None:
     try:
         return jwt.decode(
@@ -34,6 +36,7 @@ def verify_token(token: str) -> dict | None:
         return None
 
 
+# 리프레시 토큰 생성
 def create_refresh_token(user_id: str, db: Session):
     exp = _utc_now() + timedelta(days=settings.JWT_REFRESH_EXPIRES_IN_DAYS)
     payload = {"sub": user_id, "exp": exp, "type": "refresh"}
@@ -47,10 +50,12 @@ def create_refresh_token(user_id: str, db: Session):
     return token
 
 
+# 리프레시 토큰 조회
 def get_refresh_token(db: Session, token: str) -> RefreshToken | None:
     return db.query(RefreshToken).filter(RefreshToken.token == token).first()
 
 
+# 리프레시 토큰 취소
 def revoke_refresh_token(db: Session, token: str) -> RefreshToken | None:
     refresh_token = get_refresh_token(db, token)
     if not refresh_token:
@@ -61,8 +66,9 @@ def revoke_refresh_token(db: Session, token: str) -> RefreshToken | None:
     return refresh_token
 
 
+# 리프레시 토큰 갱신
+# 리프레시 토큰을 사용해서 새로운 액세스 토큰과 리프레시 토큰을 발급
 def refresh_access_token(db: Session, refresh_token_str: str) -> tuple[str, str] | None:
-    """Refresh token을 사용해서 새로운 access token과 refresh token을 발급받습니다."""
     # Refresh token 검증
     payload = verify_token(refresh_token_str)
     if not payload or payload.get("type") != "refresh":
