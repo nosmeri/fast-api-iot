@@ -30,6 +30,26 @@ def decode_token(token: str) -> UserResponse:
     return UserResponse(**user_data)
 
 
+def _handle_token_refresh(
+    request: Request, db: Session, refresh_token: str
+) -> UserResponse | None:
+    """토큰 갱신을 처리하는 내부 함수"""
+    if not refresh_token:
+        return None
+
+    result = jwt_service.refresh_access_token(db, refresh_token)
+    if result:
+        new_access_token, new_refresh_token = result
+        # request.state에 새로운 토큰들을 저장
+        request.state.new_access_token = new_access_token
+        request.state.new_refresh_token = new_refresh_token
+
+        # 새로운 access token으로 사용자 정보 반환
+        return decode_token(new_access_token)
+
+    return None
+
+
 def get_current_user_optional(
     request: Request,
     db: Session = Depends(get_db),
@@ -44,16 +64,7 @@ def get_current_user_optional(
             return decode_token(token)
     except HTTPException:
         # Access token이 만료되었고 refresh token이 있는 경우
-        if refresh_token:
-            result = jwt_service.refresh_access_token(db, refresh_token)
-            if result:
-                new_access_token, new_refresh_token = result
-                # request.state에 새로운 토큰들을 저장
-                request.state.new_access_token = new_access_token
-                request.state.new_refresh_token = new_refresh_token
-
-                # 새로운 access token으로 사용자 정보 반환
-                return decode_token(new_access_token)
+        return _handle_token_refresh(request, db, refresh_token)
 
     return None
 
@@ -75,16 +86,9 @@ def get_current_user(
             return decode_token(token)
     except HTTPException:
         # Access token이 만료되었고 refresh token이 있는 경우
-        if refresh_token:
-            result = jwt_service.refresh_access_token(db, refresh_token)
-            if result:
-                new_access_token, new_refresh_token = result
-                # request.state에 새로운 토큰들을 저장
-                request.state.new_access_token = new_access_token
-                request.state.new_refresh_token = new_refresh_token
-
-                # 새로운 access token으로 사용자 정보 반환
-                return decode_token(new_access_token)
+        refreshed_user = _handle_token_refresh(request, db, refresh_token)
+        if refreshed_user:
+            return refreshed_user
 
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
