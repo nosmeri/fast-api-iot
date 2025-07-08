@@ -1,5 +1,5 @@
 'use strict';
-import { validateUsername, validatePassword } from './validators.js';
+import { validateUserCredentials } from './validators.js';
 
 const form = document.querySelector('#registerForm');
 const submitButton = form.querySelector('button[type="submit"]');
@@ -23,13 +23,9 @@ form.addEventListener('submit', async (event) => {
         return;
     }
 
-    if (!validateUsername(username)) {
-        alert('아이디는 영문, 숫자, 하이픈(-)만 사용할 수 있으며, 하이픈으로 시작하거나 끝날 수 없습니다.');
-        submitButton.disabled = false;
-        return;
-    }
-    if (!validatePassword(password)) {
-
+    // 통합 유효성 검사
+    const isValid = await validateUserCredentials(username, password);
+    if (!isValid) {
         submitButton.disabled = false;
         return;
     }

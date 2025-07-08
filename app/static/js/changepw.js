@@ -19,7 +19,9 @@ form.addEventListener('submit', async (event) => {
         return;
     }
 
-    if (!validatePassword(newPassword)) {
+    // 새 비밀번호 유효성 검사
+    const isPasswordValid = await validatePassword(newPassword);
+    if (!isPasswordValid) {
         submitButton.disabled = false;
         return;
     }

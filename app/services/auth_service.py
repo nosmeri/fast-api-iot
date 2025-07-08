@@ -1,7 +1,7 @@
 from models.user import User, UserCreate, UserResponse
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from models.refresh_tocken import RefreshToken
+from utils.validators import validate_user_credentials
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -16,40 +16,16 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-# 사용자명 유효성 검사
-def validate_username(username: str) -> bool:
-    import re
-
-    # 하이픈으로 시작하지 않고, 연속된 하이픈이 없으며, 하이픈으로 끝나지 않는 영숫자와 하이픈만 허용
-    regex = r"^(?!-)(?!.*--)[A-Za-z0-9-]+(?<!-)$"
-    return bool(re.match(regex, username))
-
-
-# 비밀번호 유효성 검사
-def validate_password(password: str) -> bool:
-    # 최소 8자 이상
-    if len(password) < 8:
-        return False
-
-    # 숫자 포함 여부
-    has_number = any(char.isdigit() for char in password)
-    # 알파벳 포함 여부
-    has_alphabet = any(char.isalpha() for char in password)
-    # 특수문자 포함 여부
-    special_chars = '!@#$%^&*(),.?":{}|<>'
-    has_special_char = any(char in special_chars for char in password)
-
-    return has_number and has_alphabet and has_special_char
-
-
 # 사용자 생성
 def create_user(db: Session, user: UserCreate) -> User:
     existing_user = get_user_by_username(db, user.username)
     if existing_user:
         raise ValueError("Username already exists")
 
-    if not validate_username(user.username) or not validate_password(user.password):
-        raise ValueError("Invalid username or password")
+    # 통합 유효성 검사
+    is_valid, errors = validate_user_credentials(user.username, user.password)
+    if not is_valid:
+        raise ValueError("; ".join(errors))
 
     hashed_password = get_password_hash(user.password)
     db_user = User(username=user.username, password=hashed_password)
