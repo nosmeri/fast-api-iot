@@ -16,7 +16,7 @@ def create_access_token(user_id: str, is_admin: bool, username: str) -> str:
         "sub": user_id,
         "is_admin": is_admin,
         "username": username,
-        "exp": _utc_now() + timedelta(hours=settings.JWT_EXPIRES_IN_HOURS),
+        "exp": _utc_now() + timedelta(hours=settings.JWT_ACCESS_EXPIRES_IN_HOURS),
         "type": "access",
     }
     return jwt.encode(
