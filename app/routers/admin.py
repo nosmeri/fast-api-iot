@@ -1,10 +1,11 @@
+from typing import Any
+
 import services.admin_service as admin_service
 from config.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from models.user import User, UserResponse
 from sqlalchemy.orm import Session
-from typing import Any
 from utils.deps import require_admin
 from utils.path import templates
 

@@ -4,7 +4,7 @@ import aiofiles
 import routers.admin as admin_router
 import routers.auth as auth_router
 import routers.mypage as mypage_router
-from fastapi import Depends, FastAPI, Request, UploadFile, status
+from fastapi import Depends, FastAPI, Request, UploadFile
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import JSONResponse
@@ -12,14 +12,14 @@ from fastapi.staticfiles import StaticFiles
 from models import *
 from models.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
+from utils.error_handlers import (
+    forbidden_error,
+    internal_server_error,
+    not_found_error,
+    unauthorized_error,
+)
 from utils.logger import main_logger
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
-from utils.error_handlers import (
-    unauthorized_error,
-    forbidden_error,
-    not_found_error,
-    internal_server_error,
-)
 
 # FastAPI 애플리케이션 인스턴스 생성
 # - docs_url=None: Swagger UI 문서 비활성화

@@ -1,6 +1,7 @@
+from typing import Any
+
 from fastapi import Request, status
 from utils.path import templates
-from typing import Any
 
 
 def error_response(

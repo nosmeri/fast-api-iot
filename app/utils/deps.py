@@ -1,8 +1,8 @@
-from fastapi import Depends, HTTPException, Request, Response, status
+from config.db import get_db
+from fastapi import Depends, HTTPException, Request, status
 from models.user import UserResponse
 from services import jwt_service
 from sqlalchemy.orm import Session
-from config.db import get_db
 
 
 def get_raw_token(request: Request) -> str | None:

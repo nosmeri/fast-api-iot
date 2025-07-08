@@ -1,6 +1,7 @@
+from typing import Any
+
 from models.user import User, UserResponse
 from sqlalchemy.orm import Session
-from typing import Any
 
 
 def get_all_users(db: Session) -> list[UserResponse]:

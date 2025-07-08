@@ -1,7 +1,6 @@
 import re
 from typing import Dict, List, Tuple
 
-
 # 유효성 검사 규칙 정의
 VALIDATION_RULES = {
     "username": {

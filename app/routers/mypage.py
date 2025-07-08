@@ -1,7 +1,8 @@
+from typing import Any
+
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from models.user import UserResponse
-from typing import Any
 from utils.deps import get_current_user
 from utils.path import templates
 
