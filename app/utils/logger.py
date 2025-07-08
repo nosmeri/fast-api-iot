@@ -13,6 +13,11 @@ LOGGING_CONFIG = {
         }
     },
     "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "default",
+            "level": "INFO",
+        },
         "app_file": {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": LOG_DIR / "app.log",
@@ -29,7 +34,7 @@ LOGGING_CONFIG = {
         },
     },
     "root": {
-        "handlers": ["app_file"],
+        "handlers": ["console", "app_file"],
         "level": "INFO",
     },
     "loggers": {
