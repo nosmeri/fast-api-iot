@@ -16,10 +16,12 @@ html {
     background-color: var(--content-background-color);
     color: var(--text-color);
     font-family: var(--font-family);
+    height: 100%;
 }
 
 body {
     margin: 0;
+    height: 100%;
 }
 
 .navbar a {
@@ -125,7 +127,7 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 80vh;
+    height: 80%;
     font-size: 1.5rem;
 
 }
