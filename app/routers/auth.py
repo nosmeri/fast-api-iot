@@ -47,7 +47,7 @@ def login(
         )
 
     access_token = jwt_service.create_access_token(
-        user_id=user.id, is_admin=user.is_admin, username=user.username
+        user_id=user.id, username=user.username, is_admin=user.is_admin
     )
     refresh_tocken = jwt_service.create_refresh_token(user_id=user.id, db=db)
 
@@ -81,7 +81,7 @@ def register(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
     access_token = jwt_service.create_access_token(
-        user_id=new_user.id, is_admin=new_user.is_admin, username=new_user.username
+        user_id=new_user.id, username=new_user.username, is_admin=new_user.is_admin
     )
     refresh_tocken = jwt_service.create_refresh_token(user_id=new_user.id, db=db)
 

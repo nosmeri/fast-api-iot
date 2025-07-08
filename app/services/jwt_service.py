@@ -11,11 +11,11 @@ def _utc_now() -> datetime:
 
 
 # 액세스 토큰 생성
-def create_access_token(user_id: str, is_admin: bool, username: str) -> str:
+def create_access_token(user_id: str, username: str, is_admin: bool) -> str:
     to_encode = {
         "sub": user_id,
-        "is_admin": is_admin,
         "username": username,
+        "is_admin": is_admin,
         "exp": _utc_now() + timedelta(hours=settings.JWT_ACCESS_EXPIRES_IN_HOURS),
         "type": "access",
     }
@@ -92,7 +92,7 @@ def refresh_access_token(db: Session, refresh_token_str: str) -> tuple[str, str]
         return None
 
     # 새로운 access token과 refresh token 생성
-    new_access_token = create_access_token(user.id, user.is_admin, user.username)
+    new_access_token = create_access_token(user.id, user.username, user.is_admin)
     new_refresh_token = create_refresh_token(user.id, db)
 
     return new_access_token, new_refresh_token
