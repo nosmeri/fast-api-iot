@@ -14,6 +14,12 @@ from models.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
 from utils.logger import main_logger
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
+from utils.error_handlers import (
+    unauthorized_error,
+    forbidden_error,
+    not_found_error,
+    internal_server_error,
+)
 
 # FastAPI 애플리케이션 인스턴스 생성
 # - docs_url=None: Swagger UI 문서 비활성화
@@ -173,58 +179,22 @@ async def health_check():
 # - 500: 서버 오류
 @app.exception_handler(401)
 async def unauthorized(request: Request, exc):
-    return templates.TemplateResponse(
-        request,
-        "error.html",
-        {
-            "error_code": 401,
-            "error_title": "인증 실패",
-            "error_message": "로그인이 필요합니다. 로그인 후 다시 시도해주세요.",
-        },
-        status_code=status.HTTP_401_UNAUTHORIZED,
-    )
+    return unauthorized_error(request, exc)
 
 
 @app.exception_handler(403)
 async def forbidden(request: Request, exc):
-    return templates.TemplateResponse(
-        request,
-        "error.html",
-        {
-            "error_code": 403,
-            "error_title": "접근 권한 없음",
-            "error_message": "이 페이지에 접근할 권한이 없습니다. 관리자에게 문의하세요.",
-        },
-        status_code=status.HTTP_403_FORBIDDEN,
-    )
+    return forbidden_error(request, exc)
 
 
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
-    return templates.TemplateResponse(
-        request,
-        "error.html",
-        {
-            "error_code": 404,
-            "error_title": "페이지를 찾을 수 없습니다",
-            "error_message": "요청하신 페이지가 존재하지 않습니다. URL을 확인하거나 홈페이지로 이동해주세요.",
-        },
-        status_code=status.HTTP_404_NOT_FOUND,
-    )
+    return not_found_error(request, exc)
 
 
 @app.exception_handler(500)
-async def internal_server_error(request: Request, exc):
-    return templates.TemplateResponse(
-        request,
-        "error.html",
-        {
-            "error_code": 500,
-            "error_title": "서버 오류",
-            "error_message": "서버에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-        },
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-    )
+async def internal_server_error_handler(request: Request, exc):
+    return internal_server_error(request, exc)
 
 
 # 문서 엔드포인트
