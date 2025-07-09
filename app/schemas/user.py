@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from models.user import User
 from pydantic import BaseModel, ConfigDict
 
 
@@ -28,3 +30,8 @@ class UserResponse(BaseModel):
     updated_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# User 모델을 UserResponse로 변환하는 헬퍼 함수
+def user_to_response(user: User) -> UserResponse:
+    return UserResponse.model_validate(user)

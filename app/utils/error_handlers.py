@@ -1,7 +1,7 @@
 from fastapi import Request, status
 from fastapi.responses import HTMLResponse
-from utils.path import templates
 from utils.logger import main_logger
+from utils.path import templates
 
 
 # 공통 에러 응답

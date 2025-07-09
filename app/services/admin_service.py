@@ -1,7 +1,7 @@
 from typing import Any
 
 from models.user import User
-from schemas.user import UserResponse
+from schemas.user import UserResponse, user_to_response
 from sqlalchemy.orm import Session
 
 
@@ -19,7 +19,7 @@ def db_update(db: Session, userid: str, update_data: dict[str, Any]) -> UserResp
             setattr(user, key, value)
         db.commit()
         db.refresh(user)
-        return UserResponse.model_validate(user)
+        return user_to_response(user)
     else:
         raise ValueError("User not found")
 
@@ -31,6 +31,6 @@ def db_delete(db: Session, userid: str) -> UserResponse:
         db.delete(user)
         db.commit()
         db.refresh(user)
-        return UserResponse.model_validate(user)
+        return user_to_response(user)
     else:
         raise ValueError("User not found")

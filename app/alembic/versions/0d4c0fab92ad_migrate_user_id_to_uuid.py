@@ -6,12 +6,11 @@ Create Date: 2025-07-04 23:02:46.072474
 
 """
 
+import uuid
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
-import uuid
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = "0d4c0fab92ad"
@@ -42,4 +41,3 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Downgrade schema."""
-    pass

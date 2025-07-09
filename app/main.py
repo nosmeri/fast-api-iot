@@ -9,15 +9,10 @@ from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
-from models import *
 from schemas.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
-from utils.error_handlers import (
-    forbidden_error,
-    internal_server_error,
-    not_found_error,
-    unauthorized_error,
-)
+from utils.error_handlers import (forbidden_error, internal_server_error,
+                                  not_found_error, unauthorized_error)
 from utils.logger import main_logger
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
 

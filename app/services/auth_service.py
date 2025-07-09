@@ -1,6 +1,6 @@
 from models.user import User
-from schemas.user import UserCreate, UserResponse
 from passlib.context import CryptContext
+from schemas.user import UserCreate, UserResponse, user_to_response
 from sqlalchemy.orm import Session
 from utils.validators import validate_user_credentials
 
@@ -65,7 +65,7 @@ def authenticate_user(db: Session, username: str, password: str) -> UserResponse
     user = get_user_by_username(db, username)
     if not user or not verify_password(password, user.password):  # type: ignore
         return None
-    return UserResponse.model_validate(user)
+    return user_to_response(user)
 
 
 # 사용자 삭제
@@ -75,4 +75,4 @@ def delete_user(db: Session, user_id: str) -> UserResponse:
         raise ValueError("User not found")
     db.delete(user)
     db.commit()
-    return UserResponse.model_validate(user)
+    return user_to_response(user)
