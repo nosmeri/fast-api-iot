@@ -100,15 +100,20 @@ app/
 
 ## API 엔드포인트
 
-### 인증 관련
+### 인증/사용자 관련
 - `GET /login` - 로그인 페이지
 - `POST /login` - 로그인 처리
 - `GET /register` - 회원가입 페이지
 - `POST /register` - 회원가입 처리
 - `GET /changepw` - 비밀번호 변경 페이지
-- `POST /changepw` - 비밀번호 변경 처리
-- `GET /logout` - 로그아웃
+- `PUT /changepw` - 비밀번호 변경 처리
+- `POST /logout` - 로그아웃
 - `GET /validation-rules` - 유효성 검사 규칙
+- `DELETE /delete_account` - (본인) 계정 삭제
+
+### 파일/기타
+- `POST /upload` - 파일 업로드
+- `GET /health` - 헬스체크 (문서 미포함)
 
 ### 관리자 기능
 - `GET /admin` - 관리자 페이지
@@ -118,6 +123,11 @@ app/
 ### 기타
 - `GET /` - 메인 페이지
 - `GET /mypage` - 마이페이지
+
+### 문서
+- `GET /docs` - Swagger UI (관리자만)
+- `GET /redoc` - ReDoc (관리자만)
+- `GET /openapi.json` - OpenAPI 스키마 (관리자만)
 
 ---
 

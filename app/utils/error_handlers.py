@@ -1,6 +1,7 @@
 from fastapi import Request, status
 from fastapi.responses import HTMLResponse
 from utils.path import templates
+from utils.logger import main_logger
 
 
 # 공통 에러 응답
@@ -13,6 +14,8 @@ def error_response(
 ) -> HTMLResponse:
     if status_code is None:
         status_code = error_code
+
+    main_logger.error(f"{error_code} {error_title} {error_message}")
 
     return templates.TemplateResponse(
         request,

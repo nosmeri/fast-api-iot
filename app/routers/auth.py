@@ -139,13 +139,16 @@ def change_password(
 
 
 # 로그아웃
-@router.get("/logout")
+@router.post("/logout")
 def logout(
     request: Request,
     db: Session = Depends(get_db),
     refresh_token: str = Depends(get_refresh_token),
-) -> RedirectResponse:
-    response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+) -> JSONResponse:
+    response = JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"status": "success", "message": "Logout successful"},
+    )
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
 
