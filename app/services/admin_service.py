@@ -12,17 +12,25 @@ def get_all_users(db: Session) -> list[UserResponse]:
 
 
 # 사용자 업데이트
-def db_update(db: Session, userid: str, update_data: dict[str, Any]) -> None:
+def db_update(db: Session, userid: str, update_data: dict[str, Any]) -> UserResponse:
     user = db.query(User).filter(User.id == userid).first()
     if user:
         for key, value in update_data.items():
             setattr(user, key, value)
         db.commit()
+        db.refresh(user)
+        return UserResponse.model_validate(user)
+    else:
+        raise ValueError("User not found")
 
 
 # 사용자 삭제
-def db_delete(db: Session, userid: str) -> None:
+def db_delete(db: Session, userid: str) -> UserResponse:
     user = db.query(User).filter(User.id == userid).first()
     if user:
         db.delete(user)
         db.commit()
+        db.refresh(user)
+        return UserResponse.model_validate(user)
+    else:
+        raise ValueError("User not found")

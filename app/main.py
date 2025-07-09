@@ -7,7 +7,7 @@ import routers.mypage as mypage_router
 from fastapi import Depends, FastAPI, Request, UploadFile
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from models import *
 from schemas.user import UserResponse
@@ -22,9 +22,6 @@ from utils.logger import main_logger
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
 
 # FastAPI 애플리케이션 인스턴스 생성
-# - docs_url=None: Swagger UI 문서 비활성화
-# - redoc_url=None: ReDoc 문서 비활성화
-# - openapi_url=None: OpenAPI 스키마 엔드포인트 비활성화
 app = FastAPI(
     docs_url=None,
     redoc_url=None,
@@ -36,7 +33,7 @@ app = FastAPI(
 # - 모든 HTTP 요청과 응답을 로깅 (health check 제외)
 # - 요청 시간, 메서드, URL, 상태 코드, 응답 시간 등을 기록
 @app.middleware("http")
-async def logging_middleware(request: Request, call_next):
+async def logging_middleware(request: Request, call_next) -> Response:
     # health check 경로는 로깅하지 않음
     if request.url.path == "/health":
         return await call_next(request)
@@ -79,11 +76,9 @@ async def logging_middleware(request: Request, call_next):
 
 
 # 토큰 갱신 미들웨어
-# - "http": HTTP 미들웨어
-# - request: FastAPI Request 객체
-# - call_next: 다음 미들웨어 또는 엔드포인트 함수
+# - 액세스 토큰과 리프레시 토큰을 쿠키에 설정
 @app.middleware("http")
-async def token_refresh_middleware(request: Request, call_next):
+async def token_refresh_middleware(request: Request, call_next) -> Response:
     response = await call_next(request)
 
     # request.state에 새로운 토큰이 있으면 쿠키에 설정
@@ -111,29 +106,19 @@ async def token_refresh_middleware(request: Request, call_next):
 
 
 # 라우터 포함
-# - auth_router: 인증 관련 라우터
-# - admin_router: 관리자 관련 라우터
-# - mypage_router: 마이페이지 관련 라우터
 app.include_router(auth_router.router, prefix="")
 app.include_router(admin_router.router, prefix="/admin")
 app.include_router(mypage_router.router, prefix="/mypage")
 
 # 정적 파일 서비스 마운트
-# - "/static": 정적 파일 디렉토리 마운트
-# - BASE_DIR / "static": 정적 파일 디렉토리 경로
-# - name="static": 마운트 이름
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 
 # 메인 페이지 엔드포인트
-# - "/": 메인 페이지
-# - request: FastAPI Request 객체
-# - user: 현재 사용자 정보 (선택적 의존성 주입)
-# - templates.TemplateResponse: 템플릿 응답 반환
 @app.get("/")
 async def mainPage(
     request: Request, user: UserResponse | None = Depends(get_current_user_optional)
-):
+) -> HTMLResponse:
     data: dict = {}
     if user:
         data.update(
@@ -150,7 +135,7 @@ async def mainPage(
 # - dest: 파일 저장 경로
 # - async with aiofiles.open(dest, "wb") as buffer: 비동기 파일 저장
 @app.post("/upload")
-async def upload_file(file: UploadFile):
+async def upload_file(file: UploadFile) -> dict:
     if not file.filename:
         return {"error": "No filename provided"}
 
@@ -168,7 +153,7 @@ async def upload_file(file: UploadFile):
 # - "/health": 상태 확인 엔드포인트
 # - include_in_schema=False: 문서에 포함되지 않음
 @app.get("/health", include_in_schema=False)
-async def health_check():
+async def health_check() -> dict:
     return {"status": "ok"}
 
 
@@ -178,22 +163,22 @@ async def health_check():
 # - 404: 페이지 없음
 # - 500: 서버 오류
 @app.exception_handler(401)
-async def unauthorized(request: Request, exc):
+async def unauthorized(request: Request, exc) -> HTMLResponse:
     return unauthorized_error(request, exc)
 
 
 @app.exception_handler(403)
-async def forbidden(request: Request, exc):
+async def forbidden(request: Request, exc) -> HTMLResponse:
     return forbidden_error(request, exc)
 
 
 @app.exception_handler(404)
-async def not_found(request: Request, exc):
+async def not_found(request: Request, exc) -> HTMLResponse:
     return not_found_error(request, exc)
 
 
 @app.exception_handler(500)
-async def internal_server_error_handler(request: Request, exc):
+async def internal_server_error_handler(request: Request, exc) -> HTMLResponse:
     return internal_server_error(request, exc)
 
 
@@ -202,7 +187,7 @@ async def internal_server_error_handler(request: Request, exc):
 # - dependencies=[Depends(require_admin)]: 관리자 권한 필요
 # - include_in_schema=False: 문서에 포함되지 않음
 @app.get("/docs", dependencies=[Depends(require_admin)], include_in_schema=False)
-async def custom_swagger_ui():
+async def custom_swagger_ui() -> HTMLResponse:
     return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
 
 
@@ -211,7 +196,7 @@ async def custom_swagger_ui():
 # - dependencies=[Depends(require_admin)]: 관리자 권한 필요
 # - include_in_schema=False: 문서에 포함되지 않음
 @app.get("/redoc", dependencies=[Depends(require_admin)], include_in_schema=False)
-async def custom_redoc():
+async def custom_redoc() -> HTMLResponse:
     return get_redoc_html(openapi_url="/openapi.json", title="ReDoc")
 
 
@@ -222,7 +207,7 @@ async def custom_redoc():
 @app.get(
     "/openapi.json", dependencies=[Depends(require_admin)], include_in_schema=False
 )
-async def custom_openapi():
+async def custom_openapi() -> JSONResponse:
     return JSONResponse(
         get_openapi(title=app.title, version=app.version, routes=app.routes)
     )

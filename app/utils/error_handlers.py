@@ -1,6 +1,5 @@
-from typing import Any
-
 from fastapi import Request, status
+from fastapi.responses import HTMLResponse
 from utils.path import templates
 
 
@@ -11,7 +10,7 @@ def error_response(
     error_title: str,
     error_message: str,
     status_code: int | None = None,
-) -> Any:
+) -> HTMLResponse:
     if status_code is None:
         status_code = error_code
 
@@ -28,7 +27,7 @@ def error_response(
 
 
 # 401 인증 실패 에러 응답
-def unauthorized_error(request: Request, exc) -> Any:
+def unauthorized_error(request: Request, exc) -> HTMLResponse:
     """401 인증 실패 에러 응답"""
     return error_response(
         request,
@@ -40,7 +39,7 @@ def unauthorized_error(request: Request, exc) -> Any:
 
 
 # 403 권한 없음 에러 응답
-def forbidden_error(request: Request, exc) -> Any:
+def forbidden_error(request: Request, exc) -> HTMLResponse:
     """403 권한 없음 에러 응답"""
     return error_response(
         request,
@@ -52,7 +51,7 @@ def forbidden_error(request: Request, exc) -> Any:
 
 
 # 404 페이지 없음 에러 응답
-def not_found_error(request: Request, exc) -> Any:
+def not_found_error(request: Request, exc) -> HTMLResponse:
     """404 페이지 없음 에러 응답"""
     return error_response(
         request,
@@ -64,7 +63,7 @@ def not_found_error(request: Request, exc) -> Any:
 
 
 # 500 서버 오류 응답
-def internal_server_error(request: Request, exc) -> Any:
+def internal_server_error(request: Request, exc) -> HTMLResponse:
     """500 서버 오류 응답"""
     return error_response(
         request,
