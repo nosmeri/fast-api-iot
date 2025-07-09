@@ -44,7 +44,7 @@ form.addEventListener('submit', async (event) => {
     await handleFormSubmit(
         form,
         '/changepw',
-        'POST',
+        'PUT',
         validateChangePassword,
         handleChangePasswordSuccess,
         handleChangePasswordError

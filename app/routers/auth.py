@@ -110,7 +110,7 @@ def change_password_form(
 
 
 # 비밀번호 변경
-@router.post("/changepw")
+@router.put("/changepw")
 def change_password(
     request: Request,
     change_password: ChangePassword,
@@ -148,5 +148,33 @@ def logout(
     response = RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
+
+    request.state.new_access_token = None
+    request.state.new_refresh_token = None
+
     jwt_service.revoke_refresh_token(db, refresh_token)
+    return response
+
+
+@router.delete("/delete_account")
+def delete_user(
+    request: Request,
+    db: Session = Depends(get_db),
+    user: UserResponse = Depends(get_current_user),
+) -> JSONResponse:
+    try:
+        auth_service.delete_user(db, user.id)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    response = JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"status": "success", "message": "User deleted successfully"},
+    )
+    response.delete_cookie("access_token")
+    response.delete_cookie("refresh_token")
+
+    request.state.new_access_token = None
+    request.state.new_refresh_token = None
+
     return response

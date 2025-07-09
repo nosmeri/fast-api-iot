@@ -1,9 +1,13 @@
 {%extends "base.html"%}
 
+{%block head%}
+<script type="module" src="/static/js/mypage.js" defer></script>
+{%endblock%}
+
 {%block content%}
 <h1>Welcome, {{ user.username }}!</h1>
 
 <a href="/changepw" class="btn">Change Password</a>
 <a href="/logout" class="btn">Logout</a>
-<a href="/delete_account" class="btn">Delete Account</a>
+<a id="deleteAccount" href="#" class="btn">Delete Account</a>
 {%endblock%}

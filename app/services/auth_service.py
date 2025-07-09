@@ -66,3 +66,13 @@ def authenticate_user(db: Session, username: str, password: str) -> UserResponse
     if not user or not verify_password(password, user.password):  # type: ignore
         return None
     return UserResponse.model_validate(user)
+
+
+# 사용자 삭제
+def delete_user(db: Session, user_id: str) -> UserResponse:
+    user = get_user_by_id(db, user_id)
+    if not user:
+        raise ValueError("User not found")
+    db.delete(user)
+    db.commit()
+    return UserResponse.model_validate(user)
