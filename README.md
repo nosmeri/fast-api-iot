@@ -178,6 +178,28 @@ docker-compose down -v
 docker-compose up -d --build
 ```
 
+## 코드 스타일 자동화
+
+이 프로젝트는 코드 스타일 자동화를 권장합니다.
+
+- **Black**: 코드 자동 포매팅
+- **isort**: import 정렬
+- **autoflake**: 사용하지 않는 import/변수 자동 삭제
+
+### 설치
+```bash
+pip install black isort autoflake
+```
+
+### 전체 적용
+```bash
+black .
+isort .
+autoflake --remove-all-unused-imports --in-place -r .
+```
+
+### VSCode 등 에디터에서 저장 시 자동 적용 가능
+
 ---
 
 ## TODO
