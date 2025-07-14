@@ -37,3 +37,12 @@ def test_login_success():
 def test_login_fail():
     response = client.post("/login", json={"username": "bad", "password": "bad"})
     assert response.status_code == 400, "잘못된 로그인 요청이 실패하지 않았습니다"
+
+def test_logout_success(test_user):
+    response = client.post("/logout", cookies={"access_token": test_user})
+    assert response.status_code == 200, "로그아웃 실패"
+
+
+def test_logout_fail(test_user):
+    response = client.post("/logout", cookies={"access_token": "invalid"})
+    assert response.status_code == 400, "잘못된 로그아웃 요청이 실패하지 않았습니다"

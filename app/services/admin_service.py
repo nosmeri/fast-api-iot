@@ -30,7 +30,6 @@ def db_delete(db: Session, userid: str) -> UserResponse:
     if user:
         db.delete(user)
         db.commit()
-        db.refresh(user)
         return user_to_response(user)
     else:
         raise ValueError("User not found")
