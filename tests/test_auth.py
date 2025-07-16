@@ -1,8 +1,8 @@
+from config.db import SessionLocal
 from fastapi.testclient import TestClient
 from main import app
-from app.config.db import SessionLocal
-from app.services import jwt_service
-from app.models.refresh_tocken import RefreshToken
+from models.refresh_tocken import RefreshToken
+from services import jwt_service
 
 client = TestClient(app)
 
