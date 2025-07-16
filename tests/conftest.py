@@ -22,4 +22,4 @@ def test_user():
         "/register", json={"username": "test", "password": "test1234!"}
     )
     assert response.status_code == 201, "회원가입 실패"
-    return response.cookies.get("access_token")
+    return (response.cookies.get("access_token"), response.cookies.get("refresh_token"))
