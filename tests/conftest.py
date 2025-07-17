@@ -16,10 +16,19 @@ def setup_database():
     Base.metadata.drop_all(bind=engine)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def test_user():
+@pytest.fixture(scope="session")
+def admin_user():
     response = client.post(
-        "/register", json={"username": "test", "password": "test1234!"}
+        "/register", json={"username": "admin", "password": "admin1234!"}
     )
     assert response.status_code == 201, "회원가입 실패"
+    # DB에서 is_admin True로 변경
+    from config.db import SessionLocal
+    from models.user import User
+    db = SessionLocal()
+    user = db.query(User).filter_by(username="admin").first()
+    assert user is not None, "admin 유저가 DB에 없음"
+    user.is_admin = True
+    db.commit()
+    db.close()
     return (response.cookies.get("access_token"), response.cookies.get("refresh_token"))
