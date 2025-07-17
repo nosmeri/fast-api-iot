@@ -126,7 +126,7 @@ def test_token_refresh_with_expired_access_token():
         "/mypage",
         cookies=cookies,
     )
-    assert response.status_code in (200, 401, 403), response.text
+    assert response.status_code == 200
 
 
 def test_refresh_token_reuse_after_logout():
@@ -148,7 +148,7 @@ def test_refresh_token_reuse_after_logout():
         "/mypage",
         cookies=cookies2,
     )
-    assert response.status_code in (401, 403)
+    assert response.status_code == 401
 
 
 def test_login_after_delete_account():
