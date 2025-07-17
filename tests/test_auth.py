@@ -53,10 +53,18 @@ def test_logout_token_removal_and_revoke(test_user):
 
     # 1. 쿠키가 삭제되었는지 확인
     set_cookie_header = response.headers.get("set-cookie", "")
-    # 여러 Set-Cookie가 있을 경우 분리
-    set_cookie_headers = set_cookie_header.split("\n") if "\n" in set_cookie_header else set_cookie_header.split(",")
-    assert any("access_token=;" in h for h in set_cookie_headers), "access_token 쿠키 삭제 안됨"
-    assert any("refresh_token=;" in h for h in set_cookie_headers), "refresh_token 쿠키 삭제 안됨"
+    print(f"Set-Cookie 헤더: {set_cookie_header}")  # 디버깅용
+
+    # 여러 Set-Cookie가 있을 경우 분리 (쉼표로 구분)
+    set_cookie_headers = set_cookie_header.split(", ") if set_cookie_header else []
+
+    # access_token 쿠키 삭제 확인 (쿠키 이름으로 시작하는지 확인)
+    access_token_deleted = any(h.strip().startswith("access_token=") for h in set_cookie_headers)
+    assert access_token_deleted, "access_token 쿠키 삭제 안됨"
+
+    # refresh_token 쿠키 삭제 확인 (쿠키 이름으로 시작하는지 확인)
+    refresh_token_deleted = any(h.strip().startswith("refresh_token=") for h in set_cookie_headers)
+    assert refresh_token_deleted, "refresh_token 쿠키 삭제 안됨"
 
     # 2. refresh 토큰이 DB에서 revoke 되었는지 확인
     db = SessionLocal()
