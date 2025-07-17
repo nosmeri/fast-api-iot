@@ -4,6 +4,7 @@ import aiofiles
 import routers.admin as admin_router
 import routers.auth as auth_router
 import routers.mypage as mypage_router
+from config.settings import settings
 from fastapi import Depends, FastAPI, Request, UploadFile
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
@@ -85,6 +86,7 @@ async def token_refresh_middleware(request: Request, call_next) -> Response:
             httponly=True,
             secure=True,
             samesite="strict",
+            max_age=int(settings.JWT_ACCESS_EXPIRES_IN_HOURS * 3600),  # 시간 → 초
         )
 
     if hasattr(request.state, "new_refresh_token") and request.state.new_refresh_token:
@@ -95,6 +97,7 @@ async def token_refresh_middleware(request: Request, call_next) -> Response:
             httponly=True,
             secure=True,
             samesite="strict",
+            max_age=int(settings.JWT_REFRESH_EXPIRES_IN_DAYS * 24 * 3600),  # 일 → 초
         )
 
     return response
@@ -121,6 +124,16 @@ async def mainPage(
         )
 
     return templates.TemplateResponse(request, "index.html", data)
+
+@app.get("/introduction")
+async def introduction(request: Request, user: UserResponse | None = Depends(get_current_user_optional)) -> HTMLResponse:
+    data: dict = {}
+    if user:
+        data.update(
+            {"user": {"username": user.username, "is_admin": bool(user.is_admin)}}
+        )
+
+    return templates.TemplateResponse(request, "introduction.html", data)
 
 
 # 파일 업로드 엔드포인트
