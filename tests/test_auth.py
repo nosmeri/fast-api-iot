@@ -122,6 +122,7 @@ def test_token_refresh_with_expired_access_token():
     cookies = {"access_token": expired_access_token}
     if refresh_token is not None:
         cookies["refresh_token"] = refresh_token
+    print("cookies")
     response = client.get(
         "/mypage",
         cookies=cookies,
