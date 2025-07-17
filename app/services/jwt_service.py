@@ -86,6 +86,7 @@ def refresh_access_token(db: Session, refresh_token_str: str) -> tuple[str, str]
     # 기존 refresh token revoke
     db_refresh_token.revoked = True
     db.commit()
+    db.refresh(db_refresh_token)
 
     user = db_refresh_token.user
     if not user:
