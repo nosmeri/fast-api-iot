@@ -17,6 +17,14 @@ def test_register_success():
         "/register", json={"username": "newuser", "password": "newpass1234!"}
     )
     assert response.status_code == 201, "회원가입 실패"
+    # 토큰 쿠키 검증
+    access_token = response.cookies.get("access_token")
+    refresh_token = response.cookies.get("refresh_token")
+    assert access_token is not None and access_token != "", "access_token 쿠키 없음"
+    assert refresh_token is not None and refresh_token != "", "refresh_token 쿠키 없음"
+    # JWT 형식인지 간단히 확인
+    assert access_token.count(".") == 2, "access_token이 JWT 형식이 아님"
+    assert refresh_token.count(".") == 2, "refresh_token이 JWT 형식이 아님"
 
 
 def test_register_duplicate():
@@ -35,6 +43,14 @@ def test_login_page():
 def test_login_success():
     response = client.post("/login", json={"username": "test", "password": "test1234!"})
     assert response.status_code == 200, "로그인 실패"
+    # 토큰 쿠키 검증
+    access_token = response.cookies.get("access_token")
+    refresh_token = response.cookies.get("refresh_token")
+    assert access_token is not None and access_token != "", "access_token 쿠키 없음"
+    assert refresh_token is not None and refresh_token != "", "refresh_token 쿠키 없음"
+    # JWT 형식인지 간단히 확인
+    assert access_token.count(".") == 2, "access_token이 JWT 형식이 아님"
+    assert refresh_token.count(".") == 2, "refresh_token이 JWT 형식이 아님"
 
 
 def test_login_fail():
