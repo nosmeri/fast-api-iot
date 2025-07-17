@@ -10,7 +10,7 @@ client = TestClient(app)
 
 
 def create_user_and_login(password="test1234!"):
-    username = f"user_{uuid.uuid4().hex[:8]}"
+    username = f"user-{uuid.uuid4().hex[:8]}"
     client.post("/register", json={"username": username, "password": password})
     response = client.post("/login", json={"username": username, "password": password})
     access_token = response.cookies.get("access_token")
@@ -24,7 +24,7 @@ def test_register_page():
 
 
 def test_register_success():
-    username = f"newuser_{uuid.uuid4().hex[:8]}"
+    username = f"newuser-{uuid.uuid4().hex[:8]}"
     response = client.post(
         "/register", json={"username": username, "password": "newpass1234!"}
     )
@@ -39,7 +39,7 @@ def test_register_success():
 
 
 def test_register_duplicate():
-    username = f"dupuser_{uuid.uuid4().hex[:8]}"
+    username = f"dupuser-{uuid.uuid4().hex[:8]}"
     client.post("/register", json={"username": username, "password": "pass1234!"})
     response = client.post(
         "/register", json={"username": username, "password": "pass1234!"}
@@ -48,7 +48,7 @@ def test_register_duplicate():
 
 
 def test_register_password_rule_fail():
-    username = f"pwfail_{uuid.uuid4().hex[:8]}"
+    username = f"pwfail-{uuid.uuid4().hex[:8]}"
     response = client.post(
         "/register", json={"username": username, "password": "123"}
     )
