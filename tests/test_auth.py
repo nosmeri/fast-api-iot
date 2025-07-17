@@ -123,7 +123,7 @@ def test_token_refresh_with_expired_access_token(test_user):
         cookies={"access_token": expired_access_token, "refresh_token": refresh_token},
     )
     # 자동 갱신되면 200, 실패하면 401/403 (정책에 따라 다름)
-    assert response.status_code==200
+    assert response.status_code == 200, response.json()["detail"]
 
 
 def test_refresh_token_reuse_after_logout(test_user):
@@ -184,4 +184,3 @@ def test_admin_page_without_admin():
         cookies=cookies,
     )
     assert response.status_code in (401, 403)
-
