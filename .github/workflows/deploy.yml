@@ -50,7 +50,7 @@ jobs:
 
     - name: Run Pytest
       run: |
-        pytest
+        pytest -s
 
     - name: Deploy to Raspberry Pi (only on push to master)
       if: github.event_name == 'push'
