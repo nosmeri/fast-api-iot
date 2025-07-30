@@ -145,7 +145,6 @@ def test_refresh_token_reuse_after_logout():
         try:
             db_token = get_refresh_token(db, refresh_token)
             if db_token:
-                print(f"Token revoked status after logout: {db_token.revoked}")
                 assert db_token.revoked, "토큰이 revoke되지 않았습니다"
         finally:
             db.close()

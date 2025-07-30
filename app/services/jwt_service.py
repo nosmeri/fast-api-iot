@@ -58,64 +58,46 @@ def get_refresh_token(db: Session, token: str) -> RefreshToken | None:
 
 # 리프레시 토큰 취소
 def revoke_refresh_token(db: Session, token: str) -> RefreshToken | None:
-    print(f"Attempting to revoke token: {token[:10]}...")
     refresh_token = db.query(RefreshToken).filter(RefreshToken.token == token).with_for_update().first()
     if not refresh_token:
-        print(f"Token not found: {token[:10]}...")
         return None
-    print(f"Found token, revoked status: {refresh_token.revoked}")
     refresh_token.revoked = True
     db.commit()
     db.refresh(refresh_token)
-    print(f"Token revoked successfully: {token[:10]}...")
     return refresh_token
 
 
 # 리프레시 토큰 갱신
 # 리프레시 토큰을 사용해서 새로운 액세스 토큰과 리프레시 토큰을 발급
 def refresh_access_token(db: Session, refresh_token_str: str) -> tuple[str, str] | None:
-    print(f"Attempting to refresh token: {refresh_token_str[:10]}...")
     # Refresh token 검증
     payload = verify_token(refresh_token_str)
     if not payload or payload.get("type") != "refresh":
-        print(f"Token validation failed: {refresh_token_str[:10]}...")
         return None
 
-    try:
-        # 데이터베이스에서 refresh token 확인 (동시 접근 방지)
-        db_refresh_token = db.query(RefreshToken).filter(
-            RefreshToken.token == refresh_token_str
-        ).with_for_update().first()
-        
-        print(f"DB token found: {db_refresh_token is not None}, revoked: {db_refresh_token.revoked if db_refresh_token else 'N/A'}")
-        
-        if not db_refresh_token or db_refresh_token.revoked:
-            print(f"Token is invalid or revoked: {refresh_token_str[:10]}...")
-            return None
-
-        # 만료 확인
-        if db_refresh_token.expires_at < _utc_now():
-            print(f"Token expired: {refresh_token_str[:10]}...")
-            return None
-
-        # 기존 refresh token revoke (원자적 처리)
-        db_refresh_token.revoked = True
-        db.commit()
-        db.refresh(db_refresh_token)
-        print(f"Old token revoked, creating new tokens...")
-    except Exception as e:
-        db.rollback()
-        print(f"Token refresh error: {e}")
+    # 데이터베이스에서 refresh token 확인 (동시 접근 방지)
+    db_refresh_token = db.query(RefreshToken).filter(
+        RefreshToken.token == refresh_token_str
+    ).with_for_update().first()
+    
+    if not db_refresh_token or db_refresh_token.revoked:
         return None
+
+    # 만료 확인
+    if db_refresh_token.expires_at < _utc_now():
+        return None
+
+    # 기존 refresh token revoke (원자적 처리)
+    db_refresh_token.revoked = True
+    db.commit()
+    db.refresh(db_refresh_token)
 
     user = db_refresh_token.user
     if not user:
-        print(f"User not found for token: {refresh_token_str[:10]}...")
         return None
 
     # 새로운 access token과 refresh token 생성
     new_access_token = create_access_token(user.id, user.username, user.is_admin)
     new_refresh_token = create_refresh_token(user.id, db)
-    print(f"New tokens created successfully for user: {user.username}")
 
     return new_access_token, new_refresh_token
