@@ -15,7 +15,7 @@ router = APIRouter(dependencies=[Depends(require_admin)])
 
 # 관리자 페이지
 @router.get("/")
-def admin(
+async def admin(
     request: Request,
     db: Session = Depends(get_db),
     user: UserResponse = Depends(require_admin),
@@ -31,7 +31,7 @@ def admin(
 
 # 사용자 수정
 @router.put("/user")
-def admin_modify_member(
+async def admin_modify_member(
     request: Request,
     userid: str,
     attr: str,
@@ -86,7 +86,7 @@ def admin_modify_member(
 
 # 사용자 삭제
 @router.delete("/user")
-def admin_delete_member(
+async def admin_delete_member(
     request: Request, userid: str, db: Session = Depends(get_db)
 ) -> dict[str, str]:
     admin_service.db_delete(db, userid)

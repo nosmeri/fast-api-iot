@@ -16,13 +16,13 @@ router = APIRouter()
 
 # 유효성 검사 규칙 제공 API
 @router.get("/validation-rules")
-def get_validation_rules_api():
+async def get_validation_rules_api():
     return get_validation_rules()
 
 
 # 로그인 페이지
 @router.get("/login")
-def login_form(
+async def login_form(
     request: Request, user: UserResponse | None = Depends(get_current_user_optional)
 ):
     if user:
@@ -32,7 +32,7 @@ def login_form(
 
 # 로그인
 @router.post("/login")
-def login(
+async def login(
     request: Request, user_login: UserLogin, db: Session = Depends(get_db)
 ) -> JSONResponse:
     username = user_login.username
@@ -63,7 +63,7 @@ def login(
 
 # 회원가입 페이지
 @router.get("/register")
-def register_form(
+async def register_form(
     request: Request, user: UserResponse | None = Depends(get_current_user_optional)
 ):
     if user:
@@ -73,7 +73,7 @@ def register_form(
 
 # 회원가입
 @router.post("/register")
-def register(
+async def register(
     request: Request, user: UserCreate, db: Session = Depends(get_db)
 ) -> JSONResponse:
     try:
@@ -100,7 +100,7 @@ def register(
 
 # 비밀번호 변경 페이지
 @router.get("/changepw")
-def change_password_form(
+async def change_password_form(
     request: Request, user: UserResponse = Depends(get_current_user)
 ):
     data: dict[str, Any] = {
@@ -112,7 +112,7 @@ def change_password_form(
 
 # 비밀번호 변경
 @router.put("/changepw")
-def change_password(
+async def change_password(
     request: Request,
     change_password: ChangePassword,
     db: Session = Depends(get_db),
@@ -141,7 +141,7 @@ def change_password(
 
 # 로그아웃
 @router.post("/logout")
-def logout(
+async def logout(
     request: Request,
     db: Session = Depends(get_db),
     refresh_token: str = Depends(get_refresh_token),
@@ -161,7 +161,7 @@ def logout(
 
 
 @router.delete("/delete_account")
-def delete_user(
+async def delete_user(
     request: Request,
     db: Session = Depends(get_db),
     user: UserResponse = Depends(get_current_user),

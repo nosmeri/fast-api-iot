@@ -11,7 +11,7 @@ router = APIRouter()
 
 # 마이페이지
 @router.get("/")
-def mypage(
+async def mypage(
     request: Request, user: UserResponse = Depends(get_current_user)
 ) -> HTMLResponse:
     data: dict[str, Any] = {
