@@ -120,14 +120,45 @@ def test_token_refresh_with_expired_access_token():
 
 def test_refresh_token_reuse_after_logout():
     with create_user_and_login() as (_, _, access_token, refresh_token):
-        client.post("/logout")
+        response = client.post("/logout")
+        assert response.status_code == 200, "로그아웃 실패"
+        
+        # 로그아웃 후 쿠키가 삭제되었는지 확인
+        set_cookie_header = response.headers.get("set-cookie", "")
+        set_cookie_headers = set_cookie_header.split(", ") if set_cookie_header else []
+        access_token_deleted = any('access_token=""' in h for h in set_cookie_headers)
+        refresh_token_deleted = any('refresh_token=""' in h for h in set_cookie_headers)
+        assert access_token_deleted, "access_token 쿠키 삭제 안됨"
+        assert refresh_token_deleted, "refresh_token 쿠키 삭제 안됨"
 
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
 
+        # 로그아웃 후에도 강제로 쿠키를 설정해서 테스트
         client.cookies.set("access_token", expired_access_token)
         client.cookies.set("refresh_token", refresh_token)
         response = client.get("/mypage")
-        assert response.status_code==401
+        # refresh token이 revoke되었으므로 401이어야 함
+        assert response.status_code == 401, f"로그아웃 후 refresh token이 여전히 유효함. 응답: {response.text}"
+
+
+def test_refresh_token_revoke_verification():
+    """로그아웃 후 refresh token이 실제로 revoke되었는지 확인"""
+    with create_user_and_login() as (_, _, access_token, refresh_token):
+        # 로그인 후 refresh token이 유효한지 확인
+        client.cookies.set("access_token", "expired_token")
+        client.cookies.set("refresh_token", refresh_token)
+        response = client.get("/mypage")
+        assert response.status_code == 200, "로그인 후 refresh token이 작동하지 않음"
+        
+        # 로그아웃
+        logout_response = client.post("/logout")
+        assert logout_response.status_code == 200
+        
+        # 로그아웃 후 같은 refresh token으로 접근 시도
+        client.cookies.set("access_token", "expired_token")
+        client.cookies.set("refresh_token", refresh_token)
+        response = client.get("/mypage")
+        assert response.status_code == 401, "로그아웃 후 refresh token이 여전히 유효함"
 
 
 def test_login_after_delete_account():
