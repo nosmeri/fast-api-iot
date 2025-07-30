@@ -1,13 +1,13 @@
 from typing import Any
 
-import services.admin_service as admin_service
-from config.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
-from utils.path import templates
+from sqlalchemy.orm import Session
+
+import services.admin_service as admin_service
+from config.db import get_db
 from models.user import User
 from schemas.user import UserResponse
-from sqlalchemy.orm import Session
 from utils.deps import require_admin
 from utils.path import templates
 
@@ -20,7 +20,7 @@ async def admin_page(
     user: UserResponse = Depends(require_admin),
 ) -> HTMLResponse:
     data: dict[str, Any] = {
-    "user": {"username": user.username, "is_admin": user.is_admin},
+        "user": {"username": user.username, "is_admin": user.is_admin},
     }
 
     return templates.TemplateResponse(request, "admin.html", data)
@@ -31,9 +31,7 @@ async def get_users(
     db: Session = Depends(get_db),
 ) -> dict:
     users: list[UserResponse] = admin_service.get_all_users(db)
-    return {
-        "users": [u.model_dump() for u in users]
-    }
+    return {"users": [u.model_dump() for u in users]}
 
 
 # 사용자 수정

@@ -1,15 +1,16 @@
 import time
 
 import aiofiles
-import routers.admin as admin_router
-import routers.auth as auth_router
-import routers.mypage as mypage_router
-from config.settings import settings
 from fastapi import Depends, FastAPI, Request, UploadFile
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
+
+import routers.admin as admin_router
+import routers.auth as auth_router
+import routers.mypage as mypage_router
+from config.settings import settings
 from schemas.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
 from utils.error_handlers import (forbidden_error, internal_server_error,
@@ -125,8 +126,11 @@ async def mainPage(
 
     return templates.TemplateResponse(request, "index.html", data)
 
+
 @app.get("/introduction")
-async def introduction(request: Request, user: UserResponse | None = Depends(get_current_user_optional)) -> HTMLResponse:
+async def introduction(
+    request: Request, user: UserResponse | None = Depends(get_current_user_optional)
+) -> HTMLResponse:
     data: dict = {}
     if user:
         data.update(

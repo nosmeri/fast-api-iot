@@ -1,5 +1,6 @@
 from fastapi import Request, status
 from fastapi.responses import HTMLResponse
+
 from utils.logger import main_logger
 from utils.path import templates
 

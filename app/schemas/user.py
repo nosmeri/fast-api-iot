@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from models.user import User
 from pydantic import BaseModel, ConfigDict
+
+from models.user import User
 
 
 # 사용자 생성 스키마

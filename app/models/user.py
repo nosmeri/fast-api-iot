@@ -2,9 +2,10 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from config.db import Base
 from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from config.db import Base
 
 if TYPE_CHECKING:
     from .refresh_tocken import RefreshToken
