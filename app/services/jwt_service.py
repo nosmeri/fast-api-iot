@@ -63,7 +63,12 @@ def get_refresh_token(db: Session, token: str) -> RefreshToken | None:
 
 # 리프레시 토큰 취소
 def revoke_refresh_token(db: Session, token: str) -> RefreshToken | None:
-    refresh_token = db.query(RefreshToken).filter(RefreshToken.token == token).with_for_update().first()
+    refresh_token = (
+        db.query(RefreshToken)
+        .filter(RefreshToken.token == token)
+        .with_for_update()
+        .first()
+    )
     if not refresh_token:
         return None
     refresh_token.revoked = True
@@ -81,10 +86,13 @@ def refresh_access_token(db: Session, refresh_token_str: str) -> tuple[str, str]
         return None
 
     # 데이터베이스에서 refresh token 확인 (동시 접근 방지)
-    db_refresh_token = db.query(RefreshToken).filter(
-        RefreshToken.token == refresh_token_str
-    ).with_for_update().first()
-    
+    db_refresh_token = (
+        db.query(RefreshToken)
+        .filter(RefreshToken.token == refresh_token_str)
+        .with_for_update()
+        .first()
+    )
+
     if not db_refresh_token or db_refresh_token.revoked:
         return None
 
