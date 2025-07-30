@@ -137,6 +137,19 @@ def test_refresh_token_reuse_after_logout():
 
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
 
+        # 로그아웃 후 토큰이 실제로 revoke되었는지 확인
+        from config.db import SessionLocal
+        from services.jwt_service import get_refresh_token
+        
+        db = SessionLocal()
+        try:
+            db_token = get_refresh_token(db, refresh_token)
+            if db_token:
+                print(f"Token revoked status after logout: {db_token.revoked}")
+                assert db_token.revoked, "토큰이 revoke되지 않았습니다"
+        finally:
+            db.close()
+
         # 로그아웃 후에도 강제로 쿠키를 설정해서 테스트
         client.cookies.set("access_token", expired_access_token)
         client.cookies.set("refresh_token", refresh_token)
