@@ -122,8 +122,10 @@ def test_refresh_token_reuse_after_logout():
     with create_user_and_login() as (_, _, access_token, refresh_token):
         response = client.post("/logout")
 
-        expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
+        time.sleep(0.2)
 
+        expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
+        
         # 로그아웃 후에도 강제로 쿠키를 설정해서 테스트
         client.cookies.set("access_token", expired_access_token)
         client.cookies.set("refresh_token", refresh_token)
