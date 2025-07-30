@@ -92,6 +92,8 @@ def get_current_user(
 
     try:
         if access_token:
+            print(1111111111111111111111111111111111111111111111111111111)
+            print(access_token)
             return decode_token(access_token)
         else:
             raise HTTPException(
@@ -101,8 +103,9 @@ def get_current_user(
         # Access token이 만료되었고 refresh token이 있는 경우
         refreshed_user = _handle_token_refresh(request, db, refresh_token)
         if refreshed_user:
+            print(222222222222222222222222222222222222222)
             return refreshed_user
-
+        print(3333333333333333333333333333333333)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired and no valid refresh token",
