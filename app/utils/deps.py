@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 
 # 액세스 토큰 쿠키에서 추출
-def get_raw_token(request: Request) -> str | None:
+def get_access_token(request: Request) -> str | None:
     return request.cookies.get("access_token")
 
 
@@ -58,38 +58,42 @@ def _handle_token_refresh(
 def get_current_user_optional(
     request: Request,
     db: Session = Depends(get_db),
-    token: str = Depends(get_raw_token),
+    access_token: str = Depends(get_access_token),
     refresh_token: str = Depends(get_refresh_token),
 ) -> UserResponse | None:
-    if not token and not refresh_token:
+    if not access_token and not refresh_token:
         return None
 
+    if not access_token and refresh_token:
+        return _handle_token_refresh(request, db, refresh_token)
+
     try:
-        if token:
-            return decode_token(token)
+        if access_token:
+            return decode_token(access_token)
     except HTTPException:
         # Access token이 만료되었고 refresh token이 있는 경우
         return _handle_token_refresh(request, db, refresh_token)
-
-    return None
 
 
 # 현재 사용자 정보 조회(필수)
 def get_current_user(
     request: Request,
     db: Session = Depends(get_db),
-    token: str = Depends(get_raw_token),
+    access_token: str = Depends(get_access_token),
     refresh_token: str = Depends(get_refresh_token),
 ) -> UserResponse:
-    if not token and not refresh_token:
+    if not access_token and not refresh_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Please login",
         )
 
+    if not access_token and refresh_token:
+        return _handle_token_refresh(request, db, refresh_token)
+
     try:
-        if token:
-            return decode_token(token)
+        if access_token:
+            return decode_token(access_token)
     except HTTPException:
         # Access token이 만료되었고 refresh token이 있는 경우
         refreshed_user = _handle_token_refresh(request, db, refresh_token)
