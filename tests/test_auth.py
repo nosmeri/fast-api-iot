@@ -121,13 +121,10 @@ def test_token_refresh_with_expired_access_token():
 def test_refresh_token_reuse_after_logout():
     with create_user_and_login() as (_, _, access_token, refresh_token):
         client.post("/logout")
-        
-        client.cookies.delete("access_token")
-        client.cookies.delete("refresh_token")
 
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
 
-        #client.cookies.set("access_token", expired_access_token)
+        client.cookies.set("access_token", expired_access_token)
         client.cookies.set("refresh_token", refresh_token)
         response = client.get("/mypage")
         assert response.status_code==401
