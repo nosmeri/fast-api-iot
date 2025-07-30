@@ -11,23 +11,12 @@
 {%block content%}
 <h1>Admin Dashboard</h1>
 <p>Welcome, {{ user.username }}!</p>
-<ul>
-    {% for u in users %}
-    <li>
-        <button class="modify-button" id={{u.id}}>modify</button>
-        <button class="delete-button" id={{u.id}}>delete</button>
-        {{ u.id }} {{ u.username }}
-        {%if u.is_admin%}
-        <span style="color: green;">admin</span>
-        {%endif%}
-    </li>
-    {% endfor %}
-    <form id="userModifyForm">
-        <input type="text" name="attribute" placeholder="Attribute (e.g., is_admin)">
-        <input type="text" name="value" placeholder="Value (e.g., true)">
-        <label><input type="radio" name="type" value="int">integer</label>
-        <label><input type="radio" name="type" value="str">string</label>
-        <label><input type="radio" name="type" value="bool">boolean</label>
-    </form>
-</ul>
+<ul id="user-list"></ul>
+<form id="userModifyForm">
+    <input type="text" name="attribute" placeholder="Attribute (e.g., is_admin)">
+    <input type="text" name="value" placeholder="Value (e.g., true)">
+    <label><input type="radio" name="type" value="int">integer</label>
+    <label><input type="radio" name="type" value="str">string</label>
+    <label><input type="radio" name="type" value="bool">boolean</label>
+</form>
 {%endblock%}

@@ -4,6 +4,7 @@ import services.admin_service as admin_service
 from config.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
+from utils.path import templates
 from models.user import User
 from schemas.user import UserResponse
 from sqlalchemy.orm import Session
@@ -13,20 +14,26 @@ from utils.path import templates
 router = APIRouter(dependencies=[Depends(require_admin)])
 
 
-# 관리자 페이지
 @router.get("/")
-async def admin(
+async def admin_page(
     request: Request,
-    db: Session = Depends(get_db),
     user: UserResponse = Depends(require_admin),
 ) -> HTMLResponse:
-    users: list[UserResponse] = admin_service.get_all_users(db)
     data: dict[str, Any] = {
-        "user": {"username": user.username, "is_admin": user.is_admin},
-        "users": users,
+    "user": {"username": user.username, "is_admin": user.is_admin},
     }
 
     return templates.TemplateResponse(request, "admin.html", data)
+
+
+@router.get("/user")
+async def get_users(
+    db: Session = Depends(get_db),
+) -> dict:
+    users: list[UserResponse] = admin_service.get_all_users(db)
+    return {
+        "users": [u.model_dump() for u in users]
+    }
 
 
 # 사용자 수정
