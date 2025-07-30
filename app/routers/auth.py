@@ -142,7 +142,7 @@ async def change_password(
 
 # 로그아웃
 @router.post("/logout")
-async def logout(
+def logout(
     request: Request,
     db: Session = Depends(get_db),
     refresh_token: str = Depends(get_refresh_token),
