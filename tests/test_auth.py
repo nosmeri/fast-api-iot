@@ -123,7 +123,7 @@ def test_refresh_token_reuse_after_logout():
     with create_user_and_login() as (_, _, access_token, refresh_token):
         response = client.post("/logout")
 
-        time.sleep(1)
+        time.sleep(5)
 
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
         
