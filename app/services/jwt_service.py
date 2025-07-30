@@ -53,7 +53,12 @@ def create_refresh_token(user_id: str, db: Session):
 
 # 리프레시 토큰 조회
 def get_refresh_token(db: Session, token: str) -> RefreshToken | None:
-    return db.query(RefreshToken).filter(RefreshToken.token == token).with_for_update().first()
+    return (
+        db.query(RefreshToken)
+        .filter(RefreshToken.token == token)
+        .with_for_update()
+        .first()
+    )
 
 
 # 리프레시 토큰 취소
