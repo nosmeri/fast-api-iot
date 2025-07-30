@@ -127,6 +127,7 @@ def test_refresh_token_reuse_after_logout():
 
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
 
+        client.cookies.set("access_token", expired_access_token)
         client.cookies.set("refresh_token", refresh_token)
         response = client.get("/mypage")
         assert response.status_code==401
