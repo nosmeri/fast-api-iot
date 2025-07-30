@@ -1,6 +1,7 @@
 import uuid
 from weakref import ref
 from contextlib import contextmanager
+import time
 
 from config.db import SessionLocal
 from fastapi.testclient import TestClient
@@ -123,6 +124,9 @@ def test_refresh_token_reuse_after_logout():
         response = client.post("/logout")
         assert response.status_code == 200, "로그아웃 실패"
         
+        # 동시성 문제 방지를 위한 짧은 대기
+        time.sleep(0.1)
+        
         # 로그아웃 후 쿠키가 삭제되었는지 확인
         set_cookie_header = response.headers.get("set-cookie", "")
         set_cookie_headers = set_cookie_header.split(", ") if set_cookie_header else []
@@ -153,6 +157,9 @@ def test_refresh_token_revoke_verification():
         # 로그아웃
         logout_response = client.post("/logout")
         assert logout_response.status_code == 200
+        
+        # 동시성 문제 방지를 위한 짧은 대기
+        time.sleep(0.1)
         
         # 로그아웃 후 같은 refresh token으로 접근 시도
         client.cookies.set("access_token", "expired_token")
