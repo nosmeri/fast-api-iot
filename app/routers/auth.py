@@ -147,7 +147,14 @@ async def logout(
     db: Session = Depends(get_db),
     refresh_token: str = Depends(get_refresh_token),
 ) -> JSONResponse:
-    jwt_service.revoke_refresh_token(db, refresh_token)
+    try:
+        # 토큰 revoke를 먼저 수행 (race condition 방지)
+        revoked_token = jwt_service.revoke_refresh_token(db, refresh_token)
+        if revoked_token:
+            print(f"Token revoked for user: {revoked_token.user_id}")
+    except Exception as e:
+        print(f"Logout error: {e}")
+        # 에러가 발생해도 로그아웃은 계속 진행
 
     response = JSONResponse(
         status_code=status.HTTP_200_OK,
