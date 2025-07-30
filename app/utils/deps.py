@@ -1,8 +1,9 @@
-from config.db import get_db
 from fastapi import Depends, HTTPException, Request, status
+from sqlalchemy.orm import Session
+
+from config.db import get_db
 from schemas.user import UserResponse
 from services import jwt_service
-from sqlalchemy.orm import Session
 
 
 # 액세스 토큰 쿠키에서 추출
@@ -64,12 +65,13 @@ def get_current_user_optional(
     if not access_token and not refresh_token:
         return None
 
-    if not access_token and refresh_token:
-        return _handle_token_refresh(request, db, refresh_token)
-
     try:
         if access_token:
             return decode_token(access_token)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
+            )
     except HTTPException:
         # Access token이 만료되었고 refresh token이 있는 경우
         return _handle_token_refresh(request, db, refresh_token)
@@ -88,12 +90,13 @@ def get_current_user(
             detail="Please login",
         )
 
-    if not access_token and refresh_token:
-        return _handle_token_refresh(request, db, refresh_token)
-
     try:
         if access_token:
             return decode_token(access_token)
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
+            )
     except HTTPException:
         # Access token이 만료되었고 refresh token이 있는 경우
         refreshed_user = _handle_token_refresh(request, db, refresh_token)
@@ -104,11 +107,6 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired and no valid refresh token",
         )
-
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid token",
-    )
 
 
 # 관리자 권한 확인
