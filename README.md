@@ -180,21 +180,21 @@ docker-compose up -d --build
 
 ---
 
-## 백업 스크립트 (`scripts/backup.sh`)
+## 백업 스크립트 (`scripts/db_backup.sh`)
 
 ### Crontab 등록 (자동 실행)
 ```bash
 crontab -e
 ```
 ```
-0 3 * * * /home/nosmeri/fast-api-testweb/scripts/backup.sh >> /home/nosmeri/db_backups/backup.log 2>&1
+0 3 * * * /home/deploy/fast-api-iot/scripts/db_backup.sh >> /home/deploy/db_backups/backup.log 2>&1
 ```
 
 ### 사전 준비사항
 - `~/db_backups` 디렉토리 미리 생성
   ```bash
   mkdir -p ~/db_backups
-  chmod +x scripts/backup.sh
+  chmod +x scripts/db_backup.sh
   ```
 
 ---

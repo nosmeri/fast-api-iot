@@ -1,4 +1,6 @@
 # 설정
+source /home/deploy/fast-api-iot/.env
+
 DATE=$(date +%Y-%m-%d-%H%M)
 BACKUP_DIR="/home/deploy/db_backups"
 FILENAME="backup-$DATE.sql"
