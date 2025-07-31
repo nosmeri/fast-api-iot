@@ -1,4 +1,4 @@
-# Fast API Test Web
+# Fast API I.o.T.
 
 FastAPI + PostgreSQL 기반의 간단한 웹 API 프로젝트 🚀
 

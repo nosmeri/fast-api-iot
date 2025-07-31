@@ -61,7 +61,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         script: |
           set -e
-          cd ~/fast-api-testweb/
+          cd ~/fast-api-iot/
           docker-compose down
           git pull
           docker-compose up -d --build
