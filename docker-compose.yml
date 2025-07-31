@@ -47,7 +47,9 @@ networks:
     external: true
 
 volumes:
-  db_data:
-  logs:
+  iot_db_data:
+    external: true
+  iot_logs:
+    external: true
   uploads:
     external: true
