@@ -12,8 +12,12 @@ from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from schemas.user import UserResponse
 from utils.deps import get_current_user_optional, require_admin
-from utils.error_handlers import (forbidden_error, internal_server_error,
-                                  not_found_error, unauthorized_error)
+from utils.error_handlers import (
+    forbidden_error,
+    internal_server_error,
+    not_found_error,
+    unauthorized_error,
+)
 from utils.logger import main_logger
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
 

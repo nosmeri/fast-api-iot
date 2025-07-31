@@ -6,8 +6,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from schemas.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
 from sqlalchemy.orm import Session
-from utils.deps import (get_current_user, get_current_user_optional,
-                        get_refresh_token)
+from utils.deps import get_current_user, get_current_user_optional, get_refresh_token
 from utils.path import templates
 from utils.validators import get_validation_rules
 

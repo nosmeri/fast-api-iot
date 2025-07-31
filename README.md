@@ -204,8 +204,8 @@ pip install black isort autoflake
 
 ### 전체 적용
 ```bash
-black .
 isort .
+black .
 autoflake --remove-all-unused-imports --in-place -r .
 ```
 또는
