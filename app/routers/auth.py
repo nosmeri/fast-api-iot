@@ -148,6 +148,7 @@ async def logout(
     db: Session = Depends(get_db),
     refresh_token: str = Depends(get_refresh_token),
 ) -> JSONResponse:
+    jwt_service.revoke_refresh_token(db, refresh_token)
 
     response = JSONResponse(
         status_code=status.HTTP_200_OK,
