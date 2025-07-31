@@ -38,7 +38,7 @@ def test_delete_account_db_state():
 def test_refresh_token_revoke_db_state():
     """POST /logout 호출 시 DB의 refresh_token.revoked=True 인지 검증."""
     with create_user_and_login() as (_, _, _, refresh_token):
-        resp = client.post("/logout")
+        resp = client.post("/logout", cookies={"refresh_token": refresh_token})
         assert resp.status_code == 200
 
     with db_session() as db:
