@@ -178,24 +178,14 @@ docker-compose down -v
 docker-compose up -d --build
 ```
 
----
 
-## 백업 스크립트 (`scripts/db_backup.sh`)
-
-### Crontab 등록 (자동 실행)
+## 백업 스크립트 Crontab 등록
 ```bash
 crontab -e
 ```
 ```
 0 3 * * * /home/deploy/fast-api-iot/scripts/db_backup.sh >> /home/deploy/db_backups/backup.log 2>&1
 ```
-
-### 사전 준비사항
-- `~/db_backups` 디렉토리 미리 생성
-  ```bash
-  mkdir -p ~/db_backups
-  chmod +x scripts/db_backup.sh
-  ```
 
 ---
 
