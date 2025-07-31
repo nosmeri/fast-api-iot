@@ -1,21 +1,16 @@
 # tests/test_auth_db_state.py
 import uuid
-from contextlib import contextmanager
-
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-# 기존 테스트 파일에서 재사용
-from test_auth import create_user_and_login  # 경로는 프로젝트 구조에 맞게 조정
-from main import app
+# 기존 tests/test_auth.py 의 client, create_user_and_login 재사용
+from test_auth import client, create_user_and_login
+
 from config.db import SessionLocal
 from models.user import User
 from models.refresh_tocken import RefreshToken
 
-client = TestClient(app)
 
-
-@contextmanager
 def db_session() -> Session:
     """트랜잭션 롤백을 보장하는 테스트용 세션."""
     db = SessionLocal()
@@ -24,9 +19,6 @@ def db_session() -> Session:
     finally:
         db.rollback()
         db.close()
-
-
-# --------- 테스트 케이스들 ---------
 
 
 def test_delete_account_db_state():
