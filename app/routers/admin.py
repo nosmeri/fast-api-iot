@@ -1,13 +1,12 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import HTMLResponse
-from sqlalchemy.orm import Session
-
 import services.admin_service as admin_service
 from config.db import get_db
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import HTMLResponse
 from models.user import User
 from schemas.user import UserResponse
+from sqlalchemy.orm import Session
 from utils.deps import require_admin
 from utils.path import templates
 

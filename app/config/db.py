@@ -1,7 +1,6 @@
+from config.settings import settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
-
-from config.settings import settings
 
 # 데이터베이스 연결 설정
 engine = create_engine(

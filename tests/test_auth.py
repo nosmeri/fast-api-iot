@@ -14,8 +14,12 @@ def create_user_and_login(password="test1234!"):
     response = client.post("/login", json={"username": username, "password": password})
     access_token = response.cookies.get("access_token")
     refresh_token = response.cookies.get("refresh_token")
-    assert access_token is not None, "access_token이 None입니다. 로그인 응답을 확인하세요."
-    assert refresh_token is not None, "refresh_token이 None입니다. 로그인 응답을 확인하세요."
+    assert (
+        access_token is not None
+    ), "access_token이 None입니다. 로그인 응답을 확인하세요."
+    assert (
+        refresh_token is not None
+    ), "refresh_token이 None입니다. 로그인 응답을 확인하세요."
     client.cookies.set("access_token", access_token)
     client.cookies.set("refresh_token", refresh_token)
     try:
@@ -53,9 +57,7 @@ def test_register_duplicate():
 
 def test_register_password_rule_fail():
     username = f"pwfail-{uuid.uuid4().hex[:8]}"
-    response = client.post(
-        "/register", json={"username": username, "password": "123"}
-    )
+    response = client.post("/register", json={"username": username, "password": "123"})
     assert response.status_code == 400
 
 
@@ -66,7 +68,9 @@ def test_login_page():
 
 def test_login_success():
     with create_user_and_login() as (username, password, access_token, refresh_token):
-        response = client.post("/login", json={"username": username, "password": password})
+        response = client.post(
+            "/login", json={"username": username, "password": password}
+        )
         assert response.status_code == 200, "로그인 실패"
         assert access_token.count(".") == 2  # type: ignore
         assert refresh_token.count(".") == 2  # type: ignore
@@ -74,13 +78,17 @@ def test_login_success():
 
 def test_login_wrong_password():
     with create_user_and_login() as (username, _, _, _):
-        response = client.post("/login", json={"username": username, "password": "wrongpass"})
+        response = client.post(
+            "/login", json={"username": username, "password": "wrongpass"}
+        )
         assert response.status_code == 400
 
 
 def test_login_nonexistent_user():
     username = f"idontexist-{uuid.uuid4().hex[:8]}"
-    response = client.post("/login", json={"username": username, "password": "whatever123!"})
+    response = client.post(
+        "/login", json={"username": username, "password": "whatever123!"}
+    )
     assert response.status_code == 400
 
 
@@ -111,7 +119,7 @@ def test_token_refresh_with_expired_access_token():
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
         client.cookies.set("access_token", expired_access_token)
         response = client.get("/mypage")
-        assert response.status_code==200
+        assert response.status_code == 200
 
 
 def test_refresh_token_reuse_after_logout():
@@ -119,24 +127,28 @@ def test_refresh_token_reuse_after_logout():
         response = client.post("/logout")
 
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
-        
+
         # 로그아웃 후에도 강제로 쿠키를 설정해서 테스트
         client.cookies.set("access_token", expired_access_token)
         client.cookies.set("refresh_token", refresh_token)
         response = client.get("/mypage")
         # refresh token이 revoke되었으므로 401이어야 함
-        assert response.status_code == 401, f"로그아웃 후 refresh token이 여전히 유효함. 응답: {response.text}"
+        assert (
+            response.status_code == 401
+        ), f"로그아웃 후 refresh token이 여전히 유효함. 응답: {response.text}"
 
 
 def test_login_after_delete_account():
     with create_user_and_login() as (username, password, access_token, refresh_token):
         response = client.delete("/delete_account")
         assert response.status_code == 200
-        response = client.post("/login", json={"username": username, "password": password})
+        response = client.post(
+            "/login", json={"username": username, "password": password}
+        )
         assert response.status_code == 400
 
 
 def test_admin_page_without_admin():
     with create_user_and_login() as (username, password, access_token, refresh_token):
         response = client.get("/admin")
-        assert response.status_code==403
+        assert response.status_code == 403

@@ -1,12 +1,10 @@
 from datetime import datetime, timedelta, timezone
-
-from jose import ExpiredSignatureError, JWTError, jwt
-from sqlalchemy.orm import Session
+from uuid import uuid4
 
 from config.settings import settings
+from jose import ExpiredSignatureError, JWTError, jwt
 from models.refresh_tocken import RefreshToken
-
-from uuid import uuid4
+from sqlalchemy.orm import Session
 
 
 def _utc_now() -> datetime:

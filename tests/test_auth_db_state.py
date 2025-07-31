@@ -1,15 +1,13 @@
 # tests/test_auth_db_state.py
-from contextlib import contextmanager
 import uuid
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
-
-# 기존 tests/test_auth.py 의 client, create_user_and_login 재사용
-from test_auth import client, create_user_and_login
+from contextlib import contextmanager
 
 from config.db import SessionLocal
-from models.user import User
 from models.refresh_tocken import RefreshToken
+from models.user import User
+from sqlalchemy.orm import Session
+# 기존 tests/test_auth.py 의 client, create_user_and_login 재사용
+from test_auth import client, create_user_and_login
 
 
 @contextmanager
@@ -43,7 +41,10 @@ def test_refresh_token_revoke_db_state():
 
     with db_session() as db:
         db_token = (
-            db.query(RefreshToken).filter(RefreshToken.token == refresh_token).with_for_update().first()
+            db.query(RefreshToken)
+            .filter(RefreshToken.token == refresh_token)
+            .with_for_update()
+            .first()
         )
         assert db_token is not None, "로그아웃 후에도 RefreshToken 레코드가 없습니다."
         db.refresh(db_token)

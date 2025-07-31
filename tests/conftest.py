@@ -25,6 +25,7 @@ def admin_user():
     # DB에서 is_admin True로 변경
     from config.db import SessionLocal
     from models.user import User
+
     db = SessionLocal()
     user = db.query(User).filter_by(username="admin").first()
     assert user is not None, "admin 유저가 DB에 없음"

@@ -1,13 +1,11 @@
 from typing import Any
 
+from config.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
-from sqlalchemy.orm import Session
-
-from models.refresh_tocken import RefreshToken
-from config.db import get_db
 from schemas.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
+from sqlalchemy.orm import Session
 from utils.deps import (get_current_user, get_current_user_optional,
                         get_refresh_token)
 from utils.path import templates
