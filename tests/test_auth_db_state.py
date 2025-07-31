@@ -43,7 +43,7 @@ def test_refresh_token_revoke_db_state():
 
     with db_session() as db:
         db_token = (
-            db.query(RefreshToken).filter(RefreshToken.token == refresh_token).first()
+            db.query(RefreshToken).filter(RefreshToken.token == refresh_token).with_for_update().first()
         )
         assert db_token is not None, "로그아웃 후에도 RefreshToken 레코드가 없습니다."
         assert (
