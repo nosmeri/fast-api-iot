@@ -1,4 +1,5 @@
 # tests/test_auth_db_state.py
+from contextlib import contextmanager
 import uuid
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -11,6 +12,7 @@ from models.user import User
 from models.refresh_tocken import RefreshToken
 
 
+@contextmanager
 def db_session() -> Session:
     """트랜잭션 롤백을 보장하는 테스트용 세션."""
     db = SessionLocal()
