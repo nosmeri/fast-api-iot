@@ -210,7 +210,7 @@ autoflake --remove-all-unused-imports --in-place -r .
 ```
 또는
 ```bash
-source ./scripts/lint.sh
+source ./scripts/format.sh
 ```
 
 ### VSCode 등 에디터에서 저장 시 자동 적용 가능
