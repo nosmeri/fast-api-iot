@@ -42,6 +42,7 @@ def test_refresh_token_revoke_db_state():
         assert resp.status_code == 200
 
     with db_session() as db:
+        db.expire_all()
         db_token = (
             db.query(RefreshToken).filter(RefreshToken.token == refresh_token).with_for_update().first()
         )
