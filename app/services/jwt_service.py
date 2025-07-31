@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from config.settings import settings
 from models.refresh_tocken import RefreshToken
 
+from uuid import uuid4
+
 
 def _utc_now() -> datetime:
     return datetime.now(timezone.utc)
@@ -40,7 +42,12 @@ def verify_token(token: str) -> dict | None:
 # 리프레시 토큰 생성
 def create_refresh_token(user_id: str, db: Session):
     exp = _utc_now() + timedelta(days=settings.JWT_REFRESH_EXPIRES_IN_DAYS)
-    payload = {"sub": user_id, "exp": exp, "type": "refresh"}
+    payload = {
+        "sub": user_id,
+        "exp": exp,
+        "type": "refresh",
+        "jti": str(uuid4()),
+    }
     token = jwt.encode(
         payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
     )

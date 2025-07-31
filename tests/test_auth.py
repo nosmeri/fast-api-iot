@@ -1,13 +1,8 @@
 import uuid
-from weakref import ref
 from contextlib import contextmanager
 
-from config.db import SessionLocal
 from fastapi.testclient import TestClient
 from main import app
-from models.refresh_tocken import RefreshToken
-from services import jwt_service
-import time
 
 client = TestClient(app)
 
@@ -119,13 +114,9 @@ def test_token_refresh_with_expired_access_token():
         assert response.status_code==200
 
 
-# TODO
-"""
 def test_refresh_token_reuse_after_logout():
     with create_user_and_login() as (_, _, access_token, refresh_token):
         response = client.post("/logout")
-
-        time.sleep(5)
 
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
         
@@ -135,7 +126,6 @@ def test_refresh_token_reuse_after_logout():
         response = client.get("/mypage")
         # refresh token이 revoke되었으므로 401이어야 함
         assert response.status_code == 401, f"로그아웃 후 refresh token이 여전히 유효함. 응답: {response.text}"
-"""
 
 
 def test_login_after_delete_account():

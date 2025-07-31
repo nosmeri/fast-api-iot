@@ -9,7 +9,6 @@ engine = create_engine(
     pool_pre_ping=True,
     future=True,
     echo=True,  # 쿼리 로그 활성화
-    isolation_level="REPEATABLE_READ",  # 트랜잭션 격리 수준 설정
 )
 
 # 세션 생성
