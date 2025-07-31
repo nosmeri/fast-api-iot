@@ -40,6 +40,8 @@ def test_refresh_token_revoke_db_state():
     with create_user_and_login() as (_, _, _, refresh_token):
         resp = client.post("/logout", cookies={"refresh_token": refresh_token})
         assert resp.status_code == 200
+        import time
+        time.sleep(5)
 
     with db_session() as db:
         db.expire_all()
