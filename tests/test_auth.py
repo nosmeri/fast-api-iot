@@ -2,7 +2,7 @@ import uuid
 from contextlib import contextmanager
 
 from fastapi.testclient import TestClient
-from main import app
+from main import app  # type: ignore
 
 client = TestClient(app)
 

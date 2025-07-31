@@ -2,9 +2,9 @@
 import uuid
 from contextlib import contextmanager
 
-from config.db import SessionLocal
-from models.refresh_tocken import RefreshToken
-from models.user import User
+from config.db import SessionLocal  #type: ignore
+from models.refresh_tocken import RefreshToken  # type: ignore
+from models.user import User  # type: ignore
 from sqlalchemy.orm import Session
 # 기존 tests/test_auth.py 의 client, create_user_and_login 재사용
 from test_auth import client, create_user_and_login
