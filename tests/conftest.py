@@ -26,7 +26,8 @@ def create_user_and_login(password="test1234!"):
     assert (
         refresh_token is not None
     ), "refresh_token이 None입니다. 로그인 응답을 확인하세요."
-    client.cookies.update(response.cookies)
+    client.cookies.set("access_token", access_token)
+    client.cookies.set("refresh_token", refresh_token)
     try:
         yield username, password, access_token, refresh_token
     finally:
