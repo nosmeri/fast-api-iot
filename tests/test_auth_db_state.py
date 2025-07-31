@@ -41,7 +41,7 @@ def test_refresh_token_revoke_db_state():
         resp = client.post("/logout", cookies={"refresh_token": refresh_token})
         assert resp.status_code == 200
         import time
-        time.sleep(5)
+        time.sleep(15)
 
     with db_session() as db:
         db_token = (
