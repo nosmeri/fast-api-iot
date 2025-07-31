@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
+from app.models.refresh_tocken import RefreshToken
 from config.db import get_db
 from schemas.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
@@ -147,7 +148,14 @@ async def logout(
     db: Session = Depends(get_db),
     refresh_token: str = Depends(get_refresh_token),
 ) -> JSONResponse:
-    jwt_service.revoke_refresh_token(db, refresh_token)
+    print(jwt_service.revoke_refresh_token(db, refresh_token))
+    print(
+        db.query(RefreshToken)
+        .filter(RefreshToken.token == refresh_token)
+        .with_for_update()
+        .first()
+        .revoked
+    )
 
     response = JSONResponse(
         status_code=status.HTTP_200_OK,
