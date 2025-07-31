@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from config.settings import settings
 from jose import ExpiredSignatureError, JWTError, jwt
-from models.refresh_tocken import RefreshToken
+from models.refresh_token import RefreshToken
 from sqlalchemy.orm import Session
 
 

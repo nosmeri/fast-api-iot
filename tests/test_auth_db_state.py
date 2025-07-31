@@ -1,7 +1,7 @@
 import uuid
 
 from conftest import client, create_user_and_login, db_session
-from models.refresh_tocken import RefreshToken  # type: ignore
+from models.refresh_token import RefreshToken  # type: ignore
 from models.user import User  # type: ignore
 
 

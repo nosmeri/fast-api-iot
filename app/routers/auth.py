@@ -50,10 +50,10 @@ async def login(
     access_token = jwt_service.create_access_token(
         user_id=user.id, username=user.username, is_admin=user.is_admin
     )
-    refresh_tocken = jwt_service.create_refresh_token(user_id=user.id, db=db)
+    refresh_token = jwt_service.create_refresh_token(user_id=user.id, db=db)
 
     request.state.new_access_token = access_token
-    request.state.new_refresh_token = refresh_tocken
+    request.state.new_refresh_token = refresh_token
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -84,10 +84,10 @@ async def register(
     access_token = jwt_service.create_access_token(
         user_id=new_user.id, username=new_user.username, is_admin=new_user.is_admin
     )
-    refresh_tocken = jwt_service.create_refresh_token(user_id=new_user.id, db=db)
+    refresh_token = jwt_service.create_refresh_token(user_id=new_user.id, db=db)
 
     request.state.new_access_token = access_token
-    request.state.new_refresh_token = refresh_tocken
+    request.state.new_refresh_token = refresh_token
 
     return JSONResponse(
         status_code=status.HTTP_201_CREATED,

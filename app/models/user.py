@@ -7,7 +7,7 @@ from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-    from .refresh_tocken import RefreshToken
+    from .refresh_token import RefreshToken
 
 
 # 사용자 모델

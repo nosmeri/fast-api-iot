@@ -214,11 +214,11 @@ autoflake --remove-all-unused-imports --in-place -r .
 - [x] 관리자 기능
 - [x] 프론트엔드/백엔드 유효성 검사 동기화
 - [x] 코드 중복 제거 및 모듈화
+- [x] pytest 오류 고치기
 
 ### 진행 중 🔄
 - [ ] pytest 테스트 케이스 확장
 - [ ] 비동기화 개선
-- [ ] pytest 오류 고치기
 
 ### 계획 📋
 - [ ] DB 백업 스케줄
