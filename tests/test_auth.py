@@ -1,32 +1,7 @@
 import uuid
-from contextlib import contextmanager
 
-from fastapi.testclient import TestClient
+from conftest import client, create_user_and_login
 from main import app  # type: ignore
-
-client = TestClient(app)
-
-
-@contextmanager
-def create_user_and_login(password="test1234!"):
-    username = f"user-{uuid.uuid4().hex[:8]}"
-    client.post("/register", json={"username": username, "password": password})
-    response = client.post("/login", json={"username": username, "password": password})
-    access_token = response.cookies.get("access_token")
-    refresh_token = response.cookies.get("refresh_token")
-    assert (
-        access_token is not None
-    ), "access_token이 None입니다. 로그인 응답을 확인하세요."
-    assert (
-        refresh_token is not None
-    ), "refresh_token이 None입니다. 로그인 응답을 확인하세요."
-    client.cookies.set("access_token", access_token)
-    client.cookies.set("refresh_token", refresh_token)
-    try:
-        yield username, password, access_token, refresh_token
-    finally:
-        client.cookies.delete("access_token")
-        client.cookies.delete("refresh_token")
 
 
 def test_register_page():
@@ -42,8 +17,8 @@ def test_register_success():
     assert response.status_code == 201, "회원가입 실패"
     access_token = response.cookies.get("access_token")
     refresh_token = response.cookies.get("refresh_token")
-    assert access_token.count(".") == 2  # type: ignore
-    assert refresh_token.count(".") == 2  # type: ignore
+    assert access_token.count(".") == 2
+    assert refresh_token.count(".") == 2
 
 
 def test_register_duplicate():
@@ -72,8 +47,8 @@ def test_login_success():
             "/login", json={"username": username, "password": password}
         )
         assert response.status_code == 200, "로그인 실패"
-        assert access_token.count(".") == 2  # type: ignore
-        assert refresh_token.count(".") == 2  # type: ignore
+        assert access_token.count(".") == 2
+        assert refresh_token.count(".") == 2
 
 
 def test_login_wrong_password():
@@ -98,7 +73,7 @@ def test_login_fail():
 
 
 def test_logout_token_removal_and_revoke():
-    with create_user_and_login() as (_, _, access_token, refresh_token):
+    with create_user_and_login() as (_, _, _, _):
         response = client.post("/logout")
         assert response.status_code == 200, "로그아웃 실패"
         set_cookie_header = response.headers.get("set-cookie", "")
@@ -115,7 +90,7 @@ def test_mypage_without_token():
 
 
 def test_token_refresh_with_expired_access_token():
-    with create_user_and_login() as (_, _, _, refresh_token):
+    with create_user_and_login() as (_, _, _, _):
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
         client.cookies.set("access_token", expired_access_token)
         response = client.get("/mypage")
@@ -123,7 +98,7 @@ def test_token_refresh_with_expired_access_token():
 
 
 def test_refresh_token_reuse_after_logout():
-    with create_user_and_login() as (_, _, access_token, refresh_token):
+    with create_user_and_login() as (_, _, _, refresh_token):
         response = client.post("/logout")
 
         expired_access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0IiwidXNlcm5hbWUiOiJ0ZXN0IiwiaXNfYWRtaW4iOmZhbHNlLCJleHAiOjEwMDAwMDAwMDAsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjEwMDAwMDAwMDB9.signature"
@@ -139,7 +114,7 @@ def test_refresh_token_reuse_after_logout():
 
 
 def test_login_after_delete_account():
-    with create_user_and_login() as (username, password, access_token, refresh_token):
+    with create_user_and_login() as (username, password, _, _):
         response = client.delete("/delete_account")
         assert response.status_code == 200
         response = client.post(
@@ -149,6 +124,6 @@ def test_login_after_delete_account():
 
 
 def test_admin_page_without_admin():
-    with create_user_and_login() as (username, password, access_token, refresh_token):
+    with create_user_and_login() as (_, _, _, _):
         response = client.get("/admin")
         assert response.status_code == 403
