@@ -178,6 +178,27 @@ docker-compose down -v
 docker-compose up -d --build
 ```
 
+---
+
+## 백업 스크립트 (`scripts/backup.sh`)
+
+### Crontab 등록 (자동 실행)
+```bash
+crontab -e
+```
+```
+0 3 * * * /home/nosmeri/fast-api-testweb/scripts/backup.sh >> /home/nosmeri/db_backups/backup.log 2>&1
+```
+
+### 사전 준비사항
+- `~/db_backups` 디렉토리 미리 생성
+  ```bash
+  mkdir -p ~/db_backups
+  chmod +x scripts/backup.sh
+  ```
+
+---
+
 ## 코드 스타일 자동화
 
 이 프로젝트는 코드 스타일 자동화를 권장합니다.
@@ -219,11 +240,13 @@ autoflake --remove-all-unused-imports --in-place -r .
 ### 진행 중 🔄
 - [ ] pytest 테스트 케이스 확장
 - [ ] 비동기화 개선
+- [ ] DB 백업 스케줄
 
 ### 계획 📋
-- [ ] DB 백업 스케줄
+- [ ] 로그 개선
 - [ ] API 문서화 개선
 - [ ] 성능 모니터링 추가
+- [ ] CSRF 토큰 추가
 
 ---
 
