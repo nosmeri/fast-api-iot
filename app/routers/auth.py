@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 
-from app.models.refresh_tocken import RefreshToken
+from models.refresh_tocken import RefreshToken
 from config.db import get_db
 from schemas.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
