@@ -148,7 +148,7 @@ async def logout(
     db: Session = Depends(get_db),
     refresh_token: str = Depends(get_refresh_token),
 ) -> JSONResponse:
-    print(jwt_service.revoke_refresh_token(db, refresh_token))
+    print(jwt_service.revoke_refresh_token(db, refresh_token).revoked)
     print(
         db.query(RefreshToken)
         .filter(RefreshToken.token == refresh_token)
