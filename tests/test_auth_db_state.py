@@ -18,7 +18,7 @@ def test_delete_account_db_state():
 
 def test_refresh_token_revoke_db_state():
     with create_user_and_login() as (_, _, _, refresh_token):
-        resp = client.post("/logout", cookies={"refresh_token": refresh_token})
+        resp = client.post("/logout")
         assert resp.status_code == 200
 
     with db_session() as db:
