@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 # 기존 테스트 파일에서 재사용
-from tests.test_auth import create_user_and_login  # 경로는 프로젝트 구조에 맞게 조정
+from test_auth import create_user_and_login  # 경로는 프로젝트 구조에 맞게 조정
 from main import app
 from config.db import SessionLocal
 from models.user import User
