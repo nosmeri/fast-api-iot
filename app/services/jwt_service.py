@@ -73,7 +73,7 @@ def revoke_refresh_token(db: Session, token: str) -> RefreshToken | None:
         return None
     refresh_token.revoked = True
     db.commit()
-    db.expire_all()
+    db.refresh(refresh_token)
     return refresh_token
 
 
