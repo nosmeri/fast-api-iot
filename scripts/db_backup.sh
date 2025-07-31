@@ -11,4 +11,4 @@ docker exec -t $CONTAINER_NAME pg_dump -U $POSTGRES_USER $POSTGRES_DB > $BACKUP_
 
 # 이전 백업 자동 삭제 (최근 7개만 보관)
 cd $BACKUP_DIR
-ls -tp | grep -v '/$' | tail -n +8 | xargs -I {} rm -- {}
+ls -tp *.sql 2>/dev/null | tail -n +8 | xargs -I {} rm -- {}
