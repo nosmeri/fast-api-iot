@@ -178,13 +178,20 @@ docker-compose down -v
 docker-compose up -d --build
 ```
 
+---
 
-## 백업 스크립트 Crontab 등록
+## 백업 & 롤백
+### Backup Script Crontab 등록
 ```bash
 crontab -e
 ```
 ```
 0 3 * * * /home/deploy/fast-api-iot/scripts/db_backup.sh >> /home/deploy/db_backups/backup.log 2>&1
+```
+
+### Rollback 방법
+```bash
+./scripts/db_rollback.sh backup-2025-08-01-0300.sql
 ```
 
 ---
