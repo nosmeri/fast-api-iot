@@ -15,6 +15,9 @@ FastAPI + PostgreSQL 기반의 간단한 웹 API 프로젝트 🚀
 - **Docker** + **Docker Compose**로 손쉽게 배포
 - **Alembic** 데이터베이스 마이그레이션
 - **로깅 시스템** (앱 로그, DB 로그 분리)
+- **GitHub Actions CI/CD** 자동 배포
+- **pytest** 테스트 자동화
+- **코드 포매팅** 자동화 (Black, isort, autoflake)
 
 ---
 
@@ -44,7 +47,7 @@ POSTGRES_DB=your_db
 # JWT 설정
 JWT_SECRET_KEY=your_jwt_secret_key_here_make_it_long_and_random
 JWT_ALGORITHM=HS256
-JWT_EXPIRES_IN_HOURS=24
+JWT_ACCESS_EXPIRES_IN_HOURS=24
 JWT_REFRESH_EXPIRES_IN_DAYS=30
 
 # 데이터베이스 URL (자동 생성됨)
@@ -77,23 +80,33 @@ docker-compose logs -f
 | `docker-compose logs -f` | 실시간 로그 모니터링 |
 | `docker-compose exec app bash` | 앱 컨테이너 내부 bash 접속 |
 | `docker-compose restart app` | 앱 컨테이너만 재시작 |
+| `docker-compose run --rm app alembic upgrade head` | DB 마이그레이션 실행 |
 
 ---
 
 ## 프로젝트 구조
 
 ```
-app/
-├── alembic/              # 데이터베이스 마이그레이션
-├── config/               # 설정 파일
-├── models/               # SQLAlchemy 데이터베이스 모델
-├── routers/              # FastAPI 라우터
-├── schemas/              # Pydantic API 스키마
-├── services/             # 비즈니스 로직
-├── static/               # 정적 파일 (CSS, JS)
-├── templates/            # HTML 템플릿
-├── utils/                # 유틸리티 함수
-└── main.py               # 애플리케이션 진입점
+fast_api_web/
+├── app/                    # 메인 애플리케이션
+│   ├── alembic/           # 데이터베이스 마이그레이션
+│   ├── config/            # 설정 파일
+│   ├── models/            # SQLAlchemy 데이터베이스 모델
+│   ├── routers/           # FastAPI 라우터
+│   ├── schemas/           # Pydantic API 스키마
+│   ├── services/          # 비즈니스 로직
+│   ├── static/            # 정적 파일 (CSS, JS)
+│   ├── templates/         # HTML 템플릿
+│   ├── utils/             # 유틸리티 함수
+│   ├── uploads/           # 파일 업로드 디렉토리
+│   ├── logs/              # 로그 파일
+│   └── main.py            # 애플리케이션 진입점
+├── tests/                 # pytest 테스트
+├── scripts/               # 유틸리티 스크립트
+├── .github/               # GitHub Actions CI/CD
+├── docker-compose.yml     # Docker Compose 설정
+├── Dockerfile             # Docker 이미지 설정
+└── pytest.ini            # pytest 설정
 ```
 
 ---
@@ -122,6 +135,7 @@ app/
 
 ### 기타
 - `GET /` - 메인 페이지
+- `GET /introduction` - 소개 페이지
 - `GET /mypage` - 마이페이지
 
 ### 문서
@@ -191,7 +205,7 @@ crontab -e
 
 ### Rollback 방법
 ```bash
-./scripts/db_rollback.sh backup-2025-08-01-0300.sql
+./scripts/db_rollback.sh backup-2025-01-01-0300.sql
 ```
 
 ---
@@ -204,23 +218,36 @@ crontab -e
 - **isort**: import 정렬
 - **autoflake**: 사용하지 않는 import/변수 자동 삭제
 
-### 설치
+### 전체 적용
 ```bash
-pip install black isort autoflake
+source ./scripts/format.sh
 ```
 
-### 전체 적용
+### 개별 적용
 ```bash
 isort .
 black .
 autoflake --remove-all-unused-imports --in-place -r .
 ```
-또는
-```bash
-source ./scripts/format.sh
-```
 
 ### VSCode 등 에디터에서 저장 시 자동 적용 가능
+
+---
+
+## CI/CD (GitHub Actions)
+
+이 프로젝트는 GitHub Actions를 통한 자동 CI/CD를 지원합니다.
+
+### 자동화된 프로세스
+1. **코드 푸시** → 자동 테스트 실행
+2. **main 브랜치 푸시** → 자동 배포 (Raspberry Pi)
+3. **Pull Request** → 테스트만 실행
+
+### 배포 환경 설정
+GitHub Secrets에 다음 설정 필요:
+- `SSH_HOST`: 배포 서버 IP
+- `SSH_USER`: SSH 사용자명
+- `SSH_KEY`: SSH 개인키
 
 ---
 
@@ -236,8 +263,10 @@ source ./scripts/format.sh
 - [x] 관리자 기능
 - [x] 프론트엔드/백엔드 유효성 검사 동기화
 - [x] 코드 중복 제거 및 모듈화
-- [x] pytest 오류 고치기
+- [x] pytest 테스트 케이스 구현
 - [x] DB 백업 스케줄
+- [x] GitHub Actions CI/CD 설정
+- [x] 코드 포매팅 자동화
 
 ### 진행 중 🔄
 - [ ] pytest 테스트 케이스 확장
@@ -248,6 +277,7 @@ source ./scripts/format.sh
 - [ ] API 문서화 개선
 - [ ] 성능 모니터링 추가
 - [ ] CSRF 토큰 추가
+- [ ] 보안 강화 (Rate Limiting, CORS 등)
 
 ---
 
