@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from typing import Any
 from uuid import uuid4
 
 from config.settings import settings
@@ -26,7 +27,7 @@ def create_access_token(user_id: str, username: str, is_admin: bool) -> str:
 
 
 # 토큰 검증
-def verify_token(token: str) -> dict | None:
+def verify_token(token: str) -> dict[str, Any] | None:
     try:
         return jwt.decode(
             token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]

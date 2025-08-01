@@ -1,4 +1,5 @@
 import time
+from typing import Any
 
 import aiofiles
 import routers.admin as admin_router
@@ -20,6 +21,7 @@ from utils.error_handlers import (
 )
 from utils.logger import main_logger
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
+
 
 # FastAPI 애플리케이션 인스턴스 생성
 app = FastAPI(
@@ -121,7 +123,7 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 async def mainPage(
     request: Request, user: UserResponse | None = Depends(get_current_user_optional)
 ) -> HTMLResponse:
-    data: dict = {}
+    data: dict[str, Any] = {}
     if user:
         data.update(
             {"user": {"username": user.username, "is_admin": bool(user.is_admin)}}
@@ -134,7 +136,7 @@ async def mainPage(
 async def introduction(
     request: Request, user: UserResponse | None = Depends(get_current_user_optional)
 ) -> HTMLResponse:
-    data: dict = {}
+    data: dict[str, Any] = {}
     if user:
         data.update(
             {"user": {"username": user.username, "is_admin": bool(user.is_admin)}}
