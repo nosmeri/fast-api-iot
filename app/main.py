@@ -22,7 +22,6 @@ from utils.error_handlers import (
 from utils.logger import main_logger
 from utils.path import BASE_DIR, UPLOAD_DIR, templates
 
-
 # FastAPI 애플리케이션 인스턴스 생성
 app = FastAPI(
     docs_url=None,
