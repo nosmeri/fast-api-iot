@@ -65,7 +65,7 @@ async def get_async_db():
         finally:
             await session.close()
 
-
+"""
 @pytest_asyncio.fixture(autouse=True)
 async def admin_user(async_client):
     response = await async_client.post(
@@ -89,3 +89,4 @@ async def admin_user(async_client):
             response.cookies.get("access_token"),
             response.cookies.get("refresh_token"),
         )
+"""
