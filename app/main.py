@@ -12,7 +12,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from schemas.user import UserResponse
-from utils.deps import get_current_user_optional, require_admin
+from utils.deps import get_current_user_optional_async, require_admin_async
 from utils.error_handlers import (
     forbidden_error,
     internal_server_error,
@@ -120,7 +120,8 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 # 메인 페이지 엔드포인트
 @app.get("/")
 async def mainPage(
-    request: Request, user: UserResponse | None = Depends(get_current_user_optional)
+    request: Request,
+    user: UserResponse | None = Depends(get_current_user_optional_async),
 ) -> HTMLResponse:
     data: dict[str, Any] = {}
     if user:
@@ -133,7 +134,7 @@ async def mainPage(
 
 @app.get("/introduction")
 async def introduction(
-    request: Request, user: UserResponse | None = Depends(get_current_user_optional)
+    request: Request, user: UserResponse | None = Depends(get_current_user_optional_async)
 ) -> HTMLResponse:
     data: dict[str, Any] = {}
     if user:
@@ -200,28 +201,30 @@ async def internal_server_error_handler(request: Request, exc) -> HTMLResponse:
 
 # 문서 엔드포인트
 # - "/docs": Swagger UI 문서
-# - dependencies=[Depends(require_admin)]: 관리자 권한 필요
+# - dependencies=[Depends(require_admin_async)]: 관리자 권한 필요
 # - include_in_schema=False: 문서에 포함되지 않음
-@app.get("/docs", dependencies=[Depends(require_admin)], include_in_schema=False)
+@app.get("/docs", dependencies=[Depends(require_admin_async)], include_in_schema=False)
 async def custom_swagger_ui() -> HTMLResponse:
     return get_swagger_ui_html(openapi_url="/openapi.json", title="docs")
 
 
 # 문서 엔드포인트
 # - "/redoc": ReDoc 문서
-# - dependencies=[Depends(require_admin)]: 관리자 권한 필요
+# - dependencies=[Depends(require_admin_async)]: 관리자 권한 필요
 # - include_in_schema=False: 문서에 포함되지 않음
-@app.get("/redoc", dependencies=[Depends(require_admin)], include_in_schema=False)
+@app.get("/redoc", dependencies=[Depends(require_admin_async)], include_in_schema=False)
 async def custom_redoc() -> HTMLResponse:
     return get_redoc_html(openapi_url="/openapi.json", title="ReDoc")
 
 
 # 문서 엔드포인트
 # - "/openapi.json": OpenAPI 스키마
-# - dependencies=[Depends(require_admin)]: 관리자 권한 필요
+# - dependencies=[Depends(require_admin_async)]: 관리자 권한 필요
 # - include_in_schema=False: 문서에 포함되지 않음
 @app.get(
-    "/openapi.json", dependencies=[Depends(require_admin)], include_in_schema=False
+    "/openapi.json",
+    dependencies=[Depends(require_admin_async)],
+    include_in_schema=False,
 )
 async def custom_openapi() -> JSONResponse:
     return JSONResponse(

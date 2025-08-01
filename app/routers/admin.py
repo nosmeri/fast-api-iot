@@ -7,16 +7,16 @@ from fastapi.responses import HTMLResponse
 from models.user import User
 from schemas.user import UserResponse
 from sqlalchemy.orm import Session
-from utils.deps import require_admin
+from utils.deps import require_admin_async
 from utils.path import templates
 
-router = APIRouter(dependencies=[Depends(require_admin)])
+router = APIRouter(dependencies=[Depends(require_admin_async)])
 
 
 @router.get("/")
 async def admin_page(
     request: Request,
-    user: UserResponse = Depends(require_admin),
+    user: UserResponse = Depends(require_admin_async),
 ) -> HTMLResponse:
     data: dict[str, Any] = {
         "user": {"username": user.username, "is_admin": user.is_admin},
