@@ -2,9 +2,9 @@ from typing import Any
 
 import services.admin_service as admin_service
 from config.db import get_async_db
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
-from models.user import User
+from schemas.admin import ModifyUser
 from schemas.user import UserResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from utils.deps import require_admin_async
@@ -35,56 +35,19 @@ async def get_users(
 
 # 사용자 수정
 @router.put("/user")
-async def admin_modify_member(
+async def admin_modify_user(
     request: Request,
-    userid: str,
-    attr: str,
-    type: str,
-    value: str,
+    modify_user: ModifyUser,
     db: AsyncSession = Depends(get_async_db),
 ) -> dict[str, str]:
-    if type not in ["bool", "int", "str"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid type specified. Must be 'bool', 'int', or 'str'.",
-        )
-
-    # 민감한 필드 보호
-    protected_fields = {"password"}
-    if attr in protected_fields:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Attribute '{attr}' is protected and cannot be modified through this endpoint.",
-        )
-
-    # 컬럼명 리스트를 미리 계산
-    column_names = [col.name for col in User.__table__.columns]
-    if attr not in column_names:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid attribute '{attr}' specified. Must be one of {column_names}.",
-        )
-
     # 업데이트 데이터 생성
-    update_data: dict[str, Any] = {}
-    if type == "bool":
-        update_data[attr] = value.lower() == "true"
-    elif type == "int":
-        try:
-            update_data[attr] = int(value)
-        except ValueError:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid value '{value}' for type 'int'. Must be a valid integer.",
-            )
-    elif type == "str":
-        update_data[attr] = value
+    update_data: dict[str, Any] = {modify_user.attr: modify_user.value}
 
     # 데이터베이스 업데이트
-    await admin_service.db_update(db, userid, update_data)
+    await admin_service.db_update(db, modify_user.userid, update_data)
     return {
         "status": "success",
-        "message": f"User {userid} updated successfully with {attr} = {value}",
+        "message": f"User {modify_user.userid} updated successfully with {modify_user.attr} = {modify_user.value}",
     }
 
 

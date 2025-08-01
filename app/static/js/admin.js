@@ -45,8 +45,18 @@ function addEventListenersToButtons() {
                 return;
             }
             try {
-                const response = await fetch(`/admin/user?userid=${id}&attr=${attribute}&value=${value}&type=${type}`, {
-                    method: 'PUT'
+                const response = await fetch(`/admin/user`, {
+                    method: 'PUT',
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "userid": id,
+                        "attr": attribute,
+                        "attr_type": type,
+                        "value": value
+                    })
+
                 });
                 if (response.ok) {
                     fetchAndRenderUsers();
