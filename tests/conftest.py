@@ -1,23 +1,46 @@
+from contextlib import asynccontextmanager
 import uuid
-from contextlib import contextmanager
 
-import pytest
-from config.db import SessionLocal  # type: ignore
+import pytest_asyncio
+from sqlalchemy import true
 from config.settings import settings  # type: ignore
-from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 from main import app  # type: ignore
 from models import Base  # type: ignore
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
-
-client = TestClient(app)
+from sqlalchemy.ext.asyncio import create_async_engine
+from config.db import AsyncSessionLocal  # type: ignore
 
 
-@contextmanager
-def create_user_and_login(password="test1234!"):
+@pytest_asyncio.fixture(autouse=True)
+async def setup_database():
+    # async engine 생성
+    async_database_url = settings.SQLALCHEMY_DATABASE_URL.replace(
+        "postgresql://", "postgresql+asyncpg://"
+    )
+    async_engine = create_async_engine(async_database_url, future=True)
+    async with async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    async with async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+
+
+@pytest_asyncio.fixture
+async def async_client(setup_database):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        yield ac
+
+
+@pytest_asyncio.fixture
+async def create_user_and_login(async_client, password="test1234!"):
     username = f"user-{uuid.uuid4().hex[:8]}"
-    client.post("/register", json={"username": username, "password": password})
-    response = client.post("/login", json={"username": username, "password": password})
+    await async_client.post(
+        "/register", json={"username": username, "password": password}
+    )
+    response = await async_client.post(
+        "/login", json={"username": username, "password": password}
+    )
     access_token = response.cookies.get("access_token")
     refresh_token = response.cookies.get("refresh_token")
     assert (
@@ -26,46 +49,41 @@ def create_user_and_login(password="test1234!"):
     assert (
         refresh_token is not None
     ), "refresh_token이 None입니다. 로그인 응답을 확인하세요."
-    client.cookies.set("access_token", access_token)
-    client.cookies.set("refresh_token", refresh_token)
+    async_client.cookies.set("access_token", access_token)
+    async_client.cookies.set("refresh_token", refresh_token)
     try:
         yield username, password, access_token, refresh_token
     finally:
-        client.cookies.delete("access_token")
-        client.cookies.delete("refresh_token")
+        async_client.cookies.delete("access_token")
+        async_client.cookies.delete("refresh_token")
 
 
-@contextmanager
-def db_session() -> Session:
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+@asynccontextmanager
+async def get_async_db():
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        finally:
+            await session.close()
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_database():
-    engine = create_engine(settings.SQLALCHEMY_DATABASE_URL)
-    Base.metadata.create_all(bind=engine)  # 테이블 생성
-    yield
-    Base.metadata.drop_all(bind=engine)
-
-
-@pytest.fixture(scope="session")
-def admin_user():
-    response = client.post(
+@pytest_asyncio.fixture(autouse=true)
+async def admin_user(async_client):
+    response = await async_client.post(
         "/register", json={"username": "admin", "password": "admin1234!"}
     )
     assert response.status_code == 201, "회원가입 실패"
     # DB에서 is_admin True로 변경
-    from config.db import SessionLocal  # type: ignore
     from models.user import User  # type: ignore
+    from sqlalchemy import select
 
-    db = SessionLocal()
-    user = db.query(User).filter_by(username="admin").first()
-    assert user is not None, "admin 유저가 DB에 없음"
-    user.is_admin = True
-    db.commit()
-    db.close()
-    return (response.cookies.get("access_token"), response.cookies.get("refresh_token"))
+    async with get_async_db() as db:
+        stmt = select(User).filter(User.username=="admin").with_for_update()
+
+        result = await db.execute(stmt)
+        user = result.scalar_one_or_none()
+        assert user is not None, "admin 유저가 DB에 없음"
+        user.is_admin = True
+        await db.commit()
+        await db.refresh(user)
+        return (response.cookies.get("access_token"), response.cookies.get("refresh_token"))
