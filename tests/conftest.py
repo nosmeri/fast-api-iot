@@ -1,14 +1,13 @@
-from contextlib import asynccontextmanager
 import uuid
+from contextlib import asynccontextmanager
 
 import pytest_asyncio
-from sqlalchemy import true
+from config.db import AsyncSessionLocal  # type: ignore
 from config.settings import settings  # type: ignore
 from httpx import ASGITransport, AsyncClient
 from main import app  # type: ignore
 from models import Base  # type: ignore
 from sqlalchemy.ext.asyncio import create_async_engine
-from config.db import AsyncSessionLocal  # type: ignore
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -67,7 +66,7 @@ async def get_async_db():
             await session.close()
 
 
-@pytest_asyncio.fixture(autouse=true)
+@pytest_asyncio.fixture(autouse=True)
 async def admin_user(async_client):
     response = await async_client.post(
         "/register", json={"username": "admin", "password": "admin1234!"}
@@ -78,7 +77,7 @@ async def admin_user(async_client):
     from sqlalchemy import select
 
     async with get_async_db() as db:
-        stmt = select(User).filter(User.username=="admin").with_for_update()
+        stmt = select(User).filter(User.username == "admin").with_for_update()
 
         result = await db.execute(stmt)
         user = result.scalar_one_or_none()
@@ -86,4 +85,7 @@ async def admin_user(async_client):
         user.is_admin = True
         await db.commit()
         await db.refresh(user)
-        return (response.cookies.get("access_token"), response.cookies.get("refresh_token"))
+        return (
+            response.cookies.get("access_token"),
+            response.cookies.get("refresh_token"),
+        )
