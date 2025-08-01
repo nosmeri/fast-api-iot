@@ -1,7 +1,8 @@
 from datetime import datetime
 
-from models.user import User
+from models.user import User, UserRole
 from pydantic import BaseModel, ConfigDict
+
 
 
 # 사용자 생성 스키마
@@ -26,6 +27,7 @@ class UserResponse(BaseModel):
     id: str
     username: str
     is_admin: bool = False
+    role: UserRole = UserRole.MEMBER
     created_at: datetime | None = None
     updated_at: datetime | None = None
 

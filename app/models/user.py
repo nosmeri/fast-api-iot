@@ -1,13 +1,20 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import uuid4
+from enum import Enum as PyEnum
 
 from config.db import Base
-from sqlalchemy import Boolean, DateTime, String, func
+from sqlalchemy import Boolean, DateTime, String, func, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
     from .refresh_token import RefreshToken
+
+
+class UserRole(str, PyEnum):
+    ADMIN = "admin"
+    MANAGER = "manager"
+    MEMBER = "member"
 
 
 # 사용자 모델
@@ -23,6 +30,9 @@ class User(Base):
     )
     password: Mapped[str] = mapped_column(String, nullable=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    role: Mapped[UserRole] = mapped_column(
+        Enum(UserRole), nullable=False, default=UserRole.MEMBER
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
