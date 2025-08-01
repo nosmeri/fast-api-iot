@@ -3,7 +3,7 @@ from passlib.context import CryptContext
 from schemas.user import UserCreate, UserResponse, user_to_response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from utils.validators import validate_user_credentials
+from utils.validators import validate_password, validate_user_credentials
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -51,7 +51,7 @@ async def change_password_async(
         raise ValueError("Current password is incorrect")
 
     # 새 비밀번호 유효성 검사
-    is_valid, errors = validate_user_credentials("temp_username", new_password)
+    is_valid, errors = validate_password(new_password)
     if not is_valid:
         raise ValueError("; ".join(errors))
 
