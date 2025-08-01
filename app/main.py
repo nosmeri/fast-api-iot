@@ -110,9 +110,9 @@ async def token_refresh_middleware(request: Request, call_next) -> Response:
 
 
 # 라우터 포함
-app.include_router(auth_router.router, prefix="")
-app.include_router(admin_router.router, prefix="/admin")
-app.include_router(mypage_router.router, prefix="/mypage")
+app.include_router(auth_router.router, prefix="", tags=["auth"])
+app.include_router(admin_router.router, prefix="/admin", tags=["admin"])
+app.include_router(mypage_router.router, prefix="/mypage", tags=["mypage"])
 
 # 정적 파일 서비스 마운트
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
