@@ -2,34 +2,40 @@ from typing import Any
 
 from models.user import User
 from schemas.user import UserResponse, user_to_response
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 # 모든 사용자 조회
-def get_all_users(db: Session) -> list[UserResponse]:
-    users = db.query(User).all()
+async def get_all_users(db: AsyncSession) -> list[UserResponse]:
+    result = await db.execute(select(User))
+    users = result.scalars().all()
     return [UserResponse.model_validate(user) for user in users]
 
 
 # 사용자 업데이트
-def db_update(db: Session, userid: str, update_data: dict[str, Any]) -> UserResponse:
-    user = db.query(User).filter(User.id == userid).first()
+async def db_update(
+    db: AsyncSession, userid: str, update_data: dict[str, Any]
+) -> UserResponse:
+    result = await db.execute(select(User).filter(User.id == userid))
+    user = result.scalar_one_or_none()
     if user:
         for key, value in update_data.items():
             setattr(user, key, value)
-        db.commit()
-        db.refresh(user)
+        await db.commit()
+        await db.refresh(user)
         return user_to_response(user)
     else:
         raise ValueError("User not found")
 
 
 # 사용자 삭제
-def db_delete(db: Session, userid: str) -> UserResponse:
-    user = db.query(User).filter(User.id == userid).first()
+async def db_delete(db: AsyncSession, userid: str) -> UserResponse:
+    result = await db.execute(select(User).filter(User.id == userid))
+    user = result.scalar_one_or_none()
     if user:
-        db.delete(user)
-        db.commit()
+        await db.delete(user)
+        await db.commit()
         return user_to_response(user)
     else:
         raise ValueError("User not found")

@@ -32,30 +32,3 @@ async def get_async_db():
             yield session
         finally:
             await session.close()
-
-
-# 기존 동기식 DB (하위 호환성을 위해 유지)
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
-# 동기식 데이터베이스 연결 설정
-engine = create_engine(
-    settings.SQLALCHEMY_DATABASE_URL,
-    pool_pre_ping=True,
-    future=True,
-    echo=True,  # 쿼리 로그 활성화
-)
-
-# 세션 생성
-SessionLocal = sessionmaker(
-    bind=engine, autoflush=False, autocommit=False, expire_on_commit=False
-)
-
-
-# 데이터베이스 세션 생성
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()

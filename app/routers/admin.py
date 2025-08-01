@@ -1,12 +1,12 @@
 from typing import Any
 
 import services.admin_service as admin_service
-from config.db import get_db
+from config.db import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse
 from models.user import User
 from schemas.user import UserResponse
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from utils.deps import require_admin_async
 from utils.path import templates
 
@@ -27,9 +27,9 @@ async def admin_page(
 
 @router.get("/user")
 async def get_users(
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_async_db),
 ) -> dict:
-    users: list[UserResponse] = admin_service.get_all_users(db)
+    users: list[UserResponse] = await admin_service.get_all_users(db)
     return {"users": [u.model_dump() for u in users]}
 
 
@@ -41,7 +41,7 @@ async def admin_modify_member(
     attr: str,
     type: str,
     value: str,
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_async_db),
 ) -> dict[str, str]:
     if type not in ["bool", "int", "str"]:
         raise HTTPException(
@@ -81,7 +81,7 @@ async def admin_modify_member(
         update_data[attr] = value
 
     # 데이터베이스 업데이트
-    admin_service.db_update(db, userid, update_data)
+    await admin_service.db_update(db, userid, update_data)
     return {
         "status": "success",
         "message": f"User {userid} updated successfully with {attr} = {value}",
@@ -91,7 +91,7 @@ async def admin_modify_member(
 # 사용자 삭제
 @router.delete("/user")
 async def admin_delete_member(
-    request: Request, userid: str, db: Session = Depends(get_db)
+    request: Request, userid: str, db: AsyncSession = Depends(get_async_db)
 ) -> dict[str, str]:
-    admin_service.db_delete(db, userid)
+    await admin_service.db_delete(db, userid)
     return {"status": "success", "message": f"User {userid} deleted successfully"}

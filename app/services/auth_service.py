@@ -3,7 +3,6 @@ from passlib.context import CryptContext
 from schemas.user import UserCreate, UserResponse, user_to_response
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Session
 from utils.validators import validate_user_credentials
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -17,26 +16,6 @@ def get_password_hash(password: str) -> str:
 # 비밀번호 검증
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
-
-
-# 사용자 생성 (동기식)
-def create_user(db: Session, user: UserCreate) -> User:
-    existing_user = get_user_by_username(db, user.username)
-    if existing_user:
-        raise ValueError("Username already exists")
-
-    # 통합 유효성 검사
-    is_valid, errors = validate_user_credentials(user.username, user.password)
-    if not is_valid:
-        raise ValueError("; ".join(errors))
-
-    hashed_password = get_password_hash(user.password)
-    db_user = User(username=user.username, password=hashed_password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-
-    return db_user
 
 
 # 사용자 생성 (비동기식)
@@ -57,19 +36,6 @@ async def create_user_async(db: AsyncSession, user: UserCreate) -> User:
     await db.refresh(db_user)
 
     return db_user
-
-
-# 비밀번호 변경 (동기식)
-def change_password(db: Session, id: str, new_password: str) -> User:
-    user = get_user_by_id(db, id)
-    if not user:
-        raise ValueError("User not found")
-
-    user.password = get_password_hash(new_password)  # type: ignore
-    db.commit()
-    db.refresh(user)
-
-    return user
 
 
 # 비밀번호 변경 (비동기식)
@@ -96,21 +62,11 @@ async def change_password_async(
     return user
 
 
-# 사용자 조회(username) - 동기식
-def get_user_by_username(db: Session, username: str) -> User | None:
-    return db.query(User).filter(User.username == username).first()
-
-
 # 사용자 조회(username) - 비동기식
 async def get_user_by_username_async(db: AsyncSession, username: str) -> User | None:
     stmt = select(User).filter(User.username == username)
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
-
-
-# 사용자 조회(id) - 동기식
-def get_user_by_id(db: Session, user_id: str) -> User | None:
-    return db.query(User).filter(User.id == user_id).first()
 
 
 # 사용자 조회(id) - 비동기식
@@ -120,14 +76,6 @@ async def get_user_by_id_async(db: AsyncSession, user_id: str) -> User | None:
     return result.scalar_one_or_none()
 
 
-# 사용자 인증 (동기식)
-def authenticate_user(db: Session, username: str, password: str) -> UserResponse | None:
-    user = get_user_by_username(db, username)
-    if not user or not verify_password(password, user.password):  # type: ignore
-        return None
-    return user_to_response(user)
-
-
 # 사용자 인증 (비동기식)
 async def authenticate_user_async(
     db: AsyncSession, username: str, password: str
@@ -135,16 +83,6 @@ async def authenticate_user_async(
     user = await get_user_by_username_async(db, username)
     if not user or not verify_password(password, user.password):  # type: ignore
         return None
-    return user_to_response(user)
-
-
-# 사용자 삭제 (동기식)
-def delete_user(db: Session, user_id: str) -> UserResponse:
-    user = get_user_by_id(db, user_id)
-    if not user:
-        raise ValueError("User not found")
-    db.delete(user)
-    db.commit()
     return user_to_response(user)
 
 

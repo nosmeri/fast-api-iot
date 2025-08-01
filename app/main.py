@@ -134,7 +134,8 @@ async def mainPage(
 
 @app.get("/introduction")
 async def introduction(
-    request: Request, user: UserResponse | None = Depends(get_current_user_optional_async)
+    request: Request,
+    user: UserResponse | None = Depends(get_current_user_optional_async),
 ) -> HTMLResponse:
     data: dict[str, Any] = {}
     if user:
