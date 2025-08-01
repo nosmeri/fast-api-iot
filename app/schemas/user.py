@@ -4,7 +4,6 @@ from models.user import User, UserRole
 from pydantic import BaseModel, ConfigDict
 
 
-
 # 사용자 생성 스키마
 class UserCreate(BaseModel):
     username: str

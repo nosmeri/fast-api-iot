@@ -10,7 +10,7 @@ from models import Base  # type: ignore
 from sqlalchemy.ext.asyncio import create_async_engine
 
 
-@pytest_asyncio.fixture(autouse=True)
+@pytest_asyncio.fixture(autouse=True, scope="session")
 async def setup_database():
     # async engine 생성
     async_database_url = settings.SQLALCHEMY_DATABASE_URL.replace(
@@ -24,7 +24,7 @@ async def setup_database():
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest_asyncio.fixture
+@pytest_asyncio.fixture(autouse=True, scope="session")
 async def async_client(setup_database):
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
@@ -65,8 +65,8 @@ async def get_async_db():
         finally:
             await session.close()
 
-"""
-@pytest_asyncio.fixture(autouse=True)
+
+@pytest_asyncio.fixture(autouse=True, scope="session")
 async def admin_user(async_client):
     response = await async_client.post(
         "/register", json={"username": "admin", "password": "admin1234!"}
@@ -89,4 +89,3 @@ async def admin_user(async_client):
             response.cookies.get("access_token"),
             response.cookies.get("refresh_token"),
         )
-"""

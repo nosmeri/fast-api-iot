@@ -1,10 +1,10 @@
 from datetime import datetime
+from enum import Enum as PyEnum
 from typing import TYPE_CHECKING
 from uuid import uuid4
-from enum import Enum as PyEnum
 
 from config.db import Base
-from sqlalchemy import Boolean, DateTime, String, func, Enum
+from sqlalchemy import Boolean, DateTime, Enum, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
