@@ -2,7 +2,7 @@ from typing import Any
 
 from config.db import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from schemas.user import ChangePassword, UserCreate, UserLogin, UserResponse
 from services import auth_service, jwt_service
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +19,7 @@ router = APIRouter()
 
 # 유효성 검사 규칙 제공 API
 @router.get("/validation-rules")
-async def get_validation_rules_api():
+async def get_validation_rules_api() -> dict:
     return get_validation_rules()
 
 
@@ -28,7 +28,7 @@ async def get_validation_rules_api():
 async def login_form(
     request: Request,
     user: UserResponse | None = Depends(get_current_user_optional_async),
-):
+) ->  HTMLResponse:
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse(request, "login.html")
@@ -70,7 +70,7 @@ async def login(
 async def register_form(
     request: Request,
     user: UserResponse | None = Depends(get_current_user_optional_async),
-):
+) -> HTMLResponse:
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse(request, "register.html")
@@ -111,7 +111,7 @@ async def register(
 @router.get("/changepw")
 async def change_password_form(
     request: Request, user: UserResponse = Depends(get_current_user_async)
-):
+) -> HTMLResponse:
     data: dict[str, Any] = {
         "user": {"username": user.username}
     }

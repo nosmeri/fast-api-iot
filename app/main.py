@@ -61,7 +61,7 @@ async def logging_middleware(request: Request, call_next) -> Response:
         # 성공 응답 로깅
         main_logger.info(
             f"요청 완료 - {request.method} {request.url.path} "
-            f"상태: {response.status_code}"
+            f"상태: {response.status_code} "
             f"처리시간: {process_time:.3f}초"
         )
 

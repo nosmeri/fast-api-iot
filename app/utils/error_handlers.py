@@ -10,12 +10,14 @@ def error_response(
     error_code: int,
     error_title: str,
     error_message: str,
+    exc,
     status_code: int | None = None,
 ) -> HTMLResponse:
     if status_code is None:
         status_code = error_code
 
     main_logger.error(f"{error_code} {error_title} {error_message}")
+    main_logger.error(f"DETAIL: {exc.detail}")
 
     return templates.TemplateResponse(
         request,
@@ -37,6 +39,7 @@ def unauthorized_error(request: Request, exc) -> HTMLResponse:
         401,
         "인증 실패",
         "로그인이 필요합니다. 로그인 후 다시 시도해주세요.",
+        exc,
         status_code=status.HTTP_401_UNAUTHORIZED,
     )
 
@@ -49,6 +52,7 @@ def forbidden_error(request: Request, exc) -> HTMLResponse:
         403,
         "접근 권한 없음",
         "이 페이지에 접근할 권한이 없습니다. 관리자에게 문의하세요.",
+        exc,
         status_code=status.HTTP_403_FORBIDDEN,
     )
 
@@ -61,6 +65,7 @@ def not_found_error(request: Request, exc) -> HTMLResponse:
         404,
         "페이지를 찾을 수 없습니다",
         "요청하신 페이지가 존재하지 않습니다.",
+        exc,
         status_code=status.HTTP_404_NOT_FOUND,
     )
 
@@ -73,5 +78,6 @@ def internal_server_error(request: Request, exc) -> HTMLResponse:
         500,
         "서버 오류",
         "서버에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+        exc,
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
     )
