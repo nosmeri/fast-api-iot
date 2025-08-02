@@ -65,7 +65,6 @@ async def get_refresh_token_async(db: AsyncSession, token: str) -> RefreshToken 
     stmt = (
         select(RefreshToken)
         .filter(RefreshToken.token == token)
-        .with_for_update()
         .options(selectinload(RefreshToken.user))
     )
     result = await db.execute(stmt)
@@ -76,7 +75,7 @@ async def get_refresh_token_async(db: AsyncSession, token: str) -> RefreshToken 
 async def revoke_refresh_token_async(
     db: AsyncSession, token: str
 ) -> RefreshToken | None:
-    stmt = select(RefreshToken).filter(RefreshToken.token == token).with_for_update()
+    stmt = select(RefreshToken).filter(RefreshToken.token == token)
     result = await db.execute(stmt)
     refresh_token = result.scalar_one_or_none()
 

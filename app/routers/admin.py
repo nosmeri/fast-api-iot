@@ -16,7 +16,6 @@ router = APIRouter(dependencies=[Depends(require_admin_async)])
 @router.get("/")
 async def admin_page(
     request: Request,
-    user: UserResponse = Depends(require_admin_async),
 ) -> HTMLResponse:
     return templates.TemplateResponse(request, "admin.html")
 

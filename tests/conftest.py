@@ -77,7 +77,7 @@ async def admin_user(async_client):
     from sqlalchemy import select
 
     async with get_async_db() as db:
-        stmt = select(User).filter(User.username == "admin").with_for_update()
+        stmt = select(User).filter(User.username == "admin")
 
         result = await db.execute(stmt)
         user = result.scalar_one_or_none()

@@ -1,5 +1,7 @@
 from typing import Any
 
+from fastapi import HTTPException, status
+
 from models.user import User
 from schemas.user import UserResponse, user_to_response
 from sqlalchemy import select
@@ -10,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 async def get_all_users(db: AsyncSession) -> list[UserResponse]:
     result = await db.execute(select(User))
     users = result.scalars().all()
-    return [UserResponse.model_validate(user) for user in users]
+    return [user_to_response(user) for user in users]
 
 
 # 사용자 업데이트
@@ -26,7 +28,7 @@ async def db_update(
         await db.refresh(user)
         return user_to_response(user)
     else:
-        raise ValueError("User not found")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
 
 
 # 사용자 삭제
@@ -38,4 +40,6 @@ async def db_delete(db: AsyncSession, userid: str) -> UserResponse:
         await db.commit()
         return user_to_response(user)
     else:
-        raise ValueError("User not found")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User not found"
+        )
