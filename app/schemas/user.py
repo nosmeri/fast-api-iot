@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from models.user import User, UserRole
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # 사용자 생성 스키마
@@ -17,8 +17,13 @@ class UserLogin(UserCreate):
 
 # 비밀번호 변경 스키마
 class ChangePassword(BaseModel):
-    currentPassword: str
-    newPassword: str
+    current_password: str = Field(..., alias="currentPassword")
+    new_password: str = Field(..., alias="newPassword")
+
+    model_config = {
+        "populate_by_name": True,  # alias로도, 필드명으로도 채울 수 있도록 허용
+        "extra": "forbid",  # (선택) 정의되지 않은 필드는 에러 발생
+    }
 
 
 # 사용자 응답 스키마
