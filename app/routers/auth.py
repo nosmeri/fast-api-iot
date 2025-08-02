@@ -1,4 +1,3 @@
-
 from config.db import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse

@@ -23,7 +23,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 async def create_user_async(db: AsyncSession, user: UserCreate) -> User:
     existing_user = await get_user_by_username_async(db, user.username)
     if existing_user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists"
+        )
 
     # 통합 유효성 검사
     is_valid, errors = validate_user_credentials(user.username, user.password)

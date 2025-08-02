@@ -4,7 +4,7 @@ from models.user import User
 from pydantic import BaseModel, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
-protected_fields = {"password","id"}
+protected_fields = {"password", "id"}
 
 
 class ModifyUser(BaseModel):

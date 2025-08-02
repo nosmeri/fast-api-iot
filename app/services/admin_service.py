@@ -1,7 +1,6 @@
 from typing import Any
 
 from fastapi import HTTPException, status
-
 from models.user import User
 from schemas.user import UserResponse, user_to_response
 from sqlalchemy import select
@@ -28,7 +27,9 @@ async def db_update(
         await db.refresh(user)
         return user_to_response(user)
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User not found"
+        )
 
 
 # 사용자 삭제
