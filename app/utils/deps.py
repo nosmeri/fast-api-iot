@@ -1,5 +1,6 @@
 from config.db import get_async_db
 from fastapi import Depends, HTTPException, Request, status
+from models.enums import UserRole
 from schemas.user import UserResponse
 from services import jwt_service
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,13 +25,9 @@ def decode_token(token: str) -> UserResponse:
         )
 
     # JWT 토큰의 'sub' 필드를 'id'로 변환
-    user_data = {
-        "id": payload.get("sub"),  # sub -> id로 변환
-        "username": payload.get("username"),
-        "is_admin": payload.get("is_admin", False),
-    }
+    payload["id"] = payload["sub"]
 
-    return UserResponse(**user_data)
+    return UserResponse(**payload)
 
 
 # 토큰 갱신을 처리하는 내부 함수 (비동기식)
@@ -108,10 +105,21 @@ async def get_current_user_async(
 
 
 # 관리자 권한 확인 - 비동기식
+async def require_manager_async(
+    user: UserResponse = Depends(get_current_user_async),
+) -> UserResponse:
+    if user.role != UserRole.ADMIN and user.role != UserRole.MANAGER:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="You are not manager"
+        )
+    return user
+
+
+# 관리자 권한 확인 - 비동기식
 async def require_admin_async(
     user: UserResponse = Depends(get_current_user_async),
 ) -> UserResponse:
-    if not user.is_admin:
+    if user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="You are not admin"
         )
