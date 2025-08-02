@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from models.user import User
 from passlib.context import CryptContext
 from schemas.user import UserCreate, UserResponse, user_to_response
@@ -22,12 +23,14 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 async def create_user_async(db: AsyncSession, user: UserCreate) -> User:
     existing_user = await get_user_by_username_async(db, user.username)
     if existing_user:
-        raise ValueError("Username already exists")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Username already exists")
 
     # 통합 유효성 검사
     is_valid, errors = validate_user_credentials(user.username, user.password)
     if not is_valid:
-        raise ValueError("; ".join(errors))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="; ".join(errors)
+        )
 
     hashed_password = get_password_hash(user.password)
     db_user = User(username=user.username, password=hashed_password)
@@ -44,16 +47,23 @@ async def change_password_async(
 ) -> User:
     user = await get_user_by_id_async(db, id)
     if not user:
-        raise ValueError("User not found")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User not found"
+        )
 
     # 현재 비밀번호 확인
     if not verify_password(current_password, user.password):  # type: ignore
-        raise ValueError("Current password is incorrect")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect",
+        )
 
     # 새 비밀번호 유효성 검사
     is_valid, errors = validate_password(new_password)
     if not is_valid:
-        raise ValueError("; ".join(errors))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="; ".join(errors)
+        )
 
     user.password = get_password_hash(new_password)  # type: ignore
     await db.commit()
@@ -90,7 +100,9 @@ async def authenticate_user_async(
 async def delete_user_async(db: AsyncSession, user_id: str) -> UserResponse:
     user = await get_user_by_id_async(db, user_id)
     if not user:
-        raise ValueError("User not found")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="User not found"
+        )
     await db.delete(user)
     await db.commit()
     return user_to_response(user)

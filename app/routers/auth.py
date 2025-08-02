@@ -40,10 +40,9 @@ async def login(
 ) -> JSONResponse:
     username = user_login.username
     password = user_login.password
-    try:
-        user = await auth_service.authenticate_user_async(db, username, password)
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    user = await auth_service.authenticate_user_async(db, username, password)
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -80,10 +79,7 @@ async def register_form(
 async def register(
     request: Request, user: UserCreate, db: AsyncSession = Depends(get_async_db)
 ) -> JSONResponse:
-    try:
-        new_user = await auth_service.create_user_async(db, user)
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    new_user = await auth_service.create_user_async(db, user)
 
     access_token = jwt_service.create_access_token(
         user_id=new_user.id,
@@ -122,12 +118,9 @@ async def change_password(
     db: AsyncSession = Depends(get_async_db),
     user: UserResponse = Depends(get_current_user_async),
 ) -> JSONResponse:
-    try:
-        await auth_service.change_password_async(
-            db, user.id, change_password.current_password, change_password.new_password
-        )
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    await auth_service.change_password_async(
+        db, user.id, change_password.current_password, change_password.new_password
+    )
 
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -164,10 +157,7 @@ async def delete_user(
     db: AsyncSession = Depends(get_async_db),
     user: UserResponse = Depends(get_current_user_async),
 ) -> JSONResponse:
-    try:
-        await auth_service.delete_user_async(db, user.id)
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    await auth_service.delete_user_async(db, user.id)
 
     response = JSONResponse(
         status_code=status.HTTP_200_OK,
