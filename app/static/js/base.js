@@ -39,22 +39,24 @@ async function fetchUser(params) {
         const response = await fetch('/me');
         if (!response.ok) {
             navbar_user.remove()
+            navbar_login.style = "";
             return;
         }
         const user = await response.json();
 
         navbar_login.remove();
+        navbar_user.style = "";
 
         if (user.role == "admin") {
             navbar_admin_link.forEach(v => v.style.display = "block");
-            navbar_username.style.color = "red";
+            navbar_username.style.color = "crimson";
         }
         if (user.role == "manager") {
             navbar_manager_link.forEach(v => v.style.display = "block");
             navbar_username.style.color = "lightgreen";
         }
 
-        username.forEach(v => v.innerHTML = user.username);
+        username.forEach(v => v.textContent = user.username);
     } catch (error) {
         console.error('요저 정보를 불러오는중 오류 발생:', error);
     }
