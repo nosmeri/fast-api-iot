@@ -18,11 +18,7 @@ async def admin_page(
     request: Request,
     user: UserResponse = Depends(require_admin_async),
 ) -> HTMLResponse:
-    data: dict[str, Any] = {
-        "user": {"username": user.username},
-    }
-
-    return templates.TemplateResponse(request, "admin.html", data)
+    return templates.TemplateResponse(request, "admin.html")
 
 
 @router.get("/user")

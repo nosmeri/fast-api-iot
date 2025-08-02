@@ -112,11 +112,7 @@ async def register(
 async def change_password_form(
     request: Request, user: UserResponse = Depends(get_current_user_async)
 ) -> HTMLResponse:
-    data: dict[str, Any] = {
-        "user": {"username": user.username}
-    }
-
-    return templates.TemplateResponse(request, "changepw.html", data)
+    return templates.TemplateResponse(request, "changepw.html")
 
 
 # 비밀번호 변경 (비동기)

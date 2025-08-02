@@ -29,9 +29,11 @@ if (navbarLogoutBtn) {
 async function fetchUser(params) {
     const navbar_login = document.querySelector(".navbar_login");
     const navbar_user = document.querySelector(".navbar_user");
-    const navbar_username = navbar_user.querySelector(".user_name a")
+    const navbar_username = navbar_user.querySelector(".user_name")
     const navbar_admin_link = document.querySelectorAll(".navbar_admin_link")
     const navbar_manager_link = document.querySelectorAll(".navbar_manager_link")
+
+    const username = document.querySelectorAll(".user_name")
 
     try {
         const response = await fetch('/me');
@@ -52,9 +54,7 @@ async function fetchUser(params) {
             navbar_username.style.color = "lightgreen";
         }
 
-        navbar_username.innerHTML = user.username;
-
-
+        username.forEach(v => v.innerHTML = user.username);
     } catch (error) {
         console.error('요저 정보를 불러오는중 오류 발생:', error);
     }
