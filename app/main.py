@@ -11,10 +11,7 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from schemas.user import UserResponse
-from utils.deps import (
-    get_current_user_async,
-    require_admin_async,
-)
+from utils.deps import get_current_user_async, require_admin_async
 from utils.error_handlers import (
     forbidden_error,
     internal_server_error,

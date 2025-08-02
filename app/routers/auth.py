@@ -1,4 +1,3 @@
-from typing import Any
 
 from config.db import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -28,7 +27,7 @@ async def get_validation_rules_api() -> dict:
 async def login_form(
     request: Request,
     user: UserResponse | None = Depends(get_current_user_optional_async),
-) ->  HTMLResponse:
+) -> HTMLResponse:
     if user:
         return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse(request, "login.html")

@@ -16,9 +16,7 @@ def _utc_now() -> datetime:
 
 
 # 액세스 토큰 생성
-def create_access_token(
-    user_id: str, username: str, role: UserRole
-) -> str:
+def create_access_token(user_id: str, username: str, role: UserRole) -> str:
     to_encode = {
         "sub": user_id,
         "username": username,
@@ -120,9 +118,7 @@ async def refresh_access_token_async(
         return None
 
     # 새로운 access token과 refresh token 생성
-    new_access_token = create_access_token(
-        user.id, user.username, user.role
-    )
+    new_access_token = create_access_token(user.id, user.username, user.role)
     new_refresh_token = await create_refresh_token_async(user.id, db)
 
     return new_access_token, new_refresh_token

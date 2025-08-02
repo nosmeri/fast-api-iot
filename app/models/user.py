@@ -4,7 +4,7 @@ from uuid import uuid4
 
 from config.db import Base
 from models.enums import UserRole
-from sqlalchemy import Boolean, DateTime, Enum, String, func
+from sqlalchemy import DateTime, Enum, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
