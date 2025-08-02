@@ -3,9 +3,7 @@
 const toggleButton = document.querySelector('.navbar_toggleBtn');
 const menu = document.querySelectorAll('.toggle_menu');
 toggleButton.addEventListener('click', () => {
-    for (let i = 0; i < menu.length; i++) {
-        menu[i].classList.toggle('active');
-    }
+    menu.forEach(v => v.classList.toggle('active'))
 })
 
 const navbarLogoutBtn = document.getElementById('navbarLogoutBtn');
@@ -27,3 +25,39 @@ if (navbarLogoutBtn) {
         }
     });
 }
+
+async function fetchUser(params) {
+    const navbar_login = document.querySelector(".navbar_login");
+    const navbar_user = document.querySelector(".navbar_user");
+    const navbar_username = navbar_user.querySelector(".user_name a")
+    const navbar_admin_link = document.querySelectorAll(".navbar_admin_link")
+    const navbar_manager_link = document.querySelectorAll(".navbar_manager_link")
+
+    try {
+        const response = await fetch('/me');
+        if (!response.ok) {
+            navbar_user.remove()
+            return;
+        }
+        const user = await response.json();
+
+        navbar_login.remove();
+
+        if (user.role == "admin") {
+            navbar_admin_link.forEach(v => v.style.display = "block");
+            navbar_username.style.color = "red";
+        }
+        if (user.role == "manager") {
+            navbar_manager_link.forEach(v => v.style.display = "block");
+            navbar_username.style.color = "lightgreen";
+        }
+
+        navbar_username.innerHTML = user.username;
+
+
+    } catch (error) {
+        console.error('요저 정보를 불러오는중 오류 발생:', error);
+    }
+}
+
+window.addEventListener('DOMContentLoaded', fetchUser);

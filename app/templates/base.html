@@ -34,27 +34,21 @@
                 <li><a href="/">Home</a></li>
                 <li><a href="/introduction">Introduction</a></li>
                 <li><a href="">Members</a></li>
-                {% if user and user.is_admin %}
-                <li><a href="/admin/">Admin</a></li>
-                {% endif %}
+                <li class="navbar_admin_link" style="display: none;"><a href="/admin/">Admin</a></li>
             </ul>
             <ul class="navbar_icons toggle_menu">
                 <li><a href="https://github.com/nosmeri"><i class="fa-brands fa-github"></i></a></li>
             </ul>
 
-            {% if not user %}
             <ul class="navbar_login toggle_menu">
                 <li><a href="/login" class="navbar_btn">Sign in</a></li>
                 <li><a href="/register" class="navbar_btn">Sign up</a></li>
             </ul>
-            {% endif %}
 
-            {% if user %}
             <div class="navbar_user toggle_menu">
-                <span class="user_name"><a href="/mypage/">{{ user.username }}</a></span>
+                <span class="user_name"><a href="/mypage/"></a></span>
                 <a href="#" class="navbar_btn" id="navbarLogoutBtn">Logout</a>
             </div>
-            {% endif %}
 
             <a href="#" class="navbar_toggleBtn"><i class="fa-solid fa-bars"></i></a>
         </nav>

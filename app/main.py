@@ -1,5 +1,4 @@
 import time
-from typing import Any
 
 import aiofiles
 import routers.admin as admin_router
@@ -12,7 +11,10 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from schemas.user import UserResponse
-from utils.deps import get_current_user_optional_async, require_admin_async
+from utils.deps import (
+    get_current_user_async,
+    require_admin_async,
+)
 from utils.error_handlers import (
     forbidden_error,
     internal_server_error,
@@ -121,29 +123,15 @@ app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 @app.get("/")
 async def mainPage(
     request: Request,
-    user: UserResponse | None = Depends(get_current_user_optional_async),
 ) -> HTMLResponse:
-    data: dict[str, Any] = {}
-    if user:
-        data.update(
-            {"user": {"username": user.username, "is_admin": bool(user.is_admin)}}
-        )
-
-    return templates.TemplateResponse(request, "index.html", data)
+    return templates.TemplateResponse(request, "index.html")
 
 
 @app.get("/introduction")
 async def introduction(
     request: Request,
-    user: UserResponse | None = Depends(get_current_user_optional_async),
 ) -> HTMLResponse:
-    data: dict[str, Any] = {}
-    if user:
-        data.update(
-            {"user": {"username": user.username, "is_admin": bool(user.is_admin)}}
-        )
-
-    return templates.TemplateResponse(request, "introduction.html", data)
+    return templates.TemplateResponse(request, "introduction.html")
 
 
 # 파일 업로드 엔드포인트
@@ -165,6 +153,13 @@ async def upload_file(file: UploadFile) -> dict:
         await buffer.write(content)
 
     return {"stored": dest.name, "size": dest.stat().st_size}
+
+
+@app.get("/me")
+async def get_my_info(
+    user: UserResponse = Depends(get_current_user_async),
+) -> UserResponse:
+    return user
 
 
 # 상태 확인 엔드포인트
