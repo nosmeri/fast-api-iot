@@ -13,7 +13,8 @@ async function fetchAndRenderUsers() {
             li.innerHTML = `
                 <button class="modify-button" id="${u.id}">modify</button>
                 <button class="delete-button" id="${u.id}">delete</button>
-                ${u.id} ${u.username} ${u.is_admin ? '<span style=\"color: green;\">admin</span>' : ''}
+                ${u.id} ${u.username}
+                <span style=\"color: yellow;\">${u.role}</span>
             `;
             userList.appendChild(li);
         });

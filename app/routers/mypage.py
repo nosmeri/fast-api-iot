@@ -15,7 +15,7 @@ async def mypage(
     request: Request, user: UserResponse = Depends(get_current_user_async)
 ) -> HTMLResponse:
     data: dict[str, Any] = {
-        "user": {"username": user.username, "is_admin": user.is_admin}
+        "user": {"username": user.username}
     }
 
     return templates.TemplateResponse(request, "mypage.html", data)

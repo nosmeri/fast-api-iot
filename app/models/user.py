@@ -23,7 +23,6 @@ class User(Base):
         String, unique=True, index=True, nullable=False
     )
     password: Mapped[str] = mapped_column(String, nullable=False)
-    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     role: Mapped[UserRole] = mapped_column(
         Enum(UserRole), nullable=False, default=UserRole.MEMBER
     )

@@ -72,7 +72,7 @@ async def admin_user(async_client):
         "/register", json={"username": "admin", "password": "admin1234!"}
     )
     assert response.status_code == 201, "회원가입 실패"
-    # DB에서 is_admin True로 변경
+    # DB에서 role ADMIN으로 변경
     from models.user import User  # type: ignore
     from sqlalchemy import select
 
@@ -82,7 +82,7 @@ async def admin_user(async_client):
         result = await db.execute(stmt)
         user = result.scalar_one_or_none()
         assert user is not None, "admin 유저가 DB에 없음"
-        user.is_admin = True
+        user.role = "ADMIN"
         await db.commit()
         await db.refresh(user)
         return (

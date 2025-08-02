@@ -52,7 +52,7 @@ async def login(
         )
 
     access_token = jwt_service.create_access_token(
-        user_id=user.id, username=user.username, is_admin=user.is_admin, role=user.role
+        user_id=user.id, username=user.username, role=user.role
     )
     refresh_token = await jwt_service.create_refresh_token_async(user_id=user.id, db=db)
 
@@ -89,7 +89,6 @@ async def register(
     access_token = jwt_service.create_access_token(
         user_id=new_user.id,
         username=new_user.username,
-        is_admin=new_user.is_admin,
         role=new_user.role,
     )
     refresh_token = await jwt_service.create_refresh_token_async(
@@ -114,7 +113,7 @@ async def change_password_form(
     request: Request, user: UserResponse = Depends(get_current_user_async)
 ):
     data: dict[str, Any] = {
-        "user": {"username": user.username, "is_admin": user.is_admin}
+        "user": {"username": user.username}
     }
 
     return templates.TemplateResponse(request, "changepw.html", data)

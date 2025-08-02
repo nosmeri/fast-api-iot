@@ -25,7 +25,6 @@ class ChangePassword(BaseModel):
 class UserResponse(BaseModel):
     id: str
     username: str
-    is_admin: bool
     role: UserRole
     created_at: datetime | None = None
     updated_at: datetime | None = None
