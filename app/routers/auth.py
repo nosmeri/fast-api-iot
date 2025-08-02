@@ -90,7 +90,7 @@ async def register(
         user_id=new_user.id,
         username=new_user.username,
         is_admin=new_user.is_admin,
-        role=user.role,
+        role=new_user.role,
     )
     refresh_token = await jwt_service.create_refresh_token_async(
         user_id=new_user.id, db=db
