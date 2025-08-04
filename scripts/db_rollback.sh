@@ -1,7 +1,6 @@
 source /home/deploy/fast-api-iot/.env
 
 BACKUP_DIR="/home/deploy/db_backups"
-CONTAINER_NAME="iot_db"
 FILENAME="$1"
 
 if [ -z "$FILENAME" ]; then
@@ -16,5 +15,5 @@ if [ ! -f "$BACKUP_DIR/$FILENAME" ]; then
 fi
 
 echo "[INFO] 복원 시작: $FILENAME"
-docker exec -i $CONTAINER_NAME psql -U $POSTGRES_USER -d $POSTGRES_DB < "$BACKUP_DIR/$FILENAME"
+docker exec -i $DB_CONTAINER_NAME psql -U $POSTGRES_USER -d $POSTGRES_DB < "$BACKUP_DIR/$FILENAME"
 echo "[INFO] 복원 완료"
