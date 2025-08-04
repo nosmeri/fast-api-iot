@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   db:
-    container_name: fastapi_db
+    container_name: iot_db
     image: postgres:15
     restart: always
     ports:
@@ -17,7 +17,7 @@ services:
       - default
 
   app:
-    container_name: fastapi_app
+    container_name: iot_app
     restart: always
     build: .
     expose:
@@ -28,7 +28,7 @@ services:
       timeout: 10s
       retries: 3
     environment:
-      SQLALCHEMY_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@fastapi_db:5432/${POSTGRES_DB}
+      SQLALCHEMY_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@iot_db:5432/${POSTGRES_DB}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ALGORITHM: ${JWT_ALGORITHM}
       JWT_ACCESS_EXPIRES_IN_HOURS: ${JWT_ACCESS_EXPIRES_IN_HOURS}

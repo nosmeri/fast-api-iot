@@ -1,7 +1,7 @@
 source /home/deploy/fast-api-iot/.env
 
 BACKUP_DIR="/home/deploy/db_backups"
-CONTAINER_NAME="fastapi_db"
+CONTAINER_NAME="iot_db"
 FILENAME="$1"
 
 if [ -z "$FILENAME" ]; then
