@@ -160,10 +160,10 @@ docker-compose exec app alembic revision --autogenerate -m "설명"
 
 ```bash
 # 앱 로그 실시간 확인
-docker exec -it fastapi_app tail -f /app/logs/app.log
+docker exec -it iot_app tail -f /app/logs/app.log
 
 # DB 로그 실시간 확인
-docker exec -it fastapi_app tail -f /app/logs/db.log
+docker exec -it iot_app tail -f /app/logs/db.log
 
 # Docker Compose로 로그 확인
 docker-compose logs -f app
