@@ -121,3 +121,13 @@ async def refresh_access_token_async(
     new_refresh_token = await create_refresh_token_async(user.id, db)
 
     return new_access_token, new_refresh_token
+
+
+async def cleanup_expired_tokens_async(db: AsyncSession):
+    stmt = select(RefreshToken).filter(RefreshToken.expires_at < _utc_now())
+    result = await db.execute(stmt)
+    expired_tokens = result.scalars().all()
+
+    for token in expired_tokens:
+        await db.delete(token)
+    await db.commit()

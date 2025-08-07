@@ -113,30 +113,32 @@ fast_api_web/
 
 ## API 엔드포인트
 
-### 인증/사용자 관련
-- `GET /login` - 로그인 페이지
-- `POST /login` - 로그인 처리
-- `GET /register` - 회원가입 페이지
-- `POST /register` - 회원가입 처리
-- `GET /changepw` - 비밀번호 변경 페이지
-- `PUT /changepw` - 비밀번호 변경 처리
-- `POST /logout` - 로그아웃
-- `GET /validation-rules` - 유효성 검사 규칙
-- `DELETE /delete_account` - (본인) 계정 삭제
+### 인증 및 사용자
+- `GET /login`: 로그인 페이지
+- `POST /login`: 로그인 처리
+- `POST /logout`: 로그아웃 처리
+- `GET /register`: 회원가입 페이지
+- `POST /register`: 회원가입 처리
+- `GET /changepw`: 비밀번호 변경 페이지
+- `PUT /changepw`: 비밀번호 변경 처리
+- `DELETE /delete_account`: 회원 탈퇴
+- `GET /me`: 내 정보 조회 (API)
 
-### 파일/기타
-- `POST /upload` - 파일 업로드
-- `GET /health` - 헬스체크 (문서 미포함)
+### 마이페이지
+- `GET /mypage`: 마이페이지
 
-### 관리자 기능
-- `GET /admin` - 관리자 페이지
-- `PUT /admin/user` - 사용자 정보 수정
-- `DELETE /admin/user` - 사용자 삭제
+### 관리자
+- `GET /admin`: 관리자 페이지
+- `GET /admin/user`: 전체 사용자 목록 조회 (API)
+- `PUT /admin/user`: 사용자 정보 수정 (API)
+- `DELETE /admin/user`: 사용자 삭제 (API)
 
 ### 기타
-- `GET /` - 메인 페이지
-- `GET /introduction` - 소개 페이지
-- `GET /mypage` - 마이페이지
+- `GET /`: 메인 페이지
+- `GET /introduction`: 소개 페이지
+- `GET /validation-rules`: 프론트엔드 유효성 검사 규칙 (API)
+- `POST /upload`: 파일 업로드 (API)
+- `GET /health`: 헬스체크 (API, 문서 미포함)
 
 ### 문서
 - `GET /docs` - Swagger UI (관리자만)
@@ -278,6 +280,7 @@ GitHub Secrets에 다음 설정 필요:
 - [ ] 성능 모니터링 추가
 - [ ] CSRF 토큰 추가
 - [ ] 보안 강화 (Rate Limiting, CORS 등)
+- [ ] 어드민 페이지 기능 추가
 
 ---
 
