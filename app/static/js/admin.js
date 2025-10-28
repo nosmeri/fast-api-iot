@@ -10,11 +10,14 @@ async function fetchAndRenderUsers() {
         userList.innerHTML = '';
         data.users.forEach(u => {
             const li = document.createElement('li');
+
+            const nameColor = u.role === 'admin' ? 'red' : (u.role === 'manager' ? 'yellow' : 'white');
+
             li.innerHTML = `
                 <button class="modify-button" id="${u.id}">modify</button>
                 <button class="delete-button" id="${u.id}">delete</button>
                 ${u.id} ${u.username}
-                <span style=\"color: yellow;\">${u.role}</span>
+                <span style=\"color: ${nameColor};\">${u.role}</span>
             `;
             userList.appendChild(li);
         });
