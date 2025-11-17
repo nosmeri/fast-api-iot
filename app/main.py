@@ -8,7 +8,7 @@ from config.settings import settings
 from fastapi import Depends, FastAPI, Request, UploadFile
 from fastapi.openapi.docs import get_redoc_html, get_swagger_ui_html
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from schemas.user import UserResponse
 from utils.deps import get_current_user_async, require_admin_async
@@ -222,4 +222,12 @@ async def custom_redoc() -> HTMLResponse:
 async def custom_openapi() -> JSONResponse:
     return JSONResponse(
         get_openapi(title=app.title, version=app.version, routes=app.routes)
+    )
+
+
+@app.get("/service-worker.js", include_in_schema=False)
+async def service_worker() -> FileResponse:
+    return FileResponse(
+        BASE_DIR / "static" / "service-worker.js",
+        media_type="application/javascript",
     )
