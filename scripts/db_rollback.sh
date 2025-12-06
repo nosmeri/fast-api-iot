@@ -1,3 +1,4 @@
+#!/bin/bash
 source /home/deploy/fast-api-iot/.env
 
 BACKUP_DIR="/home/deploy/db_backups"

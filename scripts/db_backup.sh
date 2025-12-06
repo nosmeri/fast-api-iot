@@ -1,3 +1,4 @@
+#!/bin/bash
 # 설정
 source /home/deploy/fast-api-iot/.env
 
